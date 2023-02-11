@@ -38,9 +38,9 @@ class _ToolbarContents extends StatelessWidget {
       return Container(
         height: 56.0, // in logical pixels
         padding: const EdgeInsets.all(8.0),
-        color: Color.fromRGBO(78, 74, 144, 1),
-        decoration:
-            BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(4.0))),
+        decoration: BoxDecoration(
+            color: Color.fromRGBO(78, 74, 144, 1),
+            borderRadius: BorderRadius.all(Radius.circular(4.0))),
         child: Row(children: this.children),
       );
     } else {

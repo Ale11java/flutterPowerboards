@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:timu_dart/src/ui/screenSubtitle.dart';
+import 'package:timu_dart/src/ui/screenText.dart';
+import 'package:timu_dart/src/ui/screenTitle.dart';
+import 'package:timu_dart/src/ui/toolbar.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,7 +15,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'TIMU Powerboards',
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -24,7 +28,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: "Before you go in, are you the host?"),
     );
   }
 }
@@ -73,7 +77,7 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+        title: ScreenTitle(text: widget.title),
       ),
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
@@ -102,6 +106,14 @@ class _MyHomePageState extends State<MyHomePage> {
               '$_counter',
               style: Theme.of(context).textTheme.headlineMedium,
             ),
+            ScreenSubtitle(text: "Design meeting"),
+            ScreenText(
+                text: "You are joining a TIMU meeting with a Powerboard"),
+            Toolbar(direction: ToolbarDirection.horizontal, children: [
+              ScreenText(text: "Tool 1"),
+              ScreenText(text: "Tool 2"),
+              ScreenText(text: "Tool 3"),
+            ])
           ],
         ),
       ),
