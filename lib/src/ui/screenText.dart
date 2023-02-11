@@ -18,7 +18,6 @@ class ScreenText extends StatelessWidget {
         height: 1.91,
         letterSpacing: 0,
       ),
-      textAlign: TextAlign.center,
     );
   }
 }

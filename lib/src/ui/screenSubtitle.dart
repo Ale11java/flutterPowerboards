@@ -18,7 +18,6 @@ class ScreenSubtitle extends StatelessWidget {
         height: 1,
         letterSpacing: 0,
       ),
-      textAlign: TextAlign.center,
     );
   }
 }

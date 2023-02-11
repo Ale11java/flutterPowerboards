@@ -18,7 +18,6 @@ class ScreenTitle extends StatelessWidget {
         height: 1.33,
         letterSpacing: 0,
       ),
-      textAlign: TextAlign.center,
     );
   }
 }
