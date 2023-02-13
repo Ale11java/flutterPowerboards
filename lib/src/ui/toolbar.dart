@@ -10,6 +10,13 @@ enum ToolbarDirection { horizontal, vertical }
 /// should be a list of Widgets. It should constrain the height or width of the
 /// contents of the toolbar depending on the orientation (width if it is
 /// vertical and height if it is horizontal).
+///
+/// {@tool dartpad}
+/// This sample shows creation of a [Toolbar] widget
+///
+/// ** See code in examples/api/lib/ui/toolbar/toolbar.0.dart **
+/// {@end-tool}
+
 class Toolbar extends InheritedWidget {
   Toolbar({
     super.key,
@@ -47,7 +54,9 @@ class _ToolbarContents extends StatelessWidget {
       return Container(
         width: 56.0, // in logical pixels
         padding: const EdgeInsets.all(8.0),
-        decoration: BoxDecoration(color: Color.fromRGBO(78, 74, 144, 1)),
+        color: Color.fromRGBO(78, 74, 144, 1),
+        decoration:
+            BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(4.0))),
         child: Column(children: this.children),
       );
     }
