@@ -1,5 +1,5 @@
 /// TIMU Flutter UI widgets elements
 
-library material;
+library timu_dart;
 
 export 'src/ui/toolbar.dart';
