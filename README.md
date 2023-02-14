@@ -7,7 +7,7 @@ These instructions will get you a copy of the project up and running on your loc
 
 
 ### Prerequisites
-You need to have Flutter installed on your development machine. You can follow the instructions on the official Flutter website to install it: [https://flutter.dev/docs/get-started/install]
+You need to have Flutter installed on your development machine. You can follow the instructions on the official Flutter website to install it: https://flutter.dev/docs/get-started/install
 
 ### Install Required Packages
 1. Download packages

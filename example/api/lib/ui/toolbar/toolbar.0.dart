@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/// Flutter code sample for [Card].
-
 import 'package:flutter/material.dart';
 import 'package:timu_dart/ui.dart';
 
@@ -12,7 +10,7 @@ void main() => runApp(const MyApp());
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  static const String _title = 'Flutter Code Sample';
+  static const String _title = 'Toolbar Sample';
 
   @override
   Widget build(BuildContext context) {
@@ -31,38 +29,25 @@ class MyStatelessWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return Container(
+      padding: const EdgeInsets.all(20.0),
       child: Toolbar(
         direction: ToolbarDirection.horizontal,
-        children: [
-          Card(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                const ListTile(
-                  leading: Icon(Icons.album),
-                  title: Text('The Enchanted Nightingale'),
-                  subtitle:
-                      Text('Music by Julie Gable. Lyrics by Sidney Stein.'),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: <Widget>[
-                    TextButton(
-                      child: const Text('BUY TICKETS'),
-                      onPressed: () {/* ... */},
-                    ),
-                    const SizedBox(width: 8),
-                    TextButton(
-                      child: const Text('LISTEN'),
-                      onPressed: () {/* ... */},
-                    ),
-                    const SizedBox(width: 8),
-                  ],
-                ),
-              ],
-            ),
+        children: <Widget>[
+          TextButton(
+            child: const Text('BUY TICKETS', style: TextStyle(
+              color: Color.fromRGBO(255, 255, 255, 1),
+            )),
+            onPressed: () {/* ... */},
           ),
+          const SizedBox(width: 8),
+          TextButton(
+            child: const Text('LISTEN', style: TextStyle(
+              color: Color.fromRGBO(255, 255, 255, 1),
+            )),
+            onPressed: () {/* ... */},
+          ),
+          const SizedBox(width: 8),
         ],
       ),
     );

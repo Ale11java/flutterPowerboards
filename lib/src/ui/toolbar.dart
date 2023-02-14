@@ -11,11 +11,59 @@ enum ToolbarDirection { horizontal, vertical }
 /// contents of the toolbar depending on the orientation (width if it is
 /// vertical and height if it is horizontal).
 ///
-/// {@tool dartpad}
-/// This sample shows creation of a [Toolbar] widget
+/// ```run-dartpad:theme-dark:mode-flutter:run-true:split-40:width-100%:height-800px
+/// import 'package:flutter/material.dart';
+/// import 'package:timu_dart/ui.dart';
 ///
-/// ** See code in examples/api/lib/ui/toolbar/toolbar.0.dart **
-/// {@end-tool}
+/// void main() => runApp(const MyApp());
+///
+/// class MyApp extends StatelessWidget {
+///   const MyApp({super.key});
+///
+///   static const String _title = 'Toolbar Sample';
+///
+///   @override
+///   Widget build(BuildContext context) {
+///     return MaterialApp(
+///       title: _title,
+///       home: Scaffold(
+///         appBar: AppBar(title: const Text(_title)),
+///         body: const MyStatelessWidget(),
+///       ),
+///     );
+///   }
+/// }
+///
+/// class MyStatelessWidget extends StatelessWidget {
+///   const MyStatelessWidget({super.key});
+///
+///   @override
+///   Widget build(BuildContext context) {
+///     return Container(
+///       padding: const EdgeInsets.all(20.0),
+///       child: Toolbar(
+///         direction: ToolbarDirection.horizontal,
+///         children: <Widget>[
+///           TextButton(
+///             child: const Text('BUY TICKETS', style: TextStyle(
+///               color: Color.fromRGBO(255, 255, 255, 1),
+///             )),
+///             onPressed: () {/* ... */},
+///           ),
+///           const SizedBox(width: 8),
+///           TextButton(
+///             child: const Text('LISTEN', style: TextStyle(
+///               color: Color.fromRGBO(255, 255, 255, 1),
+///             )),
+///             onPressed: () {/* ... */},
+///           ),
+///           const SizedBox(width: 8),
+///         ],
+///       ),
+///     );
+///   }
+/// }
+/// ```
 
 class Toolbar extends InheritedWidget {
   Toolbar({
@@ -46,17 +94,35 @@ class _ToolbarContents extends StatelessWidget {
         height: 56.0, // in logical pixels
         padding: const EdgeInsets.all(8.0),
         decoration: BoxDecoration(
-            color: Color.fromRGBO(78, 74, 144, 1),
-            borderRadius: BorderRadius.all(Radius.circular(4.0))),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: Color(0xff4e4a90), width: 1),
+          boxShadow: [
+            const BoxShadow(
+              color: Color(0x19000000),
+              blurRadius: 10,
+              offset: Offset(0, 6),
+            ),
+          ],
+          color: Color(0xff2f2d57),
+        ),
         child: Row(children: this.children),
       );
     } else {
       return Container(
         width: 56.0, // in logical pixels
         padding: const EdgeInsets.all(8.0),
-        color: Color.fromRGBO(78, 74, 144, 1),
-        decoration:
-            BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(4.0))),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(4.0)),
+          border: Border.all(color: Color(0xff4e4a90), width: 1, ),
+          boxShadow: [
+            const BoxShadow(
+              color: Color(0x19000000),
+              blurRadius: 10,
+              offset: Offset(0, 6),
+            ),
+          ],
+          color: Color(0xff2f2d57),
+        ),
         child: Column(children: this.children),
       );
     }
