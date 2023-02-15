@@ -13,7 +13,72 @@ enum ToolbarDirection { horizontal, vertical }
 ///
 /// ```run-dartpad:theme-dark:mode-flutter:run-true:split-40:width-100%:height-800px
 /// import 'package:flutter/material.dart';
-/// import 'package:timu_dart/ui.dart';
+///
+/// enum ToolbarDirection { horizontal, vertical }
+///
+/// class Toolbar extends InheritedWidget {
+///   Toolbar({
+///     super.key,
+///     required this.direction,
+///     required List<Widget> children,
+///   }) : super(child: _ToolbarContents(children));
+/// 
+///   final ToolbarDirection direction;
+/// 
+///   @override
+///   bool updateShouldNotify(covariant Toolbar oldWidget) {
+///     return oldWidget.direction != oldWidget.direction;
+///   }
+/// }
+/// 
+/// class _ToolbarContents extends StatelessWidget {
+///   const _ToolbarContents(this.children);
+/// 
+///   final List<Widget> children;
+/// 
+///   @override
+///   Widget build(BuildContext context) {
+///     final Toolbar toolbar = context.dependOnInheritedWidgetOfExactType<Toolbar>()!;
+/// 
+///     if (toolbar.direction == ToolbarDirection.horizontal) {
+///       return Container(
+///         height: 56.0, // in logical pixels
+///         padding: const EdgeInsets.all(8.0),
+///         decoration: BoxDecoration(
+///           borderRadius: BorderRadius.circular(8),
+///           border: Border.all(color: const Color(0xff4e4a90)),
+///           boxShadow: const <BoxShadow>[
+///             BoxShadow(
+///               color: Color(0x19000000),
+///               blurRadius: 10,
+///               offset: Offset(0, 6),
+///             ),
+///           ],
+///           color: const Color(0xff2f2d57),
+///         ),
+///         child: Row(children: children),
+///       );
+///     } else {
+///       return Container(
+///         width: 56.0, // in logical pixels
+///         padding: const EdgeInsets.all(8.0),
+///         decoration: BoxDecoration(
+///           borderRadius: BorderRadius.circular(8),
+///           border: Border.all(color: const Color(0xff4e4a90)),
+///           boxShadow: const <BoxShadow>[
+///             BoxShadow(
+///               color: Color(0x19000000),
+///               blurRadius: 10,
+///               offset: Offset(0, 6),
+///             ),
+///           ],
+///           color: const Color(0xff2f2d57),
+///         ),
+///         child: Column(children: children),
+///       );
+///     }
+///   }
+/// }
 ///
 /// void main() => runApp(const MyApp());
 ///
@@ -64,7 +129,6 @@ enum ToolbarDirection { horizontal, vertical }
 ///   }
 /// }
 /// ```
-
 class Toolbar extends InheritedWidget {
   Toolbar({
     super.key,
@@ -87,7 +151,7 @@ class _ToolbarContents extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final toolbar = context.dependOnInheritedWidgetOfExactType<Toolbar>()!;
+    final Toolbar toolbar = context.dependOnInheritedWidgetOfExactType<Toolbar>()!;
 
     if (toolbar.direction == ToolbarDirection.horizontal) {
       return Container(
@@ -95,48 +159,36 @@ class _ToolbarContents extends StatelessWidget {
         padding: const EdgeInsets.all(8.0),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Color(0xff4e4a90), width: 1),
-          boxShadow: [
-            const BoxShadow(
+          border: Border.all(color: const Color(0xff4e4a90)),
+          boxShadow: const <BoxShadow>[
+            BoxShadow(
               color: Color(0x19000000),
               blurRadius: 10,
               offset: Offset(0, 6),
             ),
           ],
-          color: Color(0xff2f2d57),
+          color: const Color(0xff2f2d57),
         ),
-        child: Row(children: this.children),
+        child: Row(children: children),
       );
     } else {
       return Container(
         width: 56.0, // in logical pixels
         padding: const EdgeInsets.all(8.0),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(4.0)),
-          border: Border.all(color: Color(0xff4e4a90), width: 1, ),
-          boxShadow: [
-            const BoxShadow(
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: const Color(0xff4e4a90)),
+          boxShadow: const <BoxShadow>[
+            BoxShadow(
               color: Color(0x19000000),
               blurRadius: 10,
               offset: Offset(0, 6),
             ),
           ],
-          color: Color(0xff2f2d57),
+          color: const Color(0xff2f2d57),
         ),
-        child: Column(children: this.children),
+        child: Column(children: children),
       );
     }
   }
 }
-
-/// Occasionally, we will need to render separators between the widgets, these can be rendered using a ToolbarSeparator widget. The widget should not contain any padding, but should respect the the current toolbar orientation to know whether it should render according to the height or width constraint. Use a LayoutBuilder to retrieve this constraint.
-///
-/// ToolbarSeparator() : StatelessWidget
-///
-/// There are three types of standard buttons.
-///
-/// ToolbarButton(onPressed : Function(), child: Widget) : StatelessWidget
-/// ToggleToolbarButton(on: bool, child: Widget) : ToolbarButton
-/// EmphasizedToolbarButton( child: Widget) : ToolbarButton
-///
-/// Like the ToolbarSeparator, the ToolbarButton should also respect the horizontal or vertical constraint provided by the toolbar depending on the orientation. The major difference between the buttons is simply the background color and hover states of the buttons. The content of the button should be provided as a widget child, which could be an icon, text, or another type of widget. The button should center its contents and have a minimum width that matches the constrained dimension of the button so that buttons with a single icon or character glyph are square.
