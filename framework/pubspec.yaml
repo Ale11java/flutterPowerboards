@@ -5,6 +5,7 @@ environment:
   sdk: '>=2.18.0 <3.0.0'
 
 dependencies:
+  cross_file: ^0.3.3+4
   flutter:
     sdk: flutter
   rxdart: ^0.27.7
