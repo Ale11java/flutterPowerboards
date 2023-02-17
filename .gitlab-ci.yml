@@ -7,6 +7,9 @@ gcloud:
   variables:
     GIT_STRATEGY: fetch
     GIT_SUBMODULE_STRATEGY: none
+  only:
+    refs:
+    - main
   script:
   - |
     cd ..
