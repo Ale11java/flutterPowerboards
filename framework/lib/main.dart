@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:timu_dart/src/ui/screenSubtitle.dart';
-import 'package:timu_dart/src/ui/screenText.dart';
-import 'package:timu_dart/src/ui/screenTitle.dart';
-import 'package:timu_dart/src/ui/toolbar.dart';
+import 'package:timu_dart/ui.dart';
 
 void main() {
   runApp(const MyApp());
