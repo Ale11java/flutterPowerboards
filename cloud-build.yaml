@@ -1,0 +1,53 @@
+steps:
+- name: gcr.io/cloud-builders/gcloud
+  entrypoint: bash
+  args:
+    - -c
+    - |
+      gcloud secrets versions access latest --secret=timu-build-platform-credentials --format='get(payload.data)' | tr '_-' '/+' | base64 -d > timu-build-platform-credentials.json
+      gcloud secrets versions access latest --secret=timu-build-platform-credentials --format='get(payload.data)' | tr '_-' '/+' | base64 -d > cloud-functions-credentials.json
+  
+- name: gcr.io/cloud-builders/gcloud
+  id: serialize
+  entrypoint: bash
+  args:
+  - -c
+  - |
+    set -e
+    while true; do
+      RUNNING_BUILD_ID=$(gcloud builds list --filter="tags=flutter" --ongoing --format=json --sort-by=createTime | grep '"id": "$BUILD_ID"')
+      if [ "$$RUNNING_BUILD_ID" != "" ]; then
+        echo READY!
+        exit 0
+      else
+        echo Waiting for $$RUNNING_BUILD_ID
+        sleep 20
+      fi
+    done
+
+- name: cirrusci/flutter:stable
+  dir: flutter/framework
+  entrypoint: bash
+  args:
+  - -c
+  - |-
+    flutter pub get
+    dart doc .
+
+- name: gcr.io/cloud-builders/gcloud
+  entrypoint: bash
+  dir: flutter/framework/doc/api
+  args:
+  - -c 
+  - |-
+    export CLOUDSDK_AUTH_CREDENTIAL_FILE_OVERRIDE=/workspace/timu-build-platform-credentials.json
+    gsutil cp -r * gs://docs.timu.work
+
+tags:
+- flutter
+
+timeout: 3600s
+options:
+    substitution_option: ALLOW_LOOSE
+    machineType: N1_HIGHCPU_32
+
