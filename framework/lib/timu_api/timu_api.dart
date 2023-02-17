@@ -1,9 +1,11 @@
+/// TIMU Flutter API
+
 library timu_api;
 
-import "dart:convert";
-import "package:cross_file/cross_file.dart";
+import 'dart:convert';
+import 'package:cross_file/cross_file.dart';
 
-import "package:http/http.dart" as http;
+import 'package:http/http.dart' as http;
 
 class RequiresAuthenticationError implements Exception {}
 
