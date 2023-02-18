@@ -1,0 +1,22 @@
+stages:
+  - cloud-build
+
+gcloud:
+  stage: cloud-build
+  image: gcr.io/cloud-builders/gcloud
+  variables:
+    GIT_STRATEGY: fetch
+    GIT_SUBMODULE_STRATEGY: none
+  only:
+    refs:
+    - main
+  script:
+  - |
+    cd ..
+    git clone https://${DART_PAD_ACCESS_TOKEN}:${DART_PAD_ACCESS_TOKEN}@gitlab.timu.work/timu/dart-pad.git
+    git clone https://${DART_SERVICES_ACCESS_TOKEN}:${DART_SERVICES_ACCESS_TOKEN}@gitlab.timu.work/timu/dart-services.git
+    export CLOUDSDK_CONFIG=`pwd`/temp
+    echo $CLOUD_BUILD_CREDENTIALS > cloud-build-credentials.json
+    gcloud auth activate-service-account --key-file=cloud-build-credentials.json
+    export CLOUDSDK_CORE_PROJECT=timu-build-platform
+    gcloud builds submit --project timu-build-platform --config flutter/cloud-build.yaml --substitutions _TAG=$CI_COMMIT_REF_NAME-$CI_COMMIT_SHORT_SHA
