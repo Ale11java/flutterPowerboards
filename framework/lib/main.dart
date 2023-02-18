@@ -103,21 +103,35 @@ class _MyHomePageState extends State<MyHomePage> {
               '$_counter',
               style: Theme.of(context).textTheme.headlineMedium,
             ),
-            ScreenSubtitle(text: "Design meeting"),
-            ScreenText(
-                text: "You are joining a TIMU meeting with a Powerboard"),
-            Toolbar(direction: ToolbarDirection.horizontal, children: [
-              ScreenText(text: "Tool 1"),
-              ScreenText(text: "Tool 2"),
-              ScreenText(text: "Tool 3"),
-            ])
+            const ScreenSubtitle(text: 'Design meeting'),
+            const ScreenText(
+                text: 'You are joining a TIMU meeting with a Powerboard'),
+            Toolbar(
+                direction: ToolbarDirection.horizontal,
+                children: const <Widget>[
+                  ScreenText(text: 'Tool 1'),
+                  ScreenText(text: 'Tool 2'),
+                  ToolbarSeparator(),
+                  ScreenText(text: 'Tool 3'),
+                  ToolbarButton(
+                      child: Text('libraries',
+                          style: TextStyle(color: Color(0xffffffff)))),
+                  ToolbarButton(child: Text('hi',
+                          style: TextStyle(color: Color(0xffffffff)))),
+                  ToggleToolbarButton(on: true, child: Text('hi',
+                          style: TextStyle(color: Color(0xffffffff)))),
+                  EmphasizedToolbarButton(child: Text('hi',
+                          style: TextStyle(color: Color(0xffffffff)))),
+                  EmphasizedToolbarButton(child: Text('hi',
+                          style: TextStyle(color: Color(0xffffffff)))),
+                  ScreenText(text: 'Tool 4'),
+                ]),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: RawMaterialButton(
         onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
+        child: const Text('T'),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
