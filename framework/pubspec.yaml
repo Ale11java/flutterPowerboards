@@ -8,6 +8,8 @@ dependencies:
   cross_file: ^0.3.3+4
   flutter:
     sdk: flutter
+  flutter_secure_storage: ^8.0.0
+  http: ^0.13.5
   rxdart: ^0.27.7
   web_socket_channel: ^2.3.0
 
