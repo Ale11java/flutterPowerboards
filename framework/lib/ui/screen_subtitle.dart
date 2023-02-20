@@ -1,22 +1,23 @@
 import 'package:flutter/material.dart';
 
 class ScreenSubtitle extends StatelessWidget {
-  final String text;
-
   const ScreenSubtitle({
+    super.key,
     required this.text,
   });
+  final String text;
 
   @override
   Widget build(BuildContext context) {
     return Text(
       text,
-      style: TextStyle(
+      style: const TextStyle(
         color: Color.fromRGBO(171, 148, 255, 1),
         fontSize: 16,
-        fontFamily: "Roboto",
+        fontFamily: 'Roboto',
         height: 1,
         letterSpacing: 0,
+        decoration: TextDecoration.none,
       ),
     );
   }

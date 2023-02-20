@@ -1,22 +1,23 @@
 import 'package:flutter/material.dart';
 
 class ScreenTitle extends StatelessWidget {
-  final String text;
-
   const ScreenTitle({
+    super.key,
     required this.text,
   });
+  final String text;
 
   @override
   Widget build(BuildContext context) {
     return Text(
       text,
-      style: TextStyle(
+      style: const TextStyle(
         color: Colors.white,
         fontSize: 21,
-        fontFamily: "Inter",
+        fontFamily: 'Inter',
         height: 1.33,
         letterSpacing: 0,
+        decoration: TextDecoration.none,
       ),
     );
   }
