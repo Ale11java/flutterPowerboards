@@ -7,7 +7,6 @@ class StorageProvider extends StatefulWidget {
   StorageProvider({super.key, required this.child}) : storage = Storage();
 
   final Storage storage;
-
   final Widget child;
 
   @override
@@ -79,17 +78,3 @@ class AuthModel extends InheritedModel<AuthModelProp> {
     return false;
   }
 }
-
-// class SampleUI extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return StorageProvider(child: Builder(builder: (BuildContext context) {
-//       final account = AuthModel.of(context);
-//       final activeAccount = account.activeAccount;
-//       if (activeAccount != null) {
-//         return Text(activeAccount.firstName ?? '');
-//       }
-//       return const Text('No active account');
-//     }));
-//   }
-// }
