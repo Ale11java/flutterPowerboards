@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:timu_dart/ui.dart';
+import 'package:timu_dart/ui/auth_model.dart';
+
+import 'ui/storage_login.dart';
 
 void main() {
+  // WidgetsFlutterBinding.ensureInitialized();
+
   runApp(const MyApp());
 }
 
@@ -11,21 +16,21 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'TIMU Powerboards',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.blue,
+    return StorageProvider(
+      child: StorageLogin(
+        childLoggedIn: MaterialApp(
+          // title: 'TIMU Powerboards',
+          theme: ThemeData(
+            primarySwatch: Colors.blue,
+          ),
+          routes: {
+            '/': (BuildContext context) =>
+                const MyHomePage(title: 'Before you go in, are you the host?'),
+            '/settings': (BuildContext context) =>
+                const MyHomePage(title: 'Settings'),
+          },
+        ),
       ),
-      home: const MyHomePage(title: "Before you go in, are you the host?"),
     );
   }
 }
@@ -106,26 +111,30 @@ class _MyHomePageState extends State<MyHomePage> {
             const ScreenSubtitle(text: 'Design meeting'),
             const ScreenText(
                 text: 'You are joining a TIMU meeting with a Powerboard'),
-            Toolbar(
-                direction: ToolbarDirection.horizontal,
-                children: const <Widget>[
-                  ScreenText(text: 'Tool 1'),
-                  ScreenText(text: 'Tool 2'),
-                  ToolbarSeparator(),
-                  ScreenText(text: 'Tool 3'),
-                  ToolbarButton(
-                      child: Text('libraries',
-                          style: TextStyle(color: Color(0xffffffff)))),
-                  ToolbarButton(child: Text('hi',
-                          style: TextStyle(color: Color(0xffffffff)))),
-                  ToggleToolbarButton(on: true, child: Text('hi',
-                          style: TextStyle(color: Color(0xffffffff)))),
-                  EmphasizedToolbarButton(child: Text('hi',
-                          style: TextStyle(color: Color(0xffffffff)))),
-                  EmphasizedToolbarButton(child: Text('hi',
-                          style: TextStyle(color: Color(0xffffffff)))),
-                  ScreenText(text: 'Tool 4'),
-                ]),
+            Toolbar(direction: ToolbarDirection.horizontal, children: const <
+                Widget>[
+              ScreenText(text: 'Tool 1'),
+              ScreenText(text: 'Tool 2'),
+              ToolbarSeparator(),
+              ScreenText(text: 'Tool 3'),
+              ToolbarButton(
+                  child: Text('libraries',
+                      style: TextStyle(color: Color(0xffffffff)))),
+              ToolbarButton(
+                  child:
+                      Text('hi', style: TextStyle(color: Color(0xffffffff)))),
+              ToggleToolbarButton(
+                  on: true,
+                  child:
+                      Text('hi', style: TextStyle(color: Color(0xffffffff)))),
+              EmphasizedToolbarButton(
+                  child:
+                      Text('hi', style: TextStyle(color: Color(0xffffffff)))),
+              EmphasizedToolbarButton(
+                  child:
+                      Text('hi', style: TextStyle(color: Color(0xffffffff)))),
+              ScreenText(text: 'Tool 4'),
+            ]),
           ],
         ),
       ),

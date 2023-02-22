@@ -255,8 +255,8 @@ class ToolbarButton extends StatelessWidget {
     return FilledButton(
       onPressed: onPressed,
       style: ButtonStyle(
-        shape: MaterialStateProperty.all(RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(5.0))),
+        shape: MaterialStateProperty.all(
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0))),
         padding: MaterialStateProperty.all(const EdgeInsets.all(5)),
         minimumSize: MaterialStateProperty.all(const Size.square(32.0)),
       ),
@@ -283,9 +283,9 @@ class ToggleToolbarButton extends ToolbarButton {
         style: ButtonStyle(
           backgroundColor: MaterialStateProperty.all(const Color(0xFF7752FF)),
           textStyle: MaterialStateProperty.all(
-            const TextStyle(color: Color(0xffffffff))),
-          shape: MaterialStateProperty.all(RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(5.0))),
+              const TextStyle(color: Color(0xffffffff))),
+          shape: MaterialStateProperty.all(
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0))),
           padding: MaterialStateProperty.all(const EdgeInsets.all(5)),
           minimumSize: MaterialStateProperty.all(const Size.square(32.0)),
         ),
@@ -295,11 +295,11 @@ class ToggleToolbarButton extends ToolbarButton {
       return FilledButton(
         onPressed: onPressed,
         style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.all(const Color(0xFF7752FF)),
+          backgroundColor: MaterialStateProperty.all(const Color(0x2F2D57)),
           textStyle: MaterialStateProperty.all(
-            const TextStyle(color: Color(0xffffffff))),
-          shape: MaterialStateProperty.all(RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(5.0))),
+              const TextStyle(color: Color(0xffffffff))),
+          shape: MaterialStateProperty.all(
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0))),
           padding: MaterialStateProperty.all(const EdgeInsets.all(5)),
           minimumSize: MaterialStateProperty.all(const Size.square(32.0)),
         ),
@@ -323,9 +323,9 @@ class EmphasizedToolbarButton extends ToolbarButton {
       style: ButtonStyle(
         backgroundColor: MaterialStateProperty.all(const Color(0xFFED6464)),
         textStyle: MaterialStateProperty.all(
-          const TextStyle(color: Color(0xffffffff))),
-        shape: MaterialStateProperty.all(RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(5.0))),
+            const TextStyle(color: Color(0xffffffff))),
+        shape: MaterialStateProperty.all(
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0))),
         padding: MaterialStateProperty.all(const EdgeInsets.all(5)),
         minimumSize: MaterialStateProperty.all(const Size.square(32.0)),
       ),

@@ -1,6 +1,9 @@
+.flutter-plugins-dependencies
 .DS_Store
 .idea
 .dart_tool
 .vscode
 build
 doc
+.flutter-plugins
+.flutter-plugins-dependencies
