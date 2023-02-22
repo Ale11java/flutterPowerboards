@@ -15,6 +15,7 @@ class ScreenSubtitle extends StatelessWidget {
         color: Color.fromRGBO(171, 148, 255, 1),
         fontSize: 16,
         fontFamily: 'Roboto',
+        fontWeight: FontWeight.w700,
         height: 1,
         letterSpacing: 0,
         decoration: TextDecoration.none,

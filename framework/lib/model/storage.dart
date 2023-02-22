@@ -60,6 +60,15 @@ class Storage {
     return null;
   }
 
+  Future<void> setActiveAccount(Account account) async {
+    await _storage.write(
+      key: 'activeAccount',
+      value: account.key,
+      iOptions: _getIOSOptions(),
+      aOptions: _getAndroidOptions(),
+    );
+  }
+
   IOSOptions _getIOSOptions() => const IOSOptions(
         accountName: 'com.timu3',
       );
@@ -84,11 +93,6 @@ class Storage {
 //     await _readAccounts();
 //   }
 
-//   Future<void> setActiveAccount(Account account) async {
-//     const String key = 'activeAccount';
-//     final value = account.toJson();
-//     await _storage.write(key: key, value: value);
-//   }
 
 //   Future<Account?> getActiveAccount() async {
 //     const String key = 'activeAccount';

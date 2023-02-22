@@ -1,42 +1,33 @@
 import 'package:flutter/material.dart';
+import '../model/account.dart';
+import 'account_list.dart';
+import 'accounts_empty.dart';
+import 'auth_model.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
-
-  @override
-  State<LoginPage> createState() => _LoginPageState();
-}
-
-class _LoginPageState extends State<LoginPage> {
-  bool _isLoggedIn = false;
-
-  void _login() {
-    setState(() {
-      _isLoggedIn = true;
-    });
-  }
+class LoginPage extends StatelessWidget {
+  const LoginPage({
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final AuthModel props = AuthModel.of(context);
+    final List<Account> accounts = props.accounts;
+    // final StorageState? storageState =
+    //     context.findAncestorStateOfType<StorageState>();
+    // final StorageProvider? provider =
+    //     context.dependOnInheritedWidgetOfExactType<StorageProvider>();
+
     return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_isLoggedIn',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: RawMaterialButton(
-        onPressed: _login,
-        child: const Text('Login'),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      backgroundColor: const Color.fromRGBO(47, 45, 87, 1),
+      body: Padding(
+          padding: const EdgeInsets.fromLTRB(40, 0, 40, 0),
+          child: Center(
+              child: accounts.isNotEmpty
+                  ? AccountList(
+                      onAccountPressed: (Account account) {},
+                    )
+                  : const AccountsEmpty())),
     );
   }
 }

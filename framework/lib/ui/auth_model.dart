@@ -75,6 +75,11 @@ class AuthModel extends InheritedModel<AuthModelProp> {
         oldWidget.activeAccount != activeAccount) {
       return true;
     }
+
+    if (dependencies.contains(AuthModelProp.accounts) &&
+        oldWidget.accounts != accounts) {
+      return true;
+    }
     return false;
   }
 }
