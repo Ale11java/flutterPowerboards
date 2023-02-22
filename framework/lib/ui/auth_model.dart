@@ -23,7 +23,7 @@ class _StorageState extends State<StorageProvider> {
 
     updateState();
 
-    //listen for enum that says what props changed - if acccounts or activeAccount changed then accounts = storage.getAccounts() inside listener
+    //listen for enum that says what props changed - if accounts or activeAccount changed then accounts = storage.getAccounts() inside listener
     widget.storage.activeAccountStream.listen((_) async {
       updateState();
     });
