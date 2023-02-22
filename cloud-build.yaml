@@ -16,12 +16,12 @@ steps:
   - |
     set -e
     while true; do
-      RUNNING_BUILD_ID=$(gcloud builds list --filter="tags=flutter" --ongoing --format=json --sort-by=createTime | grep 'createTime')
-      if [ "$$RUNNING_BUILD_ID" == "" ]; then
+      RUNNING_BUILD_ID=$(gcloud builds list --filter="tags=flutter" --ongoing --format=json --sort-by=createTime | grep '"id": "$BUILD_ID"')
+      if [ "$$RUNNING_BUILD_ID" != "" ]; then
         echo READY!
         exit 0
       else
-        echo There is another build running. Waiting for that build to complete...
+        echo Waiting for $$RUNNING_BUILD_ID
         sleep 20
       fi
     done
