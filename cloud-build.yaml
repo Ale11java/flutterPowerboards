@@ -17,7 +17,7 @@ steps:
     set -e
     while true; do
       RUNNING_BUILD_ID=$(gcloud builds list --filter="tags=flutter"  --format=json --ongoing --sort-by=createTime | grep -q 'createTime'; echo $?)
-      if [ $$RUNNING_BUILD_ID -eq 1 ]; then
+      if [ $$RUNNING_BUILD_ID -eq 0 ]; then
         echo READY!
         exit 0
       else
