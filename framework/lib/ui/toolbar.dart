@@ -11,6 +11,7 @@ enum ToolbarDirection { horizontal, vertical }
 /// contents of the toolbar depending on the orientation (width if it is
 /// vertical and height if it is horizontal).
 ///
+///
 /// ```run-dartpad:theme-dark:mode-flutter:run-true:split-40:width-100%:height-800px
 /// import 'package:flutter/material.dart';
 /// import 'package:timu_dart/ui.dart';
