@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:timu_dart/ui.dart';
-import 'package:timu_dart/ui/auth_model.dart';
+import 'ui.dart';
+import 'ui/auth_model.dart';
 
 import 'ui/storage_login.dart';
 

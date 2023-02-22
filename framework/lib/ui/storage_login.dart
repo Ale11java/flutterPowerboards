@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:timu_dart/ui/login_page.dart';
+
 import '../model/account.dart';
-import 'account_list.dart';
-import 'accounts_empty.dart';
 import 'auth_model.dart';
+import 'login_page.dart';
 
 class StorageLogin extends StatelessWidget {
   const StorageLogin({
@@ -16,7 +15,7 @@ class StorageLogin extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final AuthModel props = AuthModel.of(context);
-    final List<Account> accounts = props.accounts;
+    // final List<Account> accounts = props.accounts;
     final Account? activeAccount = props.activeAccount;
 
     if (activeAccount != null) {
@@ -27,18 +26,9 @@ class StorageLogin extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        home: accounts.isNotEmpty ? const AccountList() : const AccountsEmpty(),
+        // home: accounts.isNotEmpty ? const AccountList() : const AccountsEmpty(),
+        home: const LoginPage(),
       );
-      // if (accounts.isNotEmpty) {
-      //   return const AccountList();
-      // } else {
-      //   return const AccountsEmpty();
-      //   // return Wrap(children: const <Widget>[
-      //   //   PrimaryButton(
-      //   //     text: 'Add account',
-      //   //   ),
-      //   // ]);
-      // }
     }
   }
 }

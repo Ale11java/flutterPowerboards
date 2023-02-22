@@ -5,6 +5,8 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import 'account.dart';
 
+const String APP_KEY = 'Powerboards';
+
 class Storage {
   Storage();
 
@@ -37,7 +39,7 @@ class Storage {
     final List<Account> accounts = await getAccounts();
 
     final String? activeJson = await _storage.read(
-      key: 'activeAccount',
+      key: 'activeAccount$APP_KEY',
       iOptions: _getIOSOptions(),
       aOptions: _getAndroidOptions(),
     );
@@ -58,6 +60,15 @@ class Storage {
     }
 
     return null;
+  }
+
+  Future<void> setActiveAccount(Account account) async {
+    await _storage.write(
+      key: 'activeAccount$APP_KEY',
+      value: account.key,
+      iOptions: _getIOSOptions(),
+      aOptions: _getAndroidOptions(),
+    );
   }
 
   IOSOptions _getIOSOptions() => const IOSOptions(
@@ -84,11 +95,6 @@ class Storage {
 //     await _readAccounts();
 //   }
 
-//   Future<void> setActiveAccount(Account account) async {
-//     const String key = 'activeAccount';
-//     final value = account.toJson();
-//     await _storage.write(key: key, value: value);
-//   }
 
 //   Future<Account?> getActiveAccount() async {
 //     const String key = 'activeAccount';

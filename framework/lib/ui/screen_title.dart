@@ -15,6 +15,7 @@ class ScreenTitle extends StatelessWidget {
         color: Colors.white,
         fontSize: 21,
         fontFamily: 'Inter',
+        fontWeight: FontWeight.w800,
         height: 1.33,
         letterSpacing: 0,
         decoration: TextDecoration.none,
