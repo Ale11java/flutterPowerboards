@@ -21,7 +21,7 @@ class ListRoutesPage extends StatelessWidget {
               width: 200,
               child: ElevatedButton(
                 onPressed: () => context.push(route.path),
-                child: Text(route.name!),
+                child: Text(route.name ?? route.path),
               ),
             );
           }).toList(),
