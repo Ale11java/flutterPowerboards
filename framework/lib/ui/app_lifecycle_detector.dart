@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
 
 class AppLifecycleDetector extends StatefulWidget {
-  const AppLifecycleDetector({super.key});
+  const AppLifecycleDetector({
+    super.key,
+    required this.onResumed,
+    required this.child,
+  });
+
+  final void Function()? onResumed;
+  final Widget child;
 
   @override
   AppLifecycleDetectorState createState() => AppLifecycleDetectorState();
@@ -9,7 +16,7 @@ class AppLifecycleDetector extends StatefulWidget {
 
 class AppLifecycleDetectorState extends State<AppLifecycleDetector>
     with WidgetsBindingObserver {
-  AppLifecycleState? _appLifecycleState;
+  // AppLifecycleState? _appLifecycleState;
 
   @override
   void initState() {
@@ -26,16 +33,19 @@ class AppLifecycleDetectorState extends State<AppLifecycleDetector>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     setState(() {
-      _appLifecycleState = state;
+      // _appLifecycleState = state;
       if (state == AppLifecycleState.resumed) {
         // The app has come back to the foreground
-        print('App resumed from background');
+        //print('App resumed from background');
+        if (widget.onResumed != null) {
+          widget.onResumed!();
+        }
       }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Text(_appLifecycleState?.toString() ?? '');
+    return widget.child;
   }
 }

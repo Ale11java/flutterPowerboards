@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../model/account.dart';
 import '../model/storage.dart';
+import 'app_lifecycle_detector.dart';
 
 class StorageProvider extends StatefulWidget {
   StorageProvider({super.key, required this.child}) : storage = Storage();
@@ -24,8 +27,11 @@ class _StorageState extends State<StorageProvider> {
     updateState();
 
     //listen for enum that says what props changed - if accounts or activeAccount changed then accounts = storage.getAccounts() inside listener
-    widget.storage.activeAccountStream.listen((_) async {
-      updateState();
+    widget.storage.changeStream.listen((AuthModelProp prop) {
+      if (prop == AuthModelProp.activeAccount ||
+          prop == AuthModelProp.accounts) {
+        updateState();
+      }
     });
   }
 
@@ -39,7 +45,13 @@ class _StorageState extends State<StorageProvider> {
   @override
   Widget build(BuildContext context) {
     return AuthModel(
-        accounts: accounts, activeAccount: activeAccount, child: widget.child);
+        accounts: accounts,
+        activeAccount: activeAccount,
+        child: AppLifecycleDetector(
+            onResumed: () {
+              updateState();
+            },
+            child: widget.child));
   }
 }
 
@@ -63,9 +75,14 @@ class AuthModel extends InheritedModel<AuthModelProp> {
     return maybeOf(context)!;
   }
 
+  static Storage storageOf(BuildContext context) {
+    return context.findAncestorWidgetOfExactType<StorageProvider>()!.storage;
+  }
+
   @override
   bool updateShouldNotify(covariant AuthModel oldWidget) {
-    return oldWidget.activeAccount != activeAccount;
+    return oldWidget.activeAccount != activeAccount ||
+        oldWidget.accounts != accounts;
   }
 
   @override

@@ -45,10 +45,12 @@ class AccountList extends StatelessWidget {
                     if (index == accounts.length) {
                       return Padding(
                           padding: const EdgeInsets.fromLTRB(0, 40, 0, 0),
-                          child: PrimaryButton(
-                            text: 'Add account',
-                            onPressed: _launchURL,
-                          ));
+                          child: Container(
+                              alignment: AlignmentDirectional.center,
+                              child: PrimaryButton(
+                                text: 'Add account',
+                                onPressed: _launchURL,
+                              )));
                     }
 
                     final Account account = accounts[index];
@@ -59,58 +61,5 @@ class AccountList extends StatelessWidget {
                     );
                   }))),
     ]);
-
-    // return Column(
-    //   children: [
-    //     const SizedBox(height: 100),
-    //     const ScreenTitle(text: 'Select an account'),
-    //     const SizedBox(height: 5),
-    //     const ScreenText(
-    //         text: 'To continue use the TIMU app to add an account'),
-    //     const SizedBox(height: 40),
-    //     ...accounts.map((Account account) => AccountItem(
-    //           account: account,
-    //           // onTap: () {
-    //           //   storage?.setActiveAccount(account);
-    //           // },
-    //           // leading: activeAccount == account ? const Icon(Icons.check) : null,
-    //         )),
-    //     const SizedBox(height: 40),
-    //     const PrimaryButton(text: 'Add account')
-    //   ],
-    // );
-    // return ListView.builder(
-    //   itemCount: accounts.length,
-    //   itemBuilder: (BuildContext context, int index) {
-    //     final Account account = accounts[index];
-    //     return AccountItem(
-    //       account: account,
-    //       // onTap: () {
-    //       //   storage?.setActiveAccount(account);
-    //       // },
-    //       // leading: activeAccount == account ? const Icon(Icons.check) : null,
-    //     );
-    //   },
-    // );
   }
-
-  // Widget _buildHeader() {
-  //   return Padding(
-  //     padding: const EdgeInsets.all(16.0),
-  //     child: Text(
-  //       'Accounts',
-  //       style: TextStyle(
-  //         fontSize: 24,
-  //         fontWeight: FontWeight.bold,
-  //       ),
-  //     ),
-  //   );
-  // }
-
-  // Widget _buildFooter() {
-  //   return ElevatedButton(
-  //     onPressed: () {},
-  //     child: Text('Add Account'),
-  //   );
-  // }
 }

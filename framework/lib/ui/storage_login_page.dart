@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import '../model/account.dart';
+import '../model/storage.dart';
 import 'account_list.dart';
 import 'accounts_empty.dart';
 import 'auth_model.dart';
 
-class LoginPage extends StatelessWidget {
-  const LoginPage({
+class StorageLoginPage extends StatelessWidget {
+  const StorageLoginPage({
     super.key,
   });
 
@@ -13,10 +14,7 @@ class LoginPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final AuthModel props = AuthModel.of(context);
     final List<Account> accounts = props.accounts;
-    // final StorageState? storageState =
-    //     context.findAncestorStateOfType<StorageState>();
-    // final StorageProvider? provider =
-    //     context.dependOnInheritedWidgetOfExactType<StorageProvider>();
+    final Storage storage = AuthModel.storageOf(context);
 
     return Scaffold(
       backgroundColor: const Color.fromRGBO(47, 45, 87, 1),
@@ -25,7 +23,9 @@ class LoginPage extends StatelessWidget {
           child: Center(
               child: accounts.isNotEmpty
                   ? AccountList(
-                      onAccountPressed: (Account account) {},
+                      onAccountPressed: (Account account) {
+                        storage.setActiveAccount(account);
+                      },
                     )
                   : const AccountsEmpty())),
     );

@@ -57,7 +57,7 @@ class Converter {
   }
 
   bool isValid(number) {
-    var i = 0;
+    int i = 0;
     for (; i < number.length; ++i) {
       if (!srcAlphabet.contains(number[i])) {
         return false;
@@ -68,7 +68,7 @@ class Converter {
 }
 
 String Function(String) anyBase(srcAlphabet, dstAlphabet) {
-  var converter = Converter(srcAlphabet, dstAlphabet);
+  Converter converter = Converter(srcAlphabet, dstAlphabet);
   /**
      * Convert function
      *
@@ -81,7 +81,7 @@ String Function(String) anyBase(srcAlphabet, dstAlphabet) {
   };
 }
 
-const anybaseBIN = '01';
-const anybaseOCT = '01234567';
-const anybaseDEC = '0123456789';
-const anybaseHEX = '0123456789abcdef';
+const String anybaseBIN = '01';
+const String anybaseOCT = '01234567';
+const String anybaseDEC = '0123456789';
+const String anybaseHEX = '0123456789abcdef';
