@@ -130,6 +130,13 @@ class TimuApi {
 
     return TimuObject(jsonDecode(response.body));
   }
+
+  // Map<String, dynamic> invoke({
+  //   required TimuObject object,
+  //   required String name,
+  //   bool public = false,
+  //   Map<String, dynamic> params = Map<String, dynamic>}) {
+  // }
 }
 
 class TimuObject {
