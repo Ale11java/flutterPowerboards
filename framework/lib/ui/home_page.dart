@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../model/account.dart';
 import 'auth_model.dart';
-import 'screen_subtitle.dart';
-import 'screen_title.dart';
 import 'storage_logout_button.dart';
+import 'text.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});

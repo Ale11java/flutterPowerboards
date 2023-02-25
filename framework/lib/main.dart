@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+
 import 'ui/auth_model.dart';
 import 'ui/home_page.dart';
 import 'ui/list_route_page.dart';
-import 'ui/screen_text.dart';
-import 'ui/screen_title.dart';
 import 'ui/storage_login.dart';
+import 'ui/text.dart';
 
 void main() {
   runApp(const MyApp());
@@ -15,17 +15,16 @@ final List<GoRoute> routes = <GoRoute>[
   GoRoute(
     name: 'Root',
     path: '/',
-    builder: (BuildContext context, GoRouterState state) => ListRoutesPage(routes: routes),
+    builder: (BuildContext context, GoRouterState state) =>
+        ListRoutesPage(routes: routes),
   ),
   GoRoute(
     name: 'Home Page',
     path: '/my-home-page',
-    builder: (BuildContext context, GoRouterState state) =>
-    const StorageLogin(
+    builder: (BuildContext context, GoRouterState state) => const StorageLogin(
       childLoggedIn: MyHomePage(title: 'Before you go in, are you the host?'),
     ),
   ),
-
   GoRoute(
     name: 'Screen Title',
     path: '/screen-title',
@@ -36,8 +35,6 @@ final List<GoRoute> routes = <GoRoute>[
       ),
     ),
   ),
-
-
   GoRoute(
     name: 'Screen Text',
     path: '/screen-text',
@@ -48,12 +45,9 @@ final List<GoRoute> routes = <GoRoute>[
       ),
     ),
   ),
-
 ];
 
-final GoRouter _router = GoRouter(
-  routes: routes
-);
+final GoRouter _router = GoRouter(routes: routes);
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
