@@ -131,12 +131,34 @@ class TimuApi {
     return TimuObject(jsonDecode(response.body));
   }
 
-  // Map<String, dynamic> invoke({
-  //   required TimuObject object,
-  //   required String name,
-  //   bool public = false,
-  //   Map<String, dynamic> params = Map<String, dynamic>}) {
-  // }
+  Future<dynamic> invoke({
+    required String name,
+    required String nounPath,
+    bool public = false,
+    Map<String, dynamic> params = const <String, dynamic>{},
+    Map<String, dynamic> body= const <String, dynamic>{},
+  }) async {
+    final String method = public ? '+public' : '+invoke';
+
+    print('host: $host; path: $nounPath/$method/$name');
+
+    final http.Response response = await http.post(
+      Uri(
+        scheme: 'https',
+        host: host,
+        port: port,
+        path: '$nounPath/$method/$name',
+        queryParameters: params),
+      headers: headers,
+      body: jsonEncode(body));
+
+    if (response.statusCode != 201 && response.statusCode != 200) {
+      print(response.statusCode);
+      throw response.toError();
+    }
+
+    return json.decode(response.body);
+  }
 }
 
 class TimuObject {
@@ -151,11 +173,11 @@ class TimuObject {
   }
 
   String get type {
-    return rawData["url"]!;
+    return rawData["type"]!;
   }
 
-  TimuObjectUri? get container {
-    return rawData["url"]!;
+  TimuObject? get container {
+    return rawData["container"]!;
   }
 
   DateTime get createdAt {
