@@ -37,22 +37,22 @@ List<GoRoute> genRoutes() {
         ),
       ),
     ),
-    GoRoute(
-      name: 'Test',
-      path: '/test',
-      builder: (BuildContext context, GoRouterState state) => Scaffold(
-        backgroundColor: const Color(0XFF2F2D57),
-        body: Center(
-          child: SizedBox(
-            width: 400,
-            height: 46,
-            child: Column(
-              children: const <Widget>[TestWidget()],
-            ),
-          ),
-        ),
-      ),
-    ),
+//    GoRoute(
+//      name: 'Test',
+//      path: '/test',
+//      builder: (BuildContext context, GoRouterState state) => Scaffold(
+//        backgroundColor: const Color(0XFF2F2D57),
+//        body: Center(
+//          child: SizedBox(
+//            width: 400,
+//            height: 46,
+//            child: Column(
+//              children: const <Widget>[TestWidget()],
+//            ),
+//          ),
+//        ),
+//      ),
+//    ),
     GoRoute(
       name: 'Home Page',
       path: '/my-home-page',
