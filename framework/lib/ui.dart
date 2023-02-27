@@ -2,7 +2,5 @@
 
 library timu_dart;
 
-export 'ui/screen_subtitle.dart';
-export 'ui/screen_text.dart';
-export 'ui/screen_title.dart';
+export 'ui/text.dart';
 export 'ui/toolbar.dart';

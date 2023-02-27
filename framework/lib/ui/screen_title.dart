@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+part of 'text.dart';
 
 class ScreenTitle extends StatelessWidget {
   const ScreenTitle({

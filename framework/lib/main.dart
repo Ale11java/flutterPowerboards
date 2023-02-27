@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+
 import 'ui/auth_model.dart';
 import 'ui/join_text_field.dart';
 import 'ui/home_page.dart';
 import 'ui/list_route_page.dart';
-import 'ui/screen_text.dart';
-import 'ui/screen_title.dart';
 import 'ui/storage_login.dart';
 import 'ui/test.dart';
+import 'ui/text.dart';
 
 void main() {
   runApp(const MyApp());

@@ -66,25 +66,6 @@ steps:
   waitFor:
     - dart-services-docker
 
-- name: gcr.io/kaniko-project/executor:debug
-  id: dart-pad-docker
-  entrypoint: /busybox/sh
-  args:
-    - -c
-    - /kaniko/executor --cache-repo=us-central1-docker.pkg.dev/timu-build-platform/timu/dart-pad-cache --destination=us-central1-docker.pkg.dev/timu-build-platform/timu/dart-pad:$_TAG --cache=true --dockerfile=flutter/Dockerfile-dart-pad
-  waitFor:
-    - serialize
-
-- name: gcr.io/cloud-builders/gcloud
-  id: dart-pad-deploy
-  entrypoint: bash
-  args:
-    - -c
-    - |
-      export CLOUDSDK_AUTH_CREDENTIAL_FILE_OVERRIDE=/workspace/cloud-functions-credentials.json
-      gcloud run deploy dart-pad --image us-central1-docker.pkg.dev/timu-build-platform/timu/dart-pad:$_TAG --platform managed --port 8000 --memory 8Gi  --project=timu-build-platform --region=us-central1 --allow-unauthenticated --min-instances 1 --cpu 4 --async
-  waitFor:
-    - dart-pad-docker
 tags:
 - flutter
 

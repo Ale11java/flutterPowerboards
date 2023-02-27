@@ -5,8 +5,7 @@ import '../model/account.dart';
 import 'account_item.dart';
 import 'auth_model.dart';
 import 'primary_button.dart';
-import 'screen_subtitle.dart';
-import 'screen_title.dart';
+import 'text.dart';
 
 class AccountList extends StatelessWidget {
   const AccountList({
