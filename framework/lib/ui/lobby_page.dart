@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'accounts_empty.dart';
+import 'join_text_field.dart';
+import 'text.dart';
 
 class LobbyPage extends StatelessWidget {
   const LobbyPage({
@@ -8,12 +9,23 @@ class LobbyPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      backgroundColor: Color.fromRGBO(47, 45, 87, 1),
-      body: Padding(
-        padding: EdgeInsets.fromLTRB(40, 0, 40, 0),
-        child: Center(
-          child: AccountsEmpty(),
+    return Scaffold(
+      backgroundColor: const Color(0XFF2F2D57),
+      body: Center(
+        child: SizedBox(
+          width: 400,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: const <Widget>[
+              ScreenTitle(text: 'Join an invite or sign in'),
+              SizedBox(height: 16),
+              ScreenSubtitle(
+                text: 'Enter your invite link',
+              ),
+              SizedBox(height: 44),
+              JoinTextField(),
+            ],
+          ),
         ),
       ),
     );
