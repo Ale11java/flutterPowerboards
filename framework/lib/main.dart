@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import 'ui/auth_model.dart';
 import 'ui/guest_entry_page.dart';
 import 'ui/home_page.dart';
 import 'ui/join_text_field.dart';
@@ -71,10 +72,10 @@ List<GoRoute> genRoutes() {
     GoRoute(
       name: 'Home Page',
       path: '/my-home-page',
-      builder: (BuildContext context, GoRouterState state) =>
-          const StorageLogin(
+      builder: (BuildContext context, GoRouterState state) => StorageProvider(
+          child: const StorageLogin(
         childLoggedIn: MyHomePage(title: 'Before you go in, are you the host?'),
-      ),
+      )),
     ),
     GoRoute(
       name: 'Screen title',
