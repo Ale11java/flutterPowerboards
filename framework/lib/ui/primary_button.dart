@@ -11,26 +11,27 @@ class PrimaryButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onPressed,
-      child: Container(
-          // padding: const EdgeInsets.all(16),
-          padding: const EdgeInsets.fromLTRB(30, 15, 30, 15),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(56),
-            color: Colors.white,
-          ),
-          child: Text(
-            text.toUpperCase(),
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              color: Color.fromRGBO(72, 69, 117, 1),
-              fontSize: 13,
-              fontFamily: 'Inter',
-              fontWeight: FontWeight.w900,
-              decoration: TextDecoration.none,
-            ),
-          )),
+    return ElevatedButton(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.white,
+        // disabledBackgroundColor: Colors.transparent,
+        // shadowColor: Colors.blue,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(56)),
+        elevation: 0,
+        padding: const EdgeInsets.fromLTRB(30, 15, 30, 15),
+      ),
+      child: Text(
+        text.toUpperCase(),
+        textAlign: TextAlign.center,
+        style: const TextStyle(
+          color: Color.fromRGBO(72, 69, 117, 1),
+          fontSize: 13,
+          fontFamily: 'Inter',
+          fontWeight: FontWeight.w900,
+          decoration: TextDecoration.none,
+        ),
+      ),
     );
   }
 }
