@@ -7,7 +7,9 @@ import 'ui/home_page.dart';
 import 'ui/join_text_field.dart';
 import 'ui/list_route_page.dart';
 import 'ui/lobby_page.dart';
+import 'ui/primary_button.dart';
 import 'ui/storage_login.dart';
+import 'ui/summary_button.dart';
 import 'ui/text.dart';
 
 void main() {
@@ -15,6 +17,8 @@ void main() {
 }
 
 List<GoRoute> genRoutes() {
+  const String sampleText0 = 'brown fox jumps over the lazy dog';
+
   return <GoRoute>[
     GoRoute(
       name: 'Root',
@@ -30,7 +34,8 @@ List<GoRoute> genRoutes() {
     GoRoute(
       name: 'Guest Entry Page',
       path: '/guest-entry-page',
-      builder: (BuildContext context, GoRouterState state) => const GuestEntryPage(),
+      builder: (BuildContext context, GoRouterState state) =>
+          const GuestEntryPage(),
     ),
     GoRoute(
       name: 'Join Text Field',
@@ -67,27 +72,67 @@ List<GoRoute> genRoutes() {
     GoRoute(
       name: 'Home Page',
       path: '/my-home-page',
-      builder: (BuildContext context, GoRouterState state) =>
-          const StorageLogin(
+      builder: (BuildContext context, GoRouterState state) => StorageProvider(
+          child: const StorageLogin(
         childLoggedIn: MyHomePage(title: 'Before you go in, are you the host?'),
-      ),
+      )),
     ),
     GoRoute(
-      name: 'Screen Title',
+      name: 'Screen title',
       path: '/screen-title',
       builder: (BuildContext context, GoRouterState state) => const Scaffold(
         backgroundColor: Colors.blue,
         body: Center(
-          child: ScreenTitle(text: 'brown fox jumps over the lazy dog'),
+          child: ScreenTitle(text: sampleText0),
         ),
       ),
     ),
     GoRoute(
-      name: 'Screen Text',
+      name: 'Screen subtitle',
+      path: '/screen-subtitle',
+      builder: (BuildContext context, GoRouterState state) => const Scaffold(
+        body: Center(
+          child: ScreenSubtitle(text: sampleText0),
+        ),
+      ),
+    ),
+    GoRoute(
+      name: 'Screen text',
       path: '/screen-text',
       builder: (BuildContext context, GoRouterState state) => const Scaffold(
         body: Center(
-          child: ScreenText(text: 'brown fox jumps over the lazy dog'),
+          child: ScreenText(text: sampleText0),
+        ),
+      ),
+    ),
+    GoRoute(
+      name: 'Primary button',
+      path: '/primary-button',
+      builder: (BuildContext context, GoRouterState state) => Scaffold(
+        backgroundColor: Theme.of(context).primaryColor,
+        body: Center(
+          child: PrimaryButton(
+            text: sampleText0,
+            onPressed: () {
+              context.pop();
+            },
+          ),
+        ),
+      ),
+    ),
+    GoRoute(
+      name: 'Summary button',
+      path: '/summary-button',
+      builder: (BuildContext context, GoRouterState state) => const Scaffold(
+        backgroundColor: Color(
+          0xff383658,
+        ),
+        body: Center(
+          child: BasicSummaryButton(
+            title: sampleText0,
+            body: sampleText0,
+            imageName: 'lib/assets/app-timu.png',
+          ),
         ),
       ),
     ),
