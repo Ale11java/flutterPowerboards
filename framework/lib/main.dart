@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import 'test_icons.dart';
+
 import 'ui/auth_model.dart';
 import 'ui/guest_entry_page.dart';
 import 'ui/home_page.dart';
@@ -11,6 +13,7 @@ import 'ui/primary_button.dart';
 import 'ui/storage_login.dart';
 import 'ui/summary_button.dart';
 import 'ui/text.dart';
+import 'ui/toolbar.dart';
 
 void main() {
   runApp(const MyApp());
@@ -132,6 +135,36 @@ List<GoRoute> genRoutes() {
             title: sampleText0,
             body: sampleText0,
             imageName: 'lib/assets/app-timu.png',
+          ),
+        ),
+      ),
+    ),
+    GoRoute(
+      name: 'Toolbar',
+      path: '/toolbar',
+      builder: (BuildContext context, GoRouterState state) => Scaffold(
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(40),
+            child: Toolbar(
+              direction: ToolbarDirection.horizontal,
+              children: [
+                ToolbarButton(
+                  onPressed: () => print('here'),
+                  child:
+                      const Icon(TestIcons.account_circle, color: Colors.white),
+                ),
+                ToolbarButton(
+                  onPressed: () => print('here'),
+                  child: const Icon(TestIcons.add_a_photo, color: Colors.white),
+                ),
+                EmphasizedToolbarButton(
+                  onPressed: () => print('here'),
+                  child:
+                      const Icon(TestIcons.access_alarms, color: Colors.white),
+                ),
+              ],
+            ),
           ),
         ),
       ),
