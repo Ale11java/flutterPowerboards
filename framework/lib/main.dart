@@ -35,14 +35,14 @@ List<GoRoute> genRoutes() {
     GoRoute(
       name: 'Join Text Field',
       path: '/join-text-field',
-      builder: (BuildContext context, GoRouterState state) => Scaffold(
-        backgroundColor: const Color(0XFF2F2D57),
+      builder: (BuildContext context, GoRouterState state) => const Scaffold(
+        backgroundColor: Color(0XFF2F2D57),
         body: Center(
           child: SizedBox(
             width: 400,
             height: 46,
             child: Column(
-              children: const <Widget>[JoinTextField()],
+              children: <Widget>[JoinTextField()],
             ),
           ),
         ),
