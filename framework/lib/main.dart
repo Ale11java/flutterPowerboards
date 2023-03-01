@@ -7,8 +7,12 @@ import 'ui/home_page.dart';
 import 'ui/join_text_field.dart';
 import 'ui/list_route_page.dart';
 import 'ui/lobby_page.dart';
+import 'ui/notification.dart';
 import 'ui/storage_login.dart';
 import 'ui/text.dart';
+import 'ui/dialog_buttons.dart';
+import 'ui/sidebar_group.dart';
+import 'ui/participant_overlay.dart';
 
 void main() {
   runApp(const MyApp());
@@ -30,7 +34,8 @@ List<GoRoute> genRoutes() {
     GoRoute(
       name: 'Guest Entry Page',
       path: '/guest-entry-page',
-      builder: (BuildContext context, GoRouterState state) => const GuestEntryPage(),
+      builder: (BuildContext context, GoRouterState state) =>
+          const GuestEntryPage(),
     ),
     GoRoute(
       name: 'Join Text Field',
@@ -88,6 +93,102 @@ List<GoRoute> genRoutes() {
       builder: (BuildContext context, GoRouterState state) => const Scaffold(
         body: Center(
           child: ScreenText(text: 'brown fox jumps over the lazy dog'),
+        ),
+      ),
+    ),
+    GoRoute(
+      name: 'Notification',
+      path: '/notification',
+      builder: (BuildContext context, GoRouterState state) =>
+          NotificationWidget(
+        avatar: NetworkImage('https://www.example.com/avatar.jpg'),
+        title: 'Participant Name',
+        text: 'is waiting in lobby...',
+        primaryAction: NotificationAction(
+          label: 'View',
+          onPressed: () {
+            // handle the action when the user taps the primary button
+          },
+        ),
+        secondaryAction: NotificationAction(
+          label: 'Dismiss',
+          onPressed: () {
+            // handle the action when the user taps the secondary button
+          },
+        ),
+      ),
+    ),
+    GoRoute(
+      name: 'Dialog Buttons',
+      path: '/dialog-buttons',
+      builder: (BuildContext context, GoRouterState state) => Scaffold(
+        body: Center(
+          child: CustomButtonRow(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            buttons: [
+              {
+                'text': 'JOIN NOW',
+                'color': Color(0xFFED6464),
+                'onPressed': () {},
+              },
+              {
+                'text': 'NO',
+                'color': Color(0xff2f2d57),
+                'borderColor': Color(0xFF7752FF),
+                'onPressed': () {},
+              },
+              {
+                'text': 'YES',
+                'color': Color(0xFF7752FF),
+                'onPressed': () {},
+                'textColor': Color(0xFFFFFFFF),
+              },
+            ],
+          ),
+        ),
+      ),
+    ),
+    GoRoute(
+      name: 'Sidebar Group',
+      path: '/sidebar-group',
+      builder: (BuildContext context, GoRouterState state) => const Scaffold(
+        body: Center(
+          child: SidebarScreen(
+            sections: [
+              {
+                'iconPath': 'assets/icons/create.png',
+                'title': 'Create',
+                'iconColor': Colors.purple,
+              },
+              {
+                'iconPath': 'assets/icons/view.png',
+                'title': 'View',
+                'iconColor': Colors.purple,
+              },
+              {
+                'iconPath': 'assets/icons/present.png',
+                'title': 'Present',
+                'iconColor': Colors.purple,
+              },
+              {
+                'iconPath': 'assets/icons/share.png',
+                'title': 'Share',
+                'iconColor': Colors.purple,
+              },
+            ],
+          ),
+        ),
+      ),
+    ),
+    GoRoute(
+      name: 'Participant Overlay',
+      path: '/participant-overlay',
+      builder: (BuildContext context, GoRouterState state) => const Scaffold(
+        body: Center(
+          child: ParticipantOverlay(
+            name: 'John Doe',
+            muted: false,
+          ),
         ),
       ),
     ),
