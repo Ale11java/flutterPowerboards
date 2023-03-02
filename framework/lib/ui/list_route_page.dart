@@ -11,22 +11,20 @@ class ListRoutesPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
-      body: Center(
-        child: Wrap(
-          spacing: 10,
-          children: routes.map((GoRoute route) {
-            return SizedBox(
-              width: 200,
-              child: ElevatedButton(
-                onPressed: () => context.push(route.path),
-                child: Text(route.name ?? route.path),
-              ),
-            );
-          }).toList(),
-        ),
-      )
-    );
+        body: Center(
+      child: Wrap(
+        spacing: 10,
+        children: routes.map((GoRoute route) {
+          return SizedBox(
+            width: 200,
+            child: ElevatedButton(
+              onPressed: () => context.push(route.path),
+              child: Text(route.name ?? route.path),
+            ),
+          );
+        }).toList(),
+      ),
+    ));
   }
 }

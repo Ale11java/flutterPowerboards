@@ -5,8 +5,7 @@ import '../model/account.dart';
 import 'account_item.dart';
 import 'auth_model.dart';
 import 'primary_button.dart';
-import 'screen_subtitle.dart';
-import 'screen_title.dart';
+import 'text.dart';
 
 class AccountList extends StatelessWidget {
   const AccountList({
@@ -16,7 +15,8 @@ class AccountList extends StatelessWidget {
   final void Function(Account account)? onAccountPressed;
 
   Future<void> _launchURL() async {
-    final Uri url = Uri.parse('https://app.timu.com/add-account');
+    final Uri url = Uri.parse(
+        'https://app.timu.com/add-account?redirect_uri=timutest://home');
     if (!await launchUrl(url, mode: LaunchMode.externalNonBrowserApplication)) {
       throw Exception('Could not launch $url');
     }
