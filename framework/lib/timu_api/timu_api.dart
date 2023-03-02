@@ -6,10 +6,15 @@ import 'dart:convert';
 import 'package:cross_file/cross_file.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:uuid/uuid.dart';
+
+part 'mock_timu_api.dart';
 
 class RequiresAuthenticationError implements Exception {}
 
 class AccessDeniedError implements Exception {}
+
+class NotFoundError implements Exception {}
 
 class UnexpectedStatusCode implements Exception {
   UnexpectedStatusCode(this.statusCode);
