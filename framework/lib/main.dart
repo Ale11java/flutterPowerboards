@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import 'examples/meeting_header.dart';
 import 'test_icons.dart';
 
 import 'ui/auth_model.dart';
@@ -79,6 +80,16 @@ List<GoRoute> genRoutes() {
           child: const StorageLogin(
         childLoggedIn: MyHomePage(title: 'Before you go in, are you the host?'),
       )),
+    ),
+    GoRoute(
+      name: 'Meeting Header',
+      path: '/meeting-header',
+      builder: (BuildContext context, GoRouterState state) => const Scaffold(
+        backgroundColor: Colors.blue,
+        body: Center(
+          child: MeetingHeaderExample(),
+        ),
+      ),
     ),
     GoRoute(
       name: 'Screen title',
