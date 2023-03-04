@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import 'examples/floating_panel.dart';
 import 'examples/meeting_header.dart';
 import 'test_icons.dart';
 
@@ -88,6 +89,16 @@ List<GoRoute> genRoutes() {
         backgroundColor: Colors.blue,
         body: Center(
           child: MeetingHeaderExample(),
+        ),
+      ),
+    ),
+    GoRoute(
+      name: 'Floating Panel',
+      path: '/floating-panel',
+      builder: (BuildContext context, GoRouterState state) => const Scaffold(
+        backgroundColor: Colors.blue,
+        body: Center(
+          child: FloatingPanelExample(),
         ),
       ),
     ),
