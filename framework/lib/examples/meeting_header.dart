@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../ui/meeting_header.dart';
+import '../timu_icons/timu_icons.dart';
 
 class MeetingHeaderExample extends StatelessWidget {
   const MeetingHeaderExample({super.key});
@@ -10,13 +11,8 @@ class MeetingHeaderExample extends StatelessWidget {
         title: 'This is a Meeting',
         start: DateTime.now(),
         buttons: <Widget>[
-          MeetingHeaderButton(
-              text: 'Test',
-              icon: const AssetImage('lib/assets/layer-text.png')),
-          MeetingHeaderButton(
-              on: true,
-              text: 'Test',
-              icon: const AssetImage('lib/assets/layer-text.png'))
+          MeetingHeaderButton(text: 'Text', icon: TimuIcons.layer_text),
+          MeetingHeaderButton(on: true, text: 'Tools', icon: TimuIcons.tools)
         ]);
   }
 }

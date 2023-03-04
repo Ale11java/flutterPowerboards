@@ -65,14 +65,20 @@ class MeetingHeaderButton extends FilledButton {
             style: ButtonStyle(
                 backgroundColor: MaterialStateProperty.all(Colors.transparent)),
             child: Column(children: <Widget>[
-              DecoratedBox(
-                  decoration: BoxDecoration(
-                      color:
-                          on ? _meetingHeaderButtonOnColor : Colors.transparent,
-                      borderRadius: BorderRadius.circular(5)),
-                  child: Image(
-                      color: on ? Colors.white : _meetingHeaderButtonColor,
-                      image: icon)),
+              SizedBox(
+                  width: 42,
+                  height: 42,
+                  child: DecoratedBox(
+                      decoration: BoxDecoration(
+                          color: on
+                              ? _meetingHeaderButtonOnColor
+                              : Colors.transparent,
+                          borderRadius: BorderRadius.circular(5)),
+                      child: Icon(
+                        icon,
+                        size: 32,
+                        color: on ? Colors.white : _meetingHeaderButtonColor,
+                      ))),
               const SizedBox(height: 8),
               Text(text,
                   style: _meetingHeaderButtonFont.apply(
@@ -82,7 +88,7 @@ class MeetingHeaderButton extends FilledButton {
             ]));
 
   final String text;
-  final ImageProvider icon;
+  final IconData icon;
 
   final bool on;
 }
