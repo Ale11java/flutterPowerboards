@@ -6,10 +6,13 @@ import 'dart:convert';
 import 'package:cross_file/cross_file.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:uuid/uuid.dart';
 
 class RequiresAuthenticationError implements Exception {}
 
 class AccessDeniedError implements Exception {}
+
+class NotFoundError implements Exception {}
 
 class UnexpectedStatusCode implements Exception {
   UnexpectedStatusCode(this.statusCode);
@@ -136,21 +139,21 @@ class TimuApi {
     required String nounPath,
     bool public = false,
     Map<String, dynamic> params = const <String, dynamic>{},
-    Map<String, dynamic> body= const <String, dynamic>{},
+    Map<String, dynamic> body = const <String, dynamic>{},
   }) async {
     final String method = public ? '+public' : '+invoke';
 
     print('host: $host; path: $nounPath/$method/$name');
 
     final http.Response response = await http.post(
-      Uri(
-        scheme: 'https',
-        host: host,
-        port: port,
-        path: '$nounPath/$method/$name',
-        queryParameters: params),
-      headers: headers,
-      body: jsonEncode(body));
+        Uri(
+            scheme: 'https',
+            host: host,
+            port: port,
+            path: '$nounPath/$method/$name',
+            queryParameters: params),
+        headers: headers,
+        body: jsonEncode(body));
 
     if (response.statusCode != 201 && response.statusCode != 200) {
       print(response.statusCode);

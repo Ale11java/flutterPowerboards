@@ -10,9 +10,11 @@ dependencies:
     sdk: flutter
   flutter_secure_storage: ^8.0.0
   go_router: ^6.0.10
+  google_fonts: ^4.0.3
   http: ^0.13.5
   rxdart: ^0.27.7
   url_launcher: ^6.1.9
+  uuid: ^3.0.7
   web_socket_channel: ^2.3.0
   webview_flutter: ^4.0.6
 
@@ -30,3 +32,9 @@ dev_dependencies:
 flutter:
   assets:
     - lib/assets/
+
+  fonts:
+    - family:  Timu
+      fonts:
+        - asset: lib/timu_icons/fonts/Timu.ttf
+    
