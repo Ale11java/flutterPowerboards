@@ -1,25 +1,6 @@
 stages:
-  - cloud-build
   - cloud-source
-
-gcloud:
-  stage: cloud-build
-  image: gcr.io/cloud-builders/gcloud
-  variables:
-    GIT_STRATEGY: fetch
-    GIT_SUBMODULE_STRATEGY: none
-  only:
-    refs:
-    - main
-  script:
-  - |
-    cd ..
-    git clone https://${DART_SERVICES_ACCESS_TOKEN}:${DART_SERVICES_ACCESS_TOKEN}@gitlab.timu.work/timu/dart-services.git
-    export CLOUDSDK_CONFIG=`pwd`/temp
-    echo $CLOUD_BUILD_CREDENTIALS > cloud-build-credentials.json
-    gcloud auth activate-service-account --key-file=cloud-build-credentials.json
-    export CLOUDSDK_CORE_PROJECT=timu-build-platform
-    gcloud builds submit --project timu-build-platform --config flutter/cloud-build.yaml --substitutions _TAG=$CI_COMMIT_REF_NAME-$CI_COMMIT_SHORT_SHA
+  - cloud-build
 
 push-to-cloud-source:
   stage: cloud-source
@@ -40,3 +21,22 @@ push-to-cloud-source:
     git remote add google https://source.developers.google.com/p/timu-build-platform/r/flutter
     git switch $CI_COMMIT_REF_NAME
     git push google $CI_COMMIT_REF_NAME --force
+
+gcloud:
+  stage: cloud-build
+  image: gcr.io/cloud-builders/gcloud
+  variables:
+    GIT_STRATEGY: fetch
+    GIT_SUBMODULE_STRATEGY: none
+  only:
+    refs:
+    - main
+  script:
+  - |
+    cd ..
+    git clone https://${DART_SERVICES_ACCESS_TOKEN}:${DART_SERVICES_ACCESS_TOKEN}@gitlab.timu.work/timu/dart-services.git
+    export CLOUDSDK_CONFIG=`pwd`/temp
+    echo $CLOUD_BUILD_CREDENTIALS > cloud-build-credentials.json
+    gcloud auth activate-service-account --key-file=cloud-build-credentials.json
+    export CLOUDSDK_CORE_PROJECT=timu-build-platform
+    gcloud builds submit --project timu-build-platform --config flutter/cloud-build.yaml --substitutions _CI_REF_NAME=$CI_COMMIT_REF_NAME,_TAG=$CI_COMMIT_REF_NAME-$CI_COMMIT_SHORT_SHA
