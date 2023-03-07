@@ -118,31 +118,41 @@ List<GoRoute> genRoutes() {
         ),
       ),
     ),
+
     GoRoute(
       name: 'Dialog Buttons',
       path: '/dialog-buttons',
       builder: (BuildContext context, GoRouterState state) => Scaffold(
         body: Center(
-          child: CustomButtonRow(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            buttons: [
-              {
-                'text': 'JOIN NOW',
-                'color': Color(0xFFED6464),
-                'onPressed': () {},
-              },
-              {
-                'text': 'NO',
-                'color': Color(0xff2f2d57),
-                'borderColor': Color(0xFF7752FF),
-                'onPressed': () {},
-              },
-              {
-                'text': 'YES',
-                'color': Color(0xFF7752FF),
-                'onPressed': () {},
-                'textColor': Color(0xFFFFFFFF),
-              },
+          child: ButtonSize(
+            width: 200.0,
+            children: [
+              EmphasizedDialogButton(
+                bgColor: Color(0xFFED6464),
+                onPressed: () {},
+                child: const DialogButtonText(text: 'JOIN NOW'),
+              ),
+              MaxTextWidthButtonSize(
+                minWidth: 200.0,
+                text: const [
+                  Text('Button with really long text that needs to be wrapped'),
+                  Text('Another button with long text'),
+                ],
+                children: [
+                  CancelDialogButton(
+                    bgColor: Color(0xff2f2d57),
+                    onPressed: () {},
+                    child: const DialogButtonText(text: 'NO'),
+                  ),
+                  OkDialogButton(
+                    bgColor: Color(0xFF7752FF),
+                    onPressed: () {},
+                    child: const DialogButtonText(
+                      text: 'YES',
+                    ),
+                  ),
+                ],
+              ),
             ],
           ),
         ),
@@ -153,31 +163,27 @@ List<GoRoute> genRoutes() {
       path: '/sidebar-group',
       builder: (BuildContext context, GoRouterState state) => const Scaffold(
         body: Center(
-          child: SidebarScreen(
-            sections: [
-              {
-                'iconPath': 'assets/icons/create.png',
-                'title': 'Create',
-                'iconColor': Colors.purple,
-              },
-              {
-                'iconPath': 'assets/icons/view.png',
-                'title': 'View',
-                'iconColor': Colors.purple,
-              },
-              {
-                'iconPath': 'assets/icons/present.png',
-                'title': 'Present',
-                'iconColor': Colors.purple,
-              },
-              {
-                'iconPath': 'assets/icons/share.png',
-                'title': 'Share',
-                'iconColor': Colors.purple,
-              },
-            ],
-          ),
-        ),
+            child: SidebarGroup(
+          title: 'Create/View/Present/Share',
+          children: [
+            SidebarGroupButton(
+              icon: AssetImage('assets/create.png'),
+              text: 'Create',
+            ),
+            SidebarGroupButton(
+              icon: AssetImage('assets/view.png'),
+              text: 'View',
+            ),
+            SidebarGroupButton(
+              icon: AssetImage('assets/present.png'),
+              text: 'Present',
+            ),
+            SidebarGroupButton(
+              icon: AssetImage('assets/share.png'),
+              text: 'Share',
+            ),
+          ],
+        )),
       ),
     ),
     GoRoute(
