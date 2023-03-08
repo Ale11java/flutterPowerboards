@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-const _floatingPanelBackground = Color.fromARGB(0xff, 0x2F, 0x2D, 0x57);
+import '../timu_icons/timu_icons.dart';
 
+const _floatingPanelBackground = Color.fromARGB(0xff, 0x2F, 0x2D, 0x57);
+const _closeIconColor = Color.fromARGB(0xff, 0x92, 0xA1, 0xB5);
 final _floatingPanelTitleFont = GoogleFonts.inter(
     textStyle: const TextStyle(
         fontSize: 18, letterSpacing: 0.4, fontWeight: FontWeight.w800));
@@ -44,7 +46,19 @@ class FloatingPanelScaffold extends StatelessWidget {
         child: Align(
             alignment: Alignment.topCenter,
             child: Column(children: [
-              Text(title, style: _floatingPanelTitleFont),
+              Row(children: [
+                IconButton(
+                    style: const ButtonStyle(
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+                    onPressed: onClose,
+                    icon: const Icon(TimuIcons.close,
+                        color: _closeIconColor, size: 20)),
+                Expanded(
+                    child: Text(title,
+                        textAlign: TextAlign.center,
+                        style: _floatingPanelTitleFont)),
+                const SizedBox(width: 20)
+              ]),
               Expanded(child: ListView(children: children))
             ])));
   }
