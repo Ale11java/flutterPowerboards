@@ -3,11 +3,11 @@ import 'dart:convert';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-import '../ui/auth_model.dart';
 import 'account.dart';
+import 'auth_storage.dart';
 
-class Storage {
-  Storage();
+class AuthStorageImpl extends AuthStorage {
+  AuthStorageImpl() : super.newInstance();
 
   static const String appStorageKey = 'powerboards';
   static const String activeAccountStorageKey = 'activeAccount_$appStorageKey';
@@ -16,11 +16,7 @@ class Storage {
 
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
-  final StreamController<AuthModelProp> _changeController =
-      StreamController<AuthModelProp>.broadcast();
-
-  Stream<AuthModelProp> get changeStream => _changeController.stream;
-
+  @override
   Future<List<Account>> getAccounts() async {
     final String? accountsJson = await _storage.read(
       key: accountsStorageKey,
@@ -40,6 +36,7 @@ class Storage {
     return <Account>[];
   }
 
+  @override
   Future<Account?> getActiveAccount() async {
     final List<Account> accounts = await getAccounts();
 
@@ -59,6 +56,7 @@ class Storage {
     return null;
   }
 
+  @override
   Future<void> setActiveAccount(Account? account) async {
     await _storage.write(
       key: activeAccountStorageKey,
@@ -66,8 +64,6 @@ class Storage {
       iOptions: _getIOSOptions(),
       aOptions: _getAndroidOptions(),
     );
-
-    _changeController.add(AuthModelProp.activeAccount);
   }
 
   IOSOptions _getIOSOptions() => const IOSOptions(

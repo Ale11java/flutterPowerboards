@@ -16,7 +16,6 @@ dependencies:
   url_launcher: ^6.1.9
   uuid: ^3.0.7
   web_socket_channel: ^2.3.0
-  webview_flutter: ^4.0.6
 
 dev_dependencies:
   recase: ^4.0.0

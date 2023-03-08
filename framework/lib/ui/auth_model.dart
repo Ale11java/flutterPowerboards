@@ -1,59 +1,6 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 
 import '../model/account.dart';
-import '../model/storage.dart';
-import 'app_lifecycle_detector.dart';
-
-class StorageProvider extends StatefulWidget {
-  StorageProvider({super.key, required this.child}) : storage = Storage();
-
-  final Storage storage;
-  final Widget child;
-
-  @override
-  State<StatefulWidget> createState() => _StorageState();
-}
-
-class _StorageState extends State<StorageProvider> {
-  List<Account> accounts = <Account>[];
-  Account? activeAccount;
-
-  @override
-  void initState() {
-    super.initState();
-
-    updateState();
-
-    //listen for enum that says what props changed - if accounts or activeAccount changed then accounts = storage.getAccounts() inside listener
-    widget.storage.changeStream.listen((AuthModelProp prop) {
-      if (prop == AuthModelProp.activeAccount ||
-          prop == AuthModelProp.accounts) {
-        updateState();
-      }
-    });
-  }
-
-  Future<void> updateState() async {
-    accounts = await widget.storage.getAccounts();
-    activeAccount = await widget.storage.getActiveAccount();
-
-    setState(() {});
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AuthModel(
-        accounts: accounts,
-        activeAccount: activeAccount,
-        child: AppLifecycleDetector(
-            onResumed: () {
-              updateState();
-            },
-            child: widget.child));
-  }
-}
 
 enum AuthModelProp { accounts, activeAccount }
 
@@ -73,10 +20,6 @@ class AuthModel extends InheritedModel<AuthModelProp> {
 
   static AuthModel of(BuildContext context) {
     return maybeOf(context)!;
-  }
-
-  static Storage storageOf(BuildContext context) {
-    return context.findAncestorWidgetOfExactType<StorageProvider>()!.storage;
   }
 
   @override

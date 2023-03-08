@@ -5,7 +5,7 @@ import 'examples/floating_panel.dart';
 import 'examples/meeting_header.dart';
 import 'test_icons.dart';
 
-import 'ui/auth_model.dart';
+import 'ui/auth_storage.dart';
 import 'ui/guest_entry_page.dart';
 import 'ui/home_page.dart';
 import 'ui/join_text_field.dart';
@@ -77,8 +77,8 @@ List<GoRoute> genRoutes() {
     GoRoute(
       name: 'Home Page',
       path: '/my-home-page',
-      builder: (BuildContext context, GoRouterState state) => StorageProvider(
-          child: const StorageLogin(
+      builder: (BuildContext context, GoRouterState state) => const AuthStorage(
+          child: StorageLogin(
         childLoggedIn: MyHomePage(title: 'Before you go in, are you the host?'),
       )),
     ),
