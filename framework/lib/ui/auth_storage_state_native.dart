@@ -27,7 +27,10 @@ class AuthStorageStateImpl extends AuthStorageState {
 
   @override
   void setActiveAccount(Account? account) {
-    activeAccount = account;
+    setState(() {
+      activeAccount = account;
+    });
+
     storage.setActiveAccount(account);
   }
 
