@@ -11,10 +11,14 @@ import 'ui/home_page.dart';
 import 'ui/join_text_field.dart';
 import 'ui/list_route_page.dart';
 import 'ui/lobby_page.dart';
+import 'ui/notification.dart';
 import 'ui/primary_button.dart';
 import 'ui/storage_login.dart';
 import 'ui/summary_button.dart';
 import 'ui/text.dart';
+import 'ui/dialog_buttons.dart';
+import 'ui/sidebar_group.dart';
+import 'ui/participant_overlay.dart';
 import 'ui/toolbar.dart';
 
 void main() {
@@ -187,6 +191,108 @@ List<GoRoute> genRoutes() {
                 ),
               ],
             ),
+          ),
+        ),
+      ),
+    ),
+    GoRoute(
+      name: 'Notification',
+      path: '/notification',
+      builder: (BuildContext context, GoRouterState state) =>
+          NotificationWidget(
+        avatar: NetworkImage('https://www.example.com/avatar.jpg'),
+        title: 'Participant Name',
+        text: 'is waiting in lobby...',
+        primaryAction: NotificationAction(
+          label: 'View',
+          onPressed: () {
+            // handle the action when the user taps the primary button
+          },
+        ),
+        secondaryAction: NotificationAction(
+          label: 'Dismiss',
+          onPressed: () {
+            // handle the action when the user taps the secondary button
+          },
+        ),
+      ),
+    ),
+
+    GoRoute(
+      name: 'Dialog Buttons',
+      path: '/dialog-buttons',
+      builder: (BuildContext context, GoRouterState state) => Scaffold(
+        body: Center(
+          child: ButtonSize(
+            width: 200.0,
+            children: [
+              EmphasizedDialogButton(
+                bgColor: Color(0xFFED6464),
+                onPressed: () {},
+                child: const DialogButtonText(text: 'JOIN NOW'),
+              ),
+              MaxTextWidthButtonSize(
+                minWidth: 200.0,
+                text: const [
+                  Text('Button with really long text that needs to be wrapped'),
+                  Text('Another button with long text'),
+                ],
+                children: [
+                  CancelDialogButton(
+                    bgColor: Color(0xff2f2d57),
+                    onPressed: () {},
+                    child: const DialogButtonText(text: 'NO'),
+                  ),
+                  OkDialogButton(
+                    bgColor: Color(0xFF7752FF),
+                    onPressed: () {},
+                    child: const DialogButtonText(
+                      text: 'YES',
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    ),
+    GoRoute(
+      name: 'Sidebar Group',
+      path: '/sidebar-group',
+      builder: (BuildContext context, GoRouterState state) => const Scaffold(
+        body: Center(
+            child: SidebarGroup(
+          title: 'Create/View/Present/Share',
+          children: [
+            SidebarGroupButton(
+              icon: AssetImage('assets/create.png'),
+              text: 'Create',
+            ),
+            SidebarGroupButton(
+              icon: AssetImage('assets/view.png'),
+              text: 'View',
+            ),
+            SidebarGroupButton(
+              icon: AssetImage('assets/present.png'),
+              text: 'Present',
+            ),
+            SidebarGroupButton(
+              icon: AssetImage('assets/share.png'),
+              text: 'Share',
+            ),
+          ],
+        )),
+      ),
+    ),
+    GoRoute(
+      name: 'Participant Overlay',
+      path: '/participant-overlay',
+      builder: (BuildContext context, GoRouterState state) => const Scaffold(
+        body: Center(
+          child: ParticipantOverlay(
+            name: 'John Doe',
+            muted: false,
           ),
         ),
       ),
