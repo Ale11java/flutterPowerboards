@@ -63,6 +63,9 @@ class MeetingHeaderButton extends FilledButton {
       this.on = false})
       : super(
             style: ButtonStyle(
+                overlayColor: MaterialStateProperty.all(Colors.transparent),
+                shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5))),
                 backgroundColor: MaterialStateProperty.all(Colors.transparent)),
             child: Column(children: <Widget>[
               SizedBox(
