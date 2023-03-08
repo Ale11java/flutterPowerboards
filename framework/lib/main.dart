@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import 'examples/floating_panel.dart';
+import 'examples/meeting_header.dart';
+import 'test_icons.dart';
+
 import 'ui/auth_model.dart';
 import 'ui/guest_entry_page.dart';
 import 'ui/home_page.dart';
@@ -8,17 +12,22 @@ import 'ui/join_text_field.dart';
 import 'ui/list_route_page.dart';
 import 'ui/lobby_page.dart';
 import 'ui/notification.dart';
+import 'ui/primary_button.dart';
 import 'ui/storage_login.dart';
+import 'ui/summary_button.dart';
 import 'ui/text.dart';
 import 'ui/dialog_buttons.dart';
 import 'ui/sidebar_group.dart';
 import 'ui/participant_overlay.dart';
+import 'ui/toolbar.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
 List<GoRoute> genRoutes() {
+  const String sampleText0 = 'brown fox jumps over the lazy dog';
+
   return <GoRoute>[
     GoRoute(
       name: 'Root',
@@ -40,14 +49,14 @@ List<GoRoute> genRoutes() {
     GoRoute(
       name: 'Join Text Field',
       path: '/join-text-field',
-      builder: (BuildContext context, GoRouterState state) => Scaffold(
-        backgroundColor: const Color(0XFF2F2D57),
+      builder: (BuildContext context, GoRouterState state) => const Scaffold(
+        backgroundColor: Color(0XFF2F2D57),
         body: Center(
           child: SizedBox(
             width: 400,
             height: 46,
             child: Column(
-              children: const <Widget>[JoinTextField()],
+              children: <Widget>[JoinTextField()],
             ),
           ),
         ),
@@ -72,27 +81,117 @@ List<GoRoute> genRoutes() {
     GoRoute(
       name: 'Home Page',
       path: '/my-home-page',
-      builder: (BuildContext context, GoRouterState state) =>
-          const StorageLogin(
+      builder: (BuildContext context, GoRouterState state) => StorageProvider(
+          child: const StorageLogin(
         childLoggedIn: MyHomePage(title: 'Before you go in, are you the host?'),
-      ),
+      )),
     ),
     GoRoute(
-      name: 'Screen Title',
-      path: '/screen-title',
+      name: 'Meeting Header',
+      path: '/meeting-header',
       builder: (BuildContext context, GoRouterState state) => const Scaffold(
         backgroundColor: Colors.blue,
         body: Center(
-          child: ScreenTitle(text: 'brown fox jumps over the lazy dog'),
+          child: MeetingHeaderExample(),
         ),
       ),
     ),
     GoRoute(
-      name: 'Screen Text',
+      name: 'Floating Panel',
+      path: '/floating-panel',
+      builder: (BuildContext context, GoRouterState state) => const Scaffold(
+        backgroundColor: Colors.blue,
+        body: Center(
+          child: FloatingPanelExample(),
+        ),
+      ),
+    ),
+    GoRoute(
+      name: 'Screen title',
+      path: '/screen-title',
+      builder: (BuildContext context, GoRouterState state) => const Scaffold(
+        backgroundColor: Colors.blue,
+        body: Center(
+          child: ScreenTitle(text: sampleText0),
+        ),
+      ),
+    ),
+    GoRoute(
+      name: 'Screen subtitle',
+      path: '/screen-subtitle',
+      builder: (BuildContext context, GoRouterState state) => const Scaffold(
+        body: Center(
+          child: ScreenSubtitle(text: sampleText0),
+        ),
+      ),
+    ),
+    GoRoute(
+      name: 'Screen text',
       path: '/screen-text',
       builder: (BuildContext context, GoRouterState state) => const Scaffold(
         body: Center(
-          child: ScreenText(text: 'brown fox jumps over the lazy dog'),
+          child: ScreenText(text: sampleText0),
+        ),
+      ),
+    ),
+    GoRoute(
+      name: 'Primary button',
+      path: '/primary-button',
+      builder: (BuildContext context, GoRouterState state) => Scaffold(
+        backgroundColor: Theme.of(context).primaryColor,
+        body: Center(
+          child: PrimaryButton(
+            text: sampleText0,
+            onPressed: () {
+              context.pop();
+            },
+          ),
+        ),
+      ),
+    ),
+    GoRoute(
+      name: 'Summary button',
+      path: '/summary-button',
+      builder: (BuildContext context, GoRouterState state) => const Scaffold(
+        backgroundColor: Color(
+          0xff383658,
+        ),
+        body: Center(
+          child: BasicSummaryButton(
+            title: sampleText0,
+            body: sampleText0,
+            imageName: 'lib/assets/app-timu.png',
+          ),
+        ),
+      ),
+    ),
+    GoRoute(
+      name: 'Toolbar',
+      path: '/toolbar',
+      builder: (BuildContext context, GoRouterState state) => Scaffold(
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(40),
+            child: Toolbar(
+              direction: ToolbarDirection.horizontal,
+              children: [
+                ToolbarButton(
+                  onPressed: () => print('here'),
+                  child:
+                      const Icon(TestIcons.account_circle, color: Colors.white),
+                ),
+                ToolbarButton(
+                  onPressed: () => print('here'),
+                  child: const Icon(TestIcons.add_a_photo, color: Colors.white),
+                ),
+                EmphasizedToolbarButton(
+                  onPressed: () => print('here'),
+                  child:
+                      const Icon(TestIcons.access_alarms, color: Colors.white),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     ),

@@ -65,6 +65,7 @@ enum ToolbarDirection { horizontal, vertical }
 ///   }
 /// }
 /// ```
+
 class Toolbar extends InheritedWidget {
   Toolbar({
     super.key,
@@ -80,8 +81,23 @@ class Toolbar extends InheritedWidget {
   }
 }
 
+List<Widget> _addSpacer(List<Widget> widgets) {
+  final List<Widget> ret = [];
+
+  for (final entry in widgets.asMap().entries) {
+    final int i = entry.key;
+
+    if (i > 0) {
+      ret.add(const SizedBox(width: 8, height: 8));
+    }
+    ret.add(entry.value);
+  }
+
+  return ret;
+}
+
 class _ToolbarContents extends StatelessWidget {
-  const _ToolbarContents(this.children);
+  _ToolbarContents(List<Widget> childrens) : children = _addSpacer(childrens);
 
   final List<Widget> children;
 
@@ -195,6 +211,7 @@ class ToolbarButton extends StatelessWidget {
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0))),
         padding: MaterialStateProperty.all(const EdgeInsets.all(5)),
         minimumSize: MaterialStateProperty.all(const Size.square(32.0)),
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
       ),
       child: child,
     );
@@ -224,6 +241,7 @@ class ToggleToolbarButton extends ToolbarButton {
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0))),
           padding: MaterialStateProperty.all(const EdgeInsets.all(5)),
           minimumSize: MaterialStateProperty.all(const Size.square(32.0)),
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
         ),
         child: child,
       );
@@ -238,6 +256,7 @@ class ToggleToolbarButton extends ToolbarButton {
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0))),
           padding: MaterialStateProperty.all(const EdgeInsets.all(5)),
           minimumSize: MaterialStateProperty.all(const Size.square(32.0)),
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
         ),
         child: child,
       );
@@ -264,6 +283,7 @@ class EmphasizedToolbarButton extends ToolbarButton {
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0))),
         padding: MaterialStateProperty.all(const EdgeInsets.all(5)),
         minimumSize: MaterialStateProperty.all(const Size.square(32.0)),
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
       ),
       child: child,
     );
