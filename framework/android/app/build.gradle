@@ -52,12 +52,26 @@ android {
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }
-
-    buildTypes {
+    signingConfigs {
+        debug {
+            storeFile file('debug.keystore')
+            storePassword 'android'
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
+        }
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
+            storeFile file(TIMU_MESSENGER_RELEASE_STORE_FILE)
+            storePassword TIMU_MESSENGER_RELEASE_STORE_PASSWORD
+            keyAlias TIMU_MESSENGER_RELEASE_KEY_ALIAS
+            keyPassword TIMU_MESSENGER_RELEASE_KEY_PASSWORD
+        }
+    }
+    buildTypes {
+        debug {
             signingConfig signingConfigs.debug
+        }
+        release {
+            signingConfig signingConfigs.release
         }
     }
 }
