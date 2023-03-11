@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:html';
 import 'dart:ui' as ui;
 
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
@@ -15,7 +16,7 @@ const String url = '$domain/js/bundle/message-frame.html';
 const String viewType = 'timu-iframe:$url';
 
 class IframeResponseMsg {
-  factory IframeResponseMsg.fromJSON(Map<String, String> json) {
+  factory IframeResponseMsg.fromJSON(Map<String, dynamic> json) {
     return IframeResponseMsg._(json);
   }
 
@@ -50,21 +51,25 @@ class IframeResponseMsg {
   }
 
   Account? toActiveAccount() {
-    final String currentLogin = rawData['currentLogin'];
-    final String accessToken = rawData['accessToken'];
+    final String currentLogin = rawData['currentLogin'] ?? '';
+    final String accessToken = rawData['accessToken'] ?? '';
 
-    final act = toAccountList().firstWhere((act) {
+    final Account? act = toAccountList().firstWhereOrNull((act) {
       return act.email == currentLogin;
     });
 
+    if (act == null) {
+      return null;
+    }
+
     return Account(
-      key: act.key,
-      email: act.email,
-      firstName: rawData['firstName'],
-      lastName: rawData['lastName'],
-      accessToken: accessToken,
-      method: act.method,
-      provider: act.provider);
+        key: act.key,
+        email: act.email,
+        firstName: rawData['firstName'],
+        lastName: rawData['lastName'],
+        accessToken: accessToken,
+        method: act.method,
+        provider: act.provider);
   }
 }
 
@@ -111,7 +116,7 @@ class AuthStorageStateImpl extends AuthStorageState {
     });
 
     subscription = window.onMessage.listen((event) {
-      final res = json.decode(event.data) as IframeResponseMsg;
+      final res = IframeResponseMsg.fromJSON(json.decode(event.data));
 
       if (messageReq.containsKey(res.requestId)) {
         messageReq[res.requestId]?.complete(res);
@@ -141,6 +146,8 @@ class AuthStorageStateImpl extends AuthStorageState {
   @override
   void setActiveAccount(Account? account) {
     activeAccount = account;
+
+    print('jkk $activeAccount');
 
     if (frame != null && account != null) {
       _sendMsg({

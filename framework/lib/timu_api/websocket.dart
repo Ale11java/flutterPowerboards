@@ -12,9 +12,26 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 //  token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9&
 //  options=1197';
 
-String _formatUrl(String apiRoot, String url, String accessToken,
-        String network, String channel, String metadata) =>
-    'wss://$apiRoot/api/realtime/watch?url=$url&channel=$channel&metadata=$metadata&token=$accessToken&options=$network';
+String _formatUrl(String apiRoot, String url, String accessToken, int? network,
+    String channel, String metadata) {
+  final params = <String, String>{
+    'url': url,
+    'channel': channel,
+    'metadata': metadata,
+    'token': accessToken,
+  };
+
+  if (network != null) {
+    params['network'] = network.toString();
+  }
+
+  return Uri(
+    scheme: 'wss',
+    host: apiRoot,
+    path: '/api/realtime/watch',
+    queryParameters: params,
+  ).toString();
+}
 
 class Client {
   Client(
@@ -35,7 +52,8 @@ class Client {
   }
 }
 
-final Client emptyClient = Client('_empty_', <String, dynamic>{}, <String, dynamic>{});
+final Client emptyClient =
+    Client('_empty_', <String, dynamic>{}, <String, dynamic>{});
 
 class UniqueClient extends Client {
   UniqueClient(
@@ -91,7 +109,7 @@ class TimuWebsocket extends Stream<TimuWebsocketEvent> {
     required this.apiRoot,
     required this.url,
     required this.accessToken,
-    required this.network,
+    this.network,
     this.channel = 'default',
     Map<String, dynamic>? metadata,
   })  : metadata = metadata ?? <String, dynamic>{},
@@ -103,7 +121,7 @@ class TimuWebsocket extends Stream<TimuWebsocketEvent> {
   final String apiRoot;
   final String url;
   final String accessToken;
-  final String network;
+  final int? network;
 
   final String channel;
   final Map<String, dynamic> metadata;
@@ -175,18 +193,14 @@ class TimuWebsocket extends Stream<TimuWebsocketEvent> {
             data['Metadata'] as Map<String, dynamic>,
             data['Added'] as Map<String, dynamic>,
           ));
-
         } else if (data.containsKey('Removed')) {
           final String id = published['Sender'].toString();
           clients.removeWhere((Client c) => c.id == id);
-
         } else if (data.containsKey('Typing')) {
           final String id = published['Sender'].toString();
-          final Client client = clients.firstWhere(
-            (Client c) => c.id == id,
-            orElse: () => emptyClient);
+          final Client client = clients.firstWhere((Client c) => c.id == id,
+              orElse: () => emptyClient);
           client.sendTyping();
-
         } else {
           _messages.add(TimuWebsocketEvent(
             published['Sender'].toString(),
@@ -204,20 +218,21 @@ class TimuWebsocket extends Stream<TimuWebsocketEvent> {
   void _startPingPong() {
     _pingPongSub?.cancel();
 
-    _pingPongSub = Stream<int>.periodic(const Duration(seconds: 15), (int i) => i)
-        .listen((int i) async {
-          _ping();
+    _pingPongSub =
+        Stream<int>.periodic(const Duration(seconds: 15), (int i) => i)
+            .listen((int i) async {
+      _ping();
 
-          final bool reconnect = await Future.any<bool>(<Future<bool>>[
-            _pongStream.first.then((int i) => false),
-            Future<dynamic>.delayed(const Duration(seconds: 5))
-              .then((dynamic v) => true),
-          ]);
+      final bool reconnect = await Future.any<bool>(<Future<bool>>[
+        _pongStream.first.then((int i) => false),
+        Future<dynamic>.delayed(const Duration(seconds: 5))
+            .then((dynamic v) => true),
+      ]);
 
-          if (reconnect) {
-            connect();
-          }
-        });
+      if (reconnect) {
+        connect();
+      }
+    });
   }
 
   void _ping() {

@@ -4,21 +4,22 @@ import 'package:go_router/go_router.dart';
 import 'examples/floating_panel.dart';
 import 'examples/meeting_header.dart';
 import 'test_icons.dart';
-
+import 'timu_api/timu_api.dart';
 import 'ui/auth_storage.dart';
+import 'ui/dialog_buttons.dart';
 import 'ui/guest_entry_page.dart';
 import 'ui/home_page.dart';
 import 'ui/join_text_field.dart';
 import 'ui/list_route_page.dart';
 import 'ui/lobby_page.dart';
+import 'ui/lobby_wait_page.dart';
 import 'ui/notification.dart';
+import 'ui/participant_overlay.dart';
 import 'ui/primary_button.dart';
+import 'ui/sidebar_group.dart';
 import 'ui/storage_login.dart';
 import 'ui/summary_button.dart';
 import 'ui/text.dart';
-import 'ui/dialog_buttons.dart';
-import 'ui/sidebar_group.dart';
-import 'ui/participant_overlay.dart';
 import 'ui/toolbar.dart';
 
 void main() {
@@ -47,6 +48,18 @@ List<GoRoute> genRoutes() {
           const GuestEntryPage(),
     ),
     GoRoute(
+        name: 'Lobby Wait Page',
+        path: '/lobby-wait-page',
+        builder: (BuildContext context, GoRouterState state) {
+          final String? tkn = state.queryParams['accessToken'];
+          final String? url = state.queryParams['nounURL'];
+
+          return LobbyWaitPage(
+            accessToken: tkn ?? '',
+            nounURL: url ?? '',
+          );
+        }),
+    GoRoute(
       name: 'Join Text Field',
       path: '/join-text-field',
       builder: (BuildContext context, GoRouterState state) => const Scaffold(
@@ -54,7 +67,7 @@ List<GoRoute> genRoutes() {
         body: Center(
           child: SizedBox(
             width: 400,
-            height: 46,
+            height: 500,
             child: Column(
               children: <Widget>[JoinTextField()],
             ),
@@ -307,10 +320,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final GoRouter routerConfig = GoRouter(routes: genRoutes());
 
-    return MaterialApp.router(
+    return TimuApiProvider(
+        child: MaterialApp.router(
       theme: ThemeData(primarySwatch: Colors.blue),
       routerConfig: routerConfig,
-    );
+    ));
 
     // child: StorageLogin(
     //   childLoggedIn: MaterialApp(
