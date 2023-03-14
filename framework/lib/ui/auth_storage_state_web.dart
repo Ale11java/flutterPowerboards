@@ -15,6 +15,35 @@ const String domain = 'https://www.timu.life';
 const String url = '$domain/js/bundle/message-frame.html';
 const String viewType = 'timu-iframe:$url';
 
+class Token {
+  factory Token.fromJSON(Map<String, dynamic> json) {
+    return Token._(json);
+  }
+  const Token._(this.rawData);
+
+  final Map<String, dynamic> rawData;
+
+  String get login {
+    return rawData['login'];
+  }
+
+  String get method {
+    // ignore: avoid_dynamic_calls
+    final method = (rawData['method'] ?? '').split(':');
+
+    // ignore: avoid_dynamic_calls
+    return method[0];
+  }
+
+  String get provider {
+    // ignore: avoid_dynamic_calls
+    final method = (rawData['method'] ?? '').split(':');
+
+    // ignore: avoid_dynamic_calls
+    return method.length > 1 ? method[1] : '';
+  }
+}
+
 class IframeResponseMsg {
   factory IframeResponseMsg.fromJSON(Map<String, dynamic> json) {
     return IframeResponseMsg._(json);
@@ -28,26 +57,28 @@ class IframeResponseMsg {
     return rawData['requestId'];
   }
 
-  List<Account> toAccountList() {
+  Iterable<Token> get tokens {
     if (rawData.containsKey('tokens')) {
-      final tokens = rawData['tokens'] as List<dynamic>;
+      final List<dynamic> tkns = rawData['tokens'];
 
-      return tokens.map((dynamic val) {
-        final method = val['method'].split(':');
-
-        return Account(
-          key: val['login'] as String,
-          email: val['login'] as String,
-          firstName: '',
-          lastName: '',
-          accessToken: '',
-          method: method[0] ?? '',
-          provider: method.length > 1 ? method[1] : '',
-        );
-      }).toList(growable: false);
+      return tkns.map<Token>((dynamic t) => Token.fromJSON(t));
     }
 
     return [];
+  }
+
+  List<Account> toAccountList() {
+    return tokens.map((Token token) {
+      return Account(
+        key: token.login,
+        email: token.login,
+        firstName: '',
+        lastName: '',
+        accessToken: '',
+        method: token.method,
+        provider: token.provider,
+      );
+    }).toList();
   }
 
   Account? toActiveAccount() {
@@ -147,12 +178,12 @@ class AuthStorageStateImpl extends AuthStorageState {
   void setActiveAccount(Account? account) {
     activeAccount = account;
 
-    print('jkk $activeAccount');
-
     if (frame != null && account != null) {
       _sendMsg({
         'type': 'setCurrentUser',
         'login': account.email,
+      }).then((IframeResponseMsg iframe) {
+        updateState();
       });
     }
   }

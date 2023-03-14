@@ -7,6 +7,7 @@ import 'package:cross_file/cross_file.dart';
 import 'package:flutter/material.dart';
 
 import 'package:http/http.dart' as http;
+import 'websocket.dart';
 
 class RequiresAuthenticationError implements Exception {}
 
@@ -35,12 +36,10 @@ class TimuApiProvider extends InheritedWidget {
   const TimuApiProvider({
     super.key,
     required super.child,
-    this.host = 'usa.timu.life',
-    this.defaultNetwork,
+    required this.api,
   });
 
-  final String host;
-  final int? defaultNetwork;
+  final TimuApi api;
 
   static TimuApiProvider? maybeOf(BuildContext context) {
     return context.dependOnInheritedWidgetOfExactType<TimuApiProvider>();
@@ -55,18 +54,19 @@ class TimuApiProvider extends InheritedWidget {
 
   @override
   bool updateShouldNotify(covariant TimuApiProvider oldWidget) {
-    return host != oldWidget.host && defaultNetwork != oldWidget.defaultNetwork;
+    return api != oldWidget.api;
   }
 }
 
 class TimuApi {
   TimuApi(
-      {required this.defaultNetwork,
+      {this.defaultNetwork,
       required this.host,
       required this.headers,
       this.port = 443});
 
-  final int defaultNetwork;
+  String accessToken = '';
+  int? defaultNetwork;
   final String host;
   final int port;
   final Map<String, String> headers;
@@ -94,9 +94,9 @@ class TimuApi {
 
     final requestData = jsonDecode(response.body);
 
-    final id = requestData['id'] as String;
-    final url = requestData['url'] as String;
-    final contentType = requestData['contentType'] as String;
+    final String id = requestData['id'];
+    final String url = requestData['url'];
+    final String contentType = requestData['contentType'];
 
     final bodyBytes = stream;
 
@@ -135,7 +135,7 @@ class TimuApi {
 
     final response = await http.post(
         Uri(
-            scheme: "https",
+            scheme: 'https',
             host: host,
             port: port,
             path: '/api/graph/$type',
@@ -150,6 +150,16 @@ class TimuApi {
     return TimuObject(jsonDecode(response.body));
   }
 
+  TimuWebsocket createWebsocket(String url, String channel) {
+    return TimuWebsocket(
+      apiRoot: host,
+      url: url,
+      accessToken: accessToken,
+      network: defaultNetwork,
+      channel: channel,
+    );
+  }
+
   Future<TimuObject> get(TimuObjectUri uri) async {
     final response = await http.get(
         Uri(scheme: 'https', host: host, port: port, path: uri),
@@ -162,7 +172,7 @@ class TimuApi {
     return TimuObject(jsonDecode(response.body));
   }
 
-  Future<dynamic> invoke({
+  Future<Map<String, dynamic>> invoke({
     required String name,
     required String nounPath,
     bool public = false,

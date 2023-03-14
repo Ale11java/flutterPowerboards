@@ -9,6 +9,7 @@ import 'ui/auth_storage.dart';
 import 'ui/dialog_buttons.dart';
 import 'ui/guest_entry_page.dart';
 import 'ui/home_page.dart';
+import 'ui/in_app_page.dart';
 import 'ui/join_text_field.dart';
 import 'ui/list_route_page.dart';
 import 'ui/lobby_page.dart';
@@ -21,6 +22,8 @@ import 'ui/storage_login.dart';
 import 'ui/summary_button.dart';
 import 'ui/text.dart';
 import 'ui/toolbar.dart';
+import 'ui/user_action_card.dart';
+import 'ui/websocket_provider.dart';
 
 void main() {
   runApp(const MyApp());
@@ -51,14 +54,24 @@ List<GoRoute> genRoutes() {
         name: 'Lobby Wait Page',
         path: '/lobby-wait-page',
         builder: (BuildContext context, GoRouterState state) {
-          final String? tkn = state.queryParams['accessToken'];
           final String? url = state.queryParams['nounURL'];
 
-          return LobbyWaitPage(
-            accessToken: tkn ?? '',
-            nounURL: url ?? '',
-          );
+          if (url != null) {
+            return WebsocketProvider(
+                nounURL: url, channel: 'lobby', child: const LobbyWaitPage());
+          }
+
+          return const SizedBox.shrink();
         }),
+    GoRoute(
+        name: 'In App Page',
+        path: '/in-app-page',
+        builder: (BuildContext context, GoRouterState state) {
+          final String? url = state.queryParams['nounURL'];
+
+          return InAppPage(nounUrl: url);
+        }),
+
     GoRoute(
       name: 'Join Text Field',
       path: '/join-text-field',
@@ -94,10 +107,10 @@ List<GoRoute> genRoutes() {
     GoRoute(
       name: 'Home Page',
       path: '/my-home-page',
-      builder: (BuildContext context, GoRouterState state) => const AuthStorage(
-          child: StorageLogin(
+      builder: (BuildContext context, GoRouterState state) =>
+          const StorageLogin(
         childLoggedIn: MyHomePage(title: 'Before you go in, are you the host?'),
-      )),
+      ),
     ),
     GoRoute(
       name: 'Meeting Header',
@@ -310,6 +323,15 @@ List<GoRoute> genRoutes() {
         ),
       ),
     ),
+    GoRoute(
+      name: 'User Action Card',
+      path: '/user-action-card',
+      builder: (BuildContext context, GoRouterState state) => Scaffold(
+          body: Stack(children: <Widget>[
+        ListRoutesPage(routes: genRoutes()),
+        const UserActionCard(userName: 'John Doe'),
+      ])),
+    )
   ];
 }
 
@@ -321,10 +343,15 @@ class MyApp extends StatelessWidget {
     final GoRouter routerConfig = GoRouter(routes: genRoutes());
 
     return TimuApiProvider(
+        api: TimuApi(host: 'usa.timu.life', headers: <String, String>{
+          'Content-Type': 'application/json',
+        }),
         child: MaterialApp.router(
-      theme: ThemeData(primarySwatch: Colors.blue),
-      routerConfig: routerConfig,
-    ));
+          builder: (BuildContext context, Widget? child) =>
+              AuthStorage(child: child ?? const SizedBox.shrink()),
+          theme: ThemeData(primarySwatch: Colors.blue),
+          routerConfig: routerConfig,
+        ));
 
     // child: StorageLogin(
     //   childLoggedIn: MaterialApp(

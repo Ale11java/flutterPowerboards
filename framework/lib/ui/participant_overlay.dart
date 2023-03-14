@@ -1,33 +1,33 @@
 import 'package:flutter/material.dart';
 
 class ParticipantOverlay extends StatelessWidget {
-  final String name;
-  final bool muted;
-
   const ParticipantOverlay({
-    Key? key,
+    super.key,
     required this.name,
     required this.muted,
-  }) : super(key: key);
+  });
+
+  final String name;
+  final bool muted;
 
   @override
   Widget build(BuildContext context) {
     final pixelRatio = MediaQuery.of(context).devicePixelRatio;
 
-    return Container(
+    return ColoredBox(
       color: Colors.black.withOpacity(0.3),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
             name,
-            style: TextStyle(
+            style: const TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.bold,
               fontSize: 20,
             ),
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Icon(
             muted ? Icons.mic_off : Icons.mic,
             color: Colors.white,

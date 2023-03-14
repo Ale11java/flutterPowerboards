@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:rxdart/rxdart.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 // wss://
@@ -18,11 +19,14 @@ String _formatUrl(String apiRoot, String url, String accessToken, int? network,
     'url': url,
     'channel': channel,
     'metadata': metadata,
-    'token': accessToken,
   };
 
   if (network != null) {
     params['network'] = network.toString();
+  }
+
+  if (accessToken != '') {
+    params['token'] = accessToken;
   }
 
   return Uri(
@@ -116,7 +120,8 @@ class TimuWebsocket extends Stream<TimuWebsocketEvent> {
         clients = <Client>[],
         uniqueClients = <Client>[],
         _pongStream = PongStream(),
-        _messages = StreamController<TimuWebsocketEvent>();
+        _messages = StreamController<TimuWebsocketEvent>(),
+        _clientsController = StreamController<List<Client>>();
 
   final String apiRoot;
   final String url;
@@ -133,11 +138,12 @@ class TimuWebsocket extends Stream<TimuWebsocketEvent> {
 
   WebSocketChannel? _websocket;
   final StreamController<TimuWebsocketEvent> _messages;
+  final StreamController<List<Client>> _clientsController;
 
   bool synced = false;
   int pongCount = 0;
 
-  StreamSubscription<int>? _pingPongSub;
+  StreamSubscription? _pingPongSub;
 
   @override
   StreamSubscription<TimuWebsocketEvent> listen(
@@ -152,6 +158,15 @@ class TimuWebsocket extends Stream<TimuWebsocketEvent> {
         cancelOnError: cancelOnError,
       );
 
+  StreamSubscription listenClients(void Function(List<Client>)? onClientsChange,
+          {Function? onError, void Function()? onDone, bool? cancelOnError}) =>
+      _clientsController.stream.listen(
+        onClientsChange,
+        onError: onError,
+        onDone: onDone,
+        cancelOnError: cancelOnError,
+      );
+
   void connect() {
     _websocket?.sink.close();
 
@@ -159,8 +174,7 @@ class TimuWebsocket extends Stream<TimuWebsocketEvent> {
         apiRoot, url, accessToken, network, channel, jsonEncode(metadata))));
 
     _websocket?.stream.listen((dynamic res) {
-      final Map<String, dynamic> msg =
-          jsonDecode(res.toString()) as Map<String, dynamic>;
+      final msg = jsonDecode(res.toString()) as Map<String, dynamic>;
 
       print('jkk $res'); // ignore: avoid_print
 
@@ -178,6 +192,7 @@ class TimuWebsocket extends Stream<TimuWebsocketEvent> {
             item['profile'] as Map<String, dynamic>,
           ));
         }
+        _clientsController.sink.add(clients);
       } else if (msg.containsKey('Pong') && msg['Pong'] != null) {
         _pongStream.add(pongCount++);
       } else if (msg.containsKey('Published') && msg['Published'] != null) {
@@ -218,17 +233,16 @@ class TimuWebsocket extends Stream<TimuWebsocketEvent> {
   void _startPingPong() {
     _pingPongSub?.cancel();
 
-    _pingPongSub =
-        Stream<int>.periodic(const Duration(seconds: 15), (int i) => i)
-            .listen((int i) async {
+    _pingPongSub = Stream.periodic(const Duration(seconds: 15), (int i) => i)
+        .switchMap((int i) {
       _ping();
 
-      final bool reconnect = await Future.any<bool>(<Future<bool>>[
+      return Stream<bool>.fromFuture(Future.any<bool>(<Future<bool>>[
         _pongStream.first.then((int i) => false),
         Future<dynamic>.delayed(const Duration(seconds: 5))
             .then((dynamic v) => true),
-      ]);
-
+      ]));
+    }).listen((reconnect) async {
       if (reconnect) {
         connect();
       }

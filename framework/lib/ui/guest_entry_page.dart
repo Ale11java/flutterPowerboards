@@ -4,9 +4,7 @@ import 'join_text_field.dart';
 import 'text.dart';
 
 class GuestEntryPage extends StatelessWidget {
-  const GuestEntryPage({
-    super.key,
-  });
+  const GuestEntryPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +26,8 @@ class GuestEntryPage extends StatelessWidget {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      ScreenTitle(text: 'Introduce yourself to other attendees'),
+                      ScreenTitle(
+                          text: 'Introduce yourself to other attendees'),
                       SizedBox(height: 16),
                       ScreenSubtitle(text: 'Daily meeting'),
                       SizedBox(height: 44),

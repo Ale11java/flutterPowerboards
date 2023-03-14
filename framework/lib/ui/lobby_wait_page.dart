@@ -1,49 +1,34 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
-import '../timu_api/timu_api.dart';
-import '../timu_api/websocket.dart';
 import 'text.dart';
+import 'websocket_provider.dart';
 
 class LobbyWaitPage extends StatefulWidget {
-  const LobbyWaitPage({
-    super.key,
-    required this.nounURL,
-    required this.accessToken,
-  });
-
-  final String nounURL;
-  final String accessToken;
+  const LobbyWaitPage({super.key});
 
   @override
   State<LobbyWaitPage> createState() => LobbyWaitState();
 }
 
 class LobbyWaitState extends State<LobbyWaitPage> {
-  TimuWebsocket? websocket;
+  StreamSubscription? sub;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    final api = TimuApiProvider.of(super.context);
+    final ws = WebsocketState.of(super.context).websocket;
 
-    final ws = TimuWebsocket(
-      network: api.defaultNetwork,
-      apiRoot: api.host,
-      url: widget.nounURL,
-      accessToken: widget.accessToken,
-    );
-
-    ws.connect();
-
-    setState(() {
-      websocket = ws;
+    sub?.cancel();
+    sub = ws?.listen((event) {
+      print('jkkk got a message $event');
     });
   }
 
   @override
   void dispose() {
-    websocket?.close();
-
+    sub?.cancel();
     super.dispose();
   }
 

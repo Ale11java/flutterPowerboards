@@ -4,7 +4,13 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../model/account.dart';
 import '../timu_api/timu_api.dart';
+import 'auth_model.dart';
+
+String formatNounUrl(String id) {
+  return '/api/graph/core:event/$id';
+}
 
 class InputTextField extends StatelessWidget {
   const InputTextField({
@@ -111,16 +117,9 @@ class _UsernameFieldState extends State<UsernameField> {
         final params = GoRouterState.of(context).queryParams;
 
         if (params.containsKey('id')) {
-          final id = params['id'];
-          final nounURL = '/api/graph/core:event/$id';
-
-          final TimuApi api = TimuApi(
-            defaultNetwork: 1197,
-            host: 'usa.timu.life',
-            headers: <String, String>{
-              'Content-Type': 'application/json',
-            },
-          );
+          final String id = params['id']!;
+          final nounURL = formatNounUrl(id);
+          final api = TimuApiProvider.of(super.context).api;
 
           api.invoke(
             name: 'register-as-guest',
@@ -130,12 +129,16 @@ class _UsernameFieldState extends State<UsernameField> {
               'firstName': firstNameCtrl.text,
               'lastName': lastNameCtrl.text,
             },
-          ).then((response) {
-            context.go(Uri(path: '/lobby-wait-page', queryParameters: {
-              'nounURL': nounURL,
-              'accessToken': response['jwt'] as String,
-            }).toString());
-            print(response); // ignore: avoid_print
+          ).then((res) {
+            final String? token = res['token'];
+
+            if (token != null) {
+              api.accessToken = token;
+            }
+
+            context.go(Uri(
+                path: '/lobby-wait-page',
+                queryParameters: {'nounURL': nounURL}).toString());
           });
         } else {
           context.go(Uri(path: '/lobby-page').toString());
@@ -221,12 +224,23 @@ class _JoinTextFieldState extends State<JoinTextField> {
   @override
   Widget build(BuildContext context) {
     final formKey = GlobalKey<FormState>();
+    final Account? activeAccount = AuthModel.of(context).activeAccount;
 
-    submitForm() {
+    submitForm() async {
+      bool hasAccess = false;
+
       if (formKey.currentState!.validate()) {
-        context.go(Uri(
-            path: '/guest-entry-page',
-            queryParameters: {'id': controller.text}).toString());
+        if (hasAccess) {
+          context.go(Uri(
+              path: '/guest-entry-page',
+              queryParameters: {'id': controller.text}).toString());
+        } else {
+          // Check access
+          context.go(Uri(
+                  path: '/in-app-page',
+                  queryParameters: {'nounUrl': formatNounUrl(controller.text)})
+              .toString());
+        }
       }
     }
 
