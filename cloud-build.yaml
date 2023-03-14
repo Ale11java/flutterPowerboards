@@ -83,6 +83,15 @@ steps:
        }' \
        https://api.codemagic.io/builds
 
+    CODEMAGIC_API_TOKEN=$(cat codemagic-api-token.txt)
+    curl -H "Content-Type: application/json" -H "x-auth-token: $$CODEMAGIC_API_TOKEN" \
+       --data '{
+         "appId": "6406892ae135bc4970bce50d",
+         "workflowId": "ios-workflow",
+         "branch": "$_CI_REF_NAME"
+       }' \
+       https://api.codemagic.io/builds
+
 tags:
 - flutter
 
