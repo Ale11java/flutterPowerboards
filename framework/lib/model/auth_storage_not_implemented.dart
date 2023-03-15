@@ -15,6 +15,11 @@ class AuthStorageImpl extends AuthStorage {
   }
 
   @override
+  Future<void> addAccount(Account account) {
+    throw UnimplementedError();
+  }
+
+  @override
   Future<List<Account>> getAccounts() {
     throw UnimplementedError();
   }

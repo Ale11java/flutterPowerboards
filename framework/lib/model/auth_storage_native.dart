@@ -80,4 +80,15 @@ class AuthStorageImpl extends AuthStorage {
       value: account?.key,
     );
   }
+
+  @override
+  Future<void> addAccount(Account account) async {
+    await _storage.write(key: activeAccountStorageKey, value: account.key);
+
+    final accounts = await getAccounts();
+    await _storage.write(
+      key: accountsStorageKey,
+      value: jsonEncode([...accounts, account]),
+    );
+  }
 }

@@ -22,7 +22,7 @@ class LobbyWaitState extends State<LobbyWaitPage> {
 
     sub?.cancel();
     sub = ws?.listen((event) {
-      print('jkkk got a message $event');
+      print('we get accept event message $event');
     });
   }
 

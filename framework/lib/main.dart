@@ -4,10 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'examples/floating_panel.dart';
 import 'examples/meeting_header.dart';
 import 'test_icons.dart';
-import 'timu_api/timu_api.dart';
-import 'ui/auth_storage.dart';
+import 'ui/auth_storage_cache.dart';
 import 'ui/dialog_buttons.dart';
-import 'ui/guest_entry_page.dart';
 import 'ui/home_page.dart';
 import 'ui/in_app_page.dart';
 import 'ui/join_text_field.dart';
@@ -17,6 +15,7 @@ import 'ui/lobby_wait_page.dart';
 import 'ui/notification.dart';
 import 'ui/participant_overlay.dart';
 import 'ui/primary_button.dart';
+import 'ui/require_access.dart';
 import 'ui/sidebar_group.dart';
 import 'ui/storage_login.dart';
 import 'ui/summary_button.dart';
@@ -39,37 +38,48 @@ List<GoRoute> genRoutes() {
       builder: (BuildContext context, GoRouterState state) =>
           ListRoutesPage(routes: genRoutes()),
     ),
+
     GoRoute(
       name: 'Lobby Page',
       path: '/lobby-page',
       builder: (BuildContext context, GoRouterState state) => const LobbyPage(),
     ),
-    GoRoute(
-      name: 'Guest Entry Page',
-      path: '/guest-entry-page',
-      builder: (BuildContext context, GoRouterState state) =>
-          const GuestEntryPage(),
-    ),
+
     GoRoute(
         name: 'Lobby Wait Page',
         path: '/lobby-wait-page',
         builder: (BuildContext context, GoRouterState state) {
-          final String? url = state.queryParams['nounURL'];
+          final String? url = state.queryParams['nounUrl'];
 
           if (url != null) {
             return WebsocketProvider(
-                nounURL: url, channel: 'lobby', child: const LobbyWaitPage());
+                nounUrl: url, channel: 'lobby', child: const LobbyWaitPage());
           }
 
           return const SizedBox.shrink();
         }),
+
     GoRoute(
         name: 'In App Page',
         path: '/in-app-page',
         builder: (BuildContext context, GoRouterState state) {
-          final String? url = state.queryParams['nounURL'];
+          final String nounUrl = state.queryParams['nounUrl'] ?? '';
 
-          return InAppPage(nounUrl: url);
+          return RequireAccess(nounUrl: nounUrl, widget: const InAppPage());
+        }),
+
+    GoRoute(
+        name: 'In App Page Prev',
+        path: '/in-app-page-prev',
+        builder: (BuildContext context, GoRouterState state) {
+          final String? url = state.queryParams['nounUrl'];
+
+          if (url != null) {
+            return WebsocketProvider(
+                nounUrl: url, channel: 'lobby', child: const InAppPage());
+          }
+
+          return const SizedBox.shrink();
         }),
 
     GoRoute(
@@ -342,16 +352,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final GoRouter routerConfig = GoRouter(routes: genRoutes());
 
-    return TimuApiProvider(
-        api: TimuApi(host: 'usa.timu.life', headers: <String, String>{
-          'Content-Type': 'application/json',
-        }),
-        child: MaterialApp.router(
-          builder: (BuildContext context, Widget? child) =>
-              AuthStorage(child: child ?? const SizedBox.shrink()),
-          theme: ThemeData(primarySwatch: Colors.blue),
-          routerConfig: routerConfig,
-        ));
+    return MaterialApp.router(
+      builder: (BuildContext context, Widget? child) =>
+          AuthStorageCache(child: child ?? const SizedBox.shrink()),
+      theme: ThemeData(primarySwatch: Colors.blue),
+      routerConfig: routerConfig,
+    );
 
     // child: StorageLogin(
     //   childLoggedIn: MaterialApp(

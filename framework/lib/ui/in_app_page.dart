@@ -1,9 +1,36 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'text.dart';
+import 'websocket_provider.dart';
 
-class InAppPage extends StatelessWidget {
-  const InAppPage({super.key, required this.nounUrl});
-  final String? nounUrl;
+class InAppPage extends StatefulWidget {
+  const InAppPage({super.key});
+
+  @override
+  State<InAppPage> createState() => InAppState();
+}
+
+class InAppState extends State<InAppPage> {
+  StreamSubscription? sub;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    final ws = WebsocketState.of(super.context).websocket;
+
+    sub?.cancel();
+    sub = ws?.listenClients((event) {
+      print('we get accept event message $event'); // ignore: avoid_print
+    });
+  }
+
+  @override
+  void dispose() {
+    sub?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {

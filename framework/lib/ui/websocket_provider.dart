@@ -8,12 +8,12 @@ class WebsocketProvider extends StatefulWidget {
   const WebsocketProvider({
     super.key,
     required this.child,
-    required this.nounURL,
+    required this.nounUrl,
     required this.channel,
   });
 
   final Widget child;
-  final String nounURL;
+  final String nounUrl;
   final String channel;
 
   @override
@@ -39,7 +39,7 @@ class WebsocketState extends State<WebsocketProvider> {
     super.didChangeDependencies();
 
     final api = TimuApiProvider.of(super.context).api;
-    final ws = api.createWebsocket(widget.nounURL, widget.channel);
+    final ws = api.createWebsocket(widget.nounUrl, widget.channel);
 
     websocket?.close();
 

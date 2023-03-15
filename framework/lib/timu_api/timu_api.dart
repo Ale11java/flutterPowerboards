@@ -60,12 +60,13 @@ class TimuApiProvider extends InheritedWidget {
 
 class TimuApi {
   TimuApi(
-      {this.defaultNetwork,
+      {this.accessToken = '',
+      this.defaultNetwork,
       required this.host,
       required this.headers,
       this.port = 443});
 
-  String accessToken = '';
+  final String accessToken;
   int? defaultNetwork;
   final String host;
   final int port;
@@ -180,6 +181,11 @@ class TimuApi {
     Map<String, dynamic> body = const <String, dynamic>{},
   }) async {
     final String method = public ? '+public' : '+invoke';
+    final Map<String, dynamic> p = {};
+
+    if (accessToken != '') {
+      p['access_token'] = accessToken;
+    }
 
     print('host: $host; path: $nounPath/$method/$name');
 
@@ -189,13 +195,17 @@ class TimuApi {
             host: host,
             port: port,
             path: '$nounPath/$method/$name',
-            queryParameters: params),
+            queryParameters: {...params, ...p}),
         headers: headers,
         body: json.encode(body));
 
     if (response.statusCode != 201 && response.statusCode != 200) {
       print(response.statusCode);
       throw response.toError();
+    }
+
+    if (response.body == '') {
+      return {};
     }
 
     return json.decode(response.body);
@@ -238,8 +248,8 @@ class TimuObject {
   }
 
   List<Attachment> getAttachments() {
-    var attachments = <Attachment>[];
-    var json = rawData["attachments"];
+    final attachments = <Attachment>[];
+    final json = rawData["attachments"];
 
     if (json is List<Map<String, dynamic>>) {
       for (var j in json) {

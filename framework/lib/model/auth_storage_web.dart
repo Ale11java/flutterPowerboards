@@ -3,13 +3,13 @@ import 'dart:convert';
 import 'dart:html';
 import 'dart:ui' as ui;
 
+// ignore: depend_on_referenced_packages
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
-import '../model/account.dart';
-import 'auth_model.dart';
-import 'auth_storage_state.dart';
+import 'account.dart';
+import 'auth_storage.dart';
 
 const String domain = 'https://www.timu.life';
 const String url = '$domain/js/bundle/message-frame.html';
@@ -104,11 +104,60 @@ class IframeResponseMsg {
   }
 }
 
-class AuthStorageStateImpl extends AuthStorageState {
-  AuthStorageStateImpl() : super.newInstance();
+class AuthStorageImpl extends AuthStorage {
+  AuthStorageImpl()
+      : ready = Completer(),
+        super.newInstance();
+
+  @override
+  Future<Account?> getActiveAccount() async {
+    await ready.future;
+
+    // TODO: what if active account is a guest?
+    final IframeResponseMsg msg = await _sendMsg({'type': 'getAccessToken'});
+    return msg.toActiveAccount();
+  }
+
+  @override
+  Future<List<Account>> getAccounts() async {
+    // TODO: merge in guest accounts from secure storage
+
+    await ready.future;
+
+    final IframeResponseMsg msg = await _sendMsg({'type': 'getAccessToken'});
+    return msg.toAccountList();
+  }
+
+  @override
+  Future<void> setActiveAccount(Account? account) async {
+    await ready.future;
+
+    // TODO: what if active account is a guest?
+
+    if (frame != null && account != null) {
+      _sendMsg({
+        'type': 'setCurrentUser',
+        'login': account.email,
+      });
+    } else {
+      // TODO: wait for ready and then send
+      throw Exception("Not ready");
+    }
+  }
+
+  @override
+  Future<void> addAccount(Account account) async {
+    await ready.future;
+
+    if (account.provider != ProviderTimuGuest) {
+      throw Exception("Can only add guest providers");
+    }
+    // TODO: Send to secureStorage
+  }
 
   IFrameElement? frame;
   StreamSubscription? subscription;
+  Completer<void> ready;
 
   final uuid = const Uuid();
   final messageReq = <String, Completer<IframeResponseMsg>>{};
@@ -140,7 +189,11 @@ class AuthStorageStateImpl extends AuthStorageState {
     // ignore: UNDEFINED_PREFIXED_NAME, avoid_dynamic_calls
     ui.platformViewRegistry.registerViewFactory(viewType, (int viewId) {
       element.onLoad.first.then((evt) {
-        updateState();
+        print('jkkk evt $evt; $viewId; $viewType');
+
+        if (!ready.isCompleted) {
+          ready.complete();
+        }
       });
 
       return element;
@@ -156,18 +209,6 @@ class AuthStorageStateImpl extends AuthStorageState {
   }
 
   @override
-  Future<void> updateState() async {
-    if (frame != null) {
-      final IframeResponseMsg msg = await _sendMsg({'type': 'getAccessToken'});
-
-      setState(() {
-        accounts = msg.toAccountList();
-        activeAccount = msg.toActiveAccount();
-      });
-    }
-  }
-
-  @override
   void dispose() {
     super.dispose();
 
@@ -175,22 +216,7 @@ class AuthStorageStateImpl extends AuthStorageState {
   }
 
   @override
-  void setActiveAccount(Account? account) {
-    activeAccount = account;
-
-    if (frame != null && account != null) {
-      _sendMsg({
-        'type': 'setCurrentUser',
-        'login': account.email,
-      }).then((IframeResponseMsg iframe) {
-        updateState();
-      });
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
-    // ignore: sized_box_shrink_expand
     return Stack(children: <Widget>[
       SizedBox.shrink(
           child: HtmlElementView(
@@ -200,10 +226,7 @@ class AuthStorageStateImpl extends AuthStorageState {
                 frame = window.document.getElementById('message-frame')
                     as IFrameElement;
               })),
-      AuthModel(
-          accounts: accounts,
-          activeAccount: activeAccount,
-          child: widget.child),
+      widget.child
     ]);
   }
 }

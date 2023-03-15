@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import '../model/account.dart';
 import '../timu_api/timu_api.dart';
 import 'auth_model.dart';
+import 'auth_storage_cache.dart';
 
 String formatNounUrl(String id) {
   return '/api/graph/core:event/$id';
@@ -88,7 +89,9 @@ class InputTextField extends StatelessWidget {
 }
 
 class UsernameField extends StatefulWidget {
-  const UsernameField({super.key});
+  const UsernameField(this.onSubmit, {super.key});
+
+  final Function(String, String) onSubmit;
 
   @override
   State<UsernameField> createState() => _UsernameFieldState();
@@ -99,7 +102,7 @@ class _UsernameFieldState extends State<UsernameField> {
   final TextEditingController lastNameCtrl = TextEditingController();
 
   @override
-  void dispose() {
+  dispose() {
     // Clean up the controller when the widget is removed from the
     // widget tree.
     firstNameCtrl.dispose();
@@ -114,35 +117,7 @@ class _UsernameFieldState extends State<UsernameField> {
 
     submitForm() {
       if (formKey.currentState!.validate()) {
-        final params = GoRouterState.of(context).queryParams;
-
-        if (params.containsKey('id')) {
-          final String id = params['id']!;
-          final nounURL = formatNounUrl(id);
-          final api = TimuApiProvider.of(super.context).api;
-
-          api.invoke(
-            name: 'register-as-guest',
-            nounPath: nounURL,
-            public: true,
-            body: {
-              'firstName': firstNameCtrl.text,
-              'lastName': lastNameCtrl.text,
-            },
-          ).then((res) {
-            final String? token = res['token'];
-
-            if (token != null) {
-              api.accessToken = token;
-            }
-
-            context.go(Uri(
-                path: '/lobby-wait-page',
-                queryParameters: {'nounURL': nounURL}).toString());
-          });
-        } else {
-          context.go(Uri(path: '/lobby-page').toString());
-        }
+        widget.onSubmit(firstNameCtrl.text, lastNameCtrl.text);
       }
     }
 
@@ -224,23 +199,13 @@ class _JoinTextFieldState extends State<JoinTextField> {
   @override
   Widget build(BuildContext context) {
     final formKey = GlobalKey<FormState>();
-    final Account? activeAccount = AuthModel.of(context).activeAccount;
 
     submitForm() async {
-      bool hasAccess = false;
-
       if (formKey.currentState!.validate()) {
-        if (hasAccess) {
-          context.go(Uri(
-              path: '/guest-entry-page',
-              queryParameters: {'id': controller.text}).toString());
-        } else {
-          // Check access
-          context.go(Uri(
-                  path: '/in-app-page',
-                  queryParameters: {'nounUrl': formatNounUrl(controller.text)})
-              .toString());
-        }
+        context.go(Uri(
+                path: '/in-app-page',
+                queryParameters: {'nounUrl': formatNounUrl(controller.text)})
+            .toString());
       }
     }
 

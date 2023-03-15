@@ -4,7 +4,9 @@ import 'join_text_field.dart';
 import 'text.dart';
 
 class GuestEntryPage extends StatelessWidget {
-  const GuestEntryPage({super.key});
+  const GuestEntryPage(this.onSubmit, {super.key});
+
+  final Function(String, String) onSubmit;
 
   @override
   Widget build(BuildContext context) {
@@ -17,8 +19,8 @@ class GuestEntryPage extends StatelessWidget {
           child: SizedBox(
             width: MediaQuery.of(context).size.width,
             // Narrow device side gutter
-            child: const Padding(
-              padding: EdgeInsets.all(40),
+            child: Padding(
+              padding: const EdgeInsets.all(40),
               // Horizontal Centering (capped by SizedBox)
               child: Center(
                 child: SizedBox(
@@ -26,12 +28,12 @@ class GuestEntryPage extends StatelessWidget {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      ScreenTitle(
+                      const ScreenTitle(
                           text: 'Introduce yourself to other attendees'),
-                      SizedBox(height: 16),
-                      ScreenSubtitle(text: 'Daily meeting'),
-                      SizedBox(height: 44),
-                      UsernameField(),
+                      const SizedBox(height: 16),
+                      const ScreenSubtitle(text: 'Daily meeting'),
+                      const SizedBox(height: 44),
+                      UsernameField(onSubmit),
                     ],
                   ),
                 ),

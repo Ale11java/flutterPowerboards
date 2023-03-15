@@ -3,7 +3,7 @@ import '../model/account.dart';
 import 'account_list.dart';
 import 'accounts_empty.dart';
 import 'auth_model.dart';
-import 'auth_storage_state.dart';
+import 'auth_storage_cache.dart';
 
 class StorageLoginPage extends StatelessWidget {
   const StorageLoginPage({
@@ -24,7 +24,7 @@ class StorageLoginPage extends StatelessWidget {
                   ? AccountList(
                       onAccountPressed: (Account account) {
                         context
-                            .findAncestorStateOfType<AuthStorageState>()
+                            .findAncestorStateOfType<AuthStorageCacheState>()
                             ?.setActiveAccount(account);
                       },
                     )
