@@ -53,7 +53,16 @@ List<GoRoute> genRoutes() {
 
           if (url != null) {
             return WebsocketProvider(
-                nounUrl: url, channel: 'lobby', child: const LobbyWaitPage());
+                nounUrl: url,
+                channel: 'lobby',
+                child: LobbyWaitPage(
+                  onApproved: () {
+                    print('approved');
+                  },
+                  onDenied: () {
+                    print('denined');
+                  },
+                ));
           }
 
           return const SizedBox.shrink();

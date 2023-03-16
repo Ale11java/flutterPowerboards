@@ -13,11 +13,12 @@ import 'websocket_provider.dart';
 
 enum Progress {
   init,
-  lggedIn,
+  loggedIn,
   needsAccess,
   hasAccess,
   waitingForApproval,
   processing,
+  denied,
 }
 
 extension IterableExt<T> on Iterable<T> {
@@ -29,7 +30,9 @@ extension IterableExt<T> on Iterable<T> {
 
     final l = [iterator.current];
     while (iterator.moveNext()) {
-      l..add(separator)..add(iterator.current);
+      l
+        ..add(separator)
+        ..add(iterator.current);
     }
 
     return l;
@@ -68,7 +71,8 @@ class _RequireAccessState extends State<RequireAccess> {
       final String? token = res['token'];
 
       if (token != null) {
-        final storage = context.findAncestorStateOfType<AuthStorageCacheState>();
+        final storage =
+            context.findAncestorStateOfType<AuthStorageCacheState>();
 
         storage?.addAccount(Account(
             key: 'register-as-user',
@@ -116,8 +120,20 @@ class _RequireAccessState extends State<RequireAccess> {
     }
   }
 
+  onApprove() {
+    setState(() {
+      progress = Progress.loggedIn;
+    });
+  }
+
+  onDeined() {
+    setState(() {
+      progress = Progress.denied;
+    });
+  }
+
   @override
-  void didChangeDependencies() {
+  didChangeDependencies() {
     super.didChangeDependencies();
 
     final Account? activeAccount = AuthModel.of(super.context).activeAccount;
@@ -130,7 +146,7 @@ class _RequireAccessState extends State<RequireAccess> {
   @override
   Widget build(BuildContext context) {
     switch (progress) {
-      case Progress.lggedIn:
+      case Progress.loggedIn:
         return widget.child;
 
       case Progress.needsAccess:
@@ -140,7 +156,10 @@ class _RequireAccessState extends State<RequireAccess> {
         return WebsocketProvider(
           nounUrl: widget.nounUrl,
           channel: 'lobby',
-          child: const LobbyWaitPage(),
+          child: LobbyWaitPage(
+            onApproved: onApprove,
+            onDenied: onDeined,
+          ),
         );
 
       case Progress.processing: // Fallthrough
@@ -155,6 +174,8 @@ class _RequireAccessState extends State<RequireAccess> {
             channel: 'lobby',
             child: _NotificationPopup(child: widget.child));
 
+      case Progress.denied:
+        return const Center();
     }
   }
 }
@@ -198,20 +219,18 @@ class _NotificationPopupState extends State<_NotificationPopup> {
   Widget build(BuildContext context) {
     return Stack(children: [
       widget.child,
-
-      Overlay(
-        initialEntries: <OverlayEntry>[
-          OverlayEntry(builder: (BuildContext context) {
+      Overlay(initialEntries: <OverlayEntry>[
+        OverlayEntry(builder: (BuildContext context) {
           return Positioned(
-            top: 50,
-            right: 50,
-            child: Column(children: waitingGuests
-                .map<Widget>((client) => _ClientWidget(client))
-                .superJoin(const SizedBox(height: 10))
-                .toList(growable: false)));
-          })
-        ]
-      ),
+              top: 50,
+              right: 50,
+              child: Column(
+                  children: waitingGuests
+                      .map<Widget>((client) => _ClientWidget(client))
+                      .superJoin(const SizedBox(height: 10))
+                      .toList(growable: false)));
+        })
+      ]),
     ]);
   }
 }
@@ -233,9 +252,7 @@ class _ClientWidget extends StatelessWidget {
         final response = await api.invoke(
           name: 'grant-access',
           nounPath: parent.nounUrl,
-          body: {
-            'id': client.profile['id']
-          },
+          body: {'id': client.profile['id']},
         );
 
         final String jwt = response['token'] as String;
@@ -245,77 +262,74 @@ class _ClientWidget extends StatelessWidget {
     }
 
     return Container(
-        width: 400,
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            color: const Color(0XFF2F2D57),
-            boxShadow: const <BoxShadow>[
-              BoxShadow(
-                color: Color(0x3a000000),
-                blurRadius: 20,
-                offset: Offset(0, 2),
-              ),
-            ]),
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('${client.profile['firstName']} ${client.profile['lastName']}' ,
-                  style: const TextStyle(
-                    fontFamily: 'Inter',
-                    fontWeight: FontWeight.w800,
-                    fontSize: 14,
-                    color: Colors.white),
-                ),
-                const Text('Is waiting in lobby...',
-                  style: TextStyle(
-                    fontFamily: 'Inter',
-                    fontWeight: FontWeight.w800,
-                    fontSize: 14,
-                    color: Colors.white),
-                )
-              ]
+      width: 400,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: const Color(0XFF2F2D57),
+          boxShadow: const <BoxShadow>[
+            BoxShadow(
+              color: Color(0x3a000000),
+              blurRadius: 20,
+              offset: Offset(0, 2),
             ),
-          ),
-          SizedBox(
-            width: 100,
-            child: Column(
-            children: [
-              FilledButton(
-                onPressed: () => grantAccess(client),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  minimumSize: const Size.fromHeight(42),
-                ),
-                child: const Text('APPROVE',
+          ]),
+      child: Row(children: [
+        Expanded(
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text(
+              '${client.profile['firstName']} ${client.profile['lastName']}',
+              style: const TextStyle(
+                  fontFamily: 'Inter',
+                  fontWeight: FontWeight.w800,
+                  fontSize: 14,
+                  color: Colors.white),
+            ),
+            const Text(
+              'Is waiting in lobby...',
+              style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontWeight: FontWeight.w800,
+                  fontSize: 14,
+                  color: Colors.white),
+            )
+          ]),
+        ),
+        SizedBox(
+          width: 100,
+          child: Column(children: [
+            FilledButton(
+              onPressed: () => grantAccess(client),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+                minimumSize: const Size.fromHeight(42),
+              ),
+              child: const Text('APPROVE',
                   style: TextStyle(
                     fontFamily: 'Inter',
                     fontWeight: FontWeight.w900,
                     fontSize: 13,
                     color: Color(0xFF484575),
                   )),
+            ),
+            FilledButton(
+              onPressed: () => print('deny'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+                minimumSize: const Size.fromHeight(42),
               ),
-                FilledButton(
-                  onPressed: () => print('deny'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    minimumSize: const Size.fromHeight(42),
-                  ),
-                  child: const Text('DENY',
-                    style: TextStyle(
-                      fontFamily: 'Inter',
-                      fontWeight: FontWeight.w900,
-                      fontSize: 13,
-                      color: Color(0xFF484575),
-                    )
-                ),
-              ),
-            ]),
-          ),
-        ]),
-      );
+              child: const Text('DENY',
+                  style: TextStyle(
+                    fontFamily: 'Inter',
+                    fontWeight: FontWeight.w900,
+                    fontSize: 13,
+                    color: Color(0xFF484575),
+                  )),
+            ),
+          ]),
+        ),
+      ]),
+    );
   }
 }

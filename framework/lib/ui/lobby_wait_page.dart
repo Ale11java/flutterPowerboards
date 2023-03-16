@@ -7,7 +7,11 @@ import 'text.dart';
 import 'websocket_provider.dart';
 
 class LobbyWaitPage extends StatefulWidget {
-  const LobbyWaitPage({super.key});
+  const LobbyWaitPage(
+      {super.key, required this.onApproved, required this.onDenied});
+
+  final Function() onApproved;
+  final Function() onDenied;
 
   @override
   State<LobbyWaitPage> createState() => LobbyWaitState();
@@ -37,6 +41,10 @@ class LobbyWaitState extends State<LobbyWaitPage> {
             accessToken: token,
             method: 'register',
             provider: 'guest'));
+
+        widget.onApproved();
+      } else if (event.data.containsKey('deny')) {
+        widget.onDenied();
       }
     });
   }
@@ -49,20 +57,17 @@ class LobbyWaitState extends State<LobbyWaitPage> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      backgroundColor: Color(0XFF2F2D57),
-      body: Center(
-        child: SingleChildScrollView(
-          child: SizedBox(
-            width: 400,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                ScreenTitle(text: 'Please wait for the host to let you in.'),
-                SizedBox(height: 16),
-                ScreenSubtitle(text: 'Daily design meetup'),
-              ],
-            ),
+    return const Center(
+      child: SingleChildScrollView(
+        child: SizedBox(
+          width: 400,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              ScreenTitle(text: 'Please wait for the host to let you in.'),
+              SizedBox(height: 16),
+              ScreenSubtitle(text: 'Daily design meetup'),
+            ],
           ),
         ),
       ),
