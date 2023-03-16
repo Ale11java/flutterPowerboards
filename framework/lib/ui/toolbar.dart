@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 enum ToolbarDirection { horizontal, vertical }
 
+const _toolbarBorderColor = const Color(0xffcccccc);
+
 /// Toolbar widget is the base widget to use for toolbars.
 ///
 /// The toolbar can be either horizontal or vertical. The toolbar widget should
@@ -111,8 +113,9 @@ class _ToolbarContents extends StatelessWidget {
         height: 56.0, // in logical pixels
         padding: const EdgeInsets.all(8.0),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: const Color(0xff4e4a90)),
+          border: Border.all(
+              color: _toolbarBorderColor,
+              strokeAlign: BorderSide.strokeAlignOutside),
           boxShadow: const <BoxShadow>[
             BoxShadow(
               color: Color(0x19000000),
@@ -120,7 +123,7 @@ class _ToolbarContents extends StatelessWidget {
               offset: Offset(0, 6),
             ),
           ],
-          color: const Color(0xff2f2d57),
+          color: const Color(0xffffff),
         ),
         child: Row(children: children),
       );
@@ -129,8 +132,9 @@ class _ToolbarContents extends StatelessWidget {
         width: 56.0, // in logical pixels
         padding: const EdgeInsets.all(8.0),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: const Color(0xff4e4a90)),
+          border: Border.all(
+              color: _toolbarBorderColor,
+              strokeAlign: BorderSide.strokeAlignOutside),
           boxShadow: const <BoxShadow>[
             BoxShadow(
               color: Color(0x19000000),
@@ -138,7 +142,7 @@ class _ToolbarContents extends StatelessWidget {
               offset: Offset(0, 6),
             ),
           ],
-          color: const Color(0xff2f2d57),
+          color: const Color(0xffffffff),
         ),
         child: Column(children: children),
       );
