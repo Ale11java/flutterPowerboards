@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'join_text_field.dart';
+import 'join_page.dart';
 import 'text.dart';
 
 class LobbyPage extends StatelessWidget {
@@ -24,7 +24,7 @@ class LobbyPage extends StatelessWidget {
                   text: 'Enter your invite link',
                 ),
                 SizedBox(height: 44),
-                JoinTextField(),
+                JoinPage(),
               ],
             ),
           ),

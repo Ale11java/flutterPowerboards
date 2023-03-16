@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'join_text_field.dart';
+import 'join_page.dart';
 import 'text.dart';
 
 class GuestEntryPage extends StatelessWidget {

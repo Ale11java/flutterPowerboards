@@ -8,7 +8,7 @@ import 'ui/auth_storage_cache.dart';
 import 'ui/dialog_buttons.dart';
 import 'ui/home_page.dart';
 import 'ui/in_app_page.dart';
-import 'ui/join_text_field.dart';
+import 'ui/join_page.dart';
 import 'ui/list_route_page.dart';
 import 'ui/lobby_page.dart';
 import 'ui/lobby_wait_page.dart';
@@ -85,18 +85,8 @@ List<GoRoute> genRoutes() {
     GoRoute(
       name: 'Join Text Field',
       path: '/join-text-field',
-      builder: (BuildContext context, GoRouterState state) => const Scaffold(
-        backgroundColor: Color(0XFF2F2D57),
-        body: Center(
-          child: SizedBox(
-            width: 400,
-            height: 500,
-            child: Column(
-              children: <Widget>[JoinTextField()],
-            ),
-          ),
-        ),
-      ),
+      builder: (BuildContext context, GoRouterState state) =>
+          const Material(child: JoinPage()),
     ),
 //    GoRoute(
 //      name: 'Test',

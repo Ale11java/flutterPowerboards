@@ -173,16 +173,27 @@ class _UsernameFieldState extends State<UsernameField> {
   }
 }
 
-class JoinTextField extends StatefulWidget {
-  const JoinTextField({super.key});
+typedef JoinRedirectBuilder = String Function({required String eventID});
+
+String defaultJoinRedirectBuilder({required String eventID}) {
+  return Uri(
+      path: '/in-app-page',
+      queryParameters: {'nounUrl': formatNounUrl(eventID)}).toString();
+}
+
+class JoinPage extends StatefulWidget {
+  const JoinPage(
+      {super.key, this.redirectBuilder = defaultJoinRedirectBuilder});
+
+  final JoinRedirectBuilder redirectBuilder;
 
   @override
-  State<JoinTextField> createState() => _JoinTextFieldState();
+  State<JoinPage> createState() => _JoinPageState();
 }
 
 // Define a corresponding State class.
 // This class holds data related to the Form.
-class _JoinTextFieldState extends State<JoinTextField> {
+class _JoinPageState extends State<JoinPage> {
   // Create a text controller. Later, use it to retrieve the
   // current value of the TextField.
   final TextEditingController controller = TextEditingController();
@@ -202,45 +213,50 @@ class _JoinTextFieldState extends State<JoinTextField> {
 
     submitForm() async {
       if (formKey.currentState!.validate()) {
-        context.go(Uri(
-                path: '/in-app-page',
-                queryParameters: {'nounUrl': formatNounUrl(controller.text)})
-            .toString());
+        context.go(widget.redirectBuilder(eventID: controller.text));
       }
     }
 
-    return Form(
-      key: formKey,
-      child: InputTextField(
-        autofocus: true,
-        controller: controller,
-        hintText: 'Enter Invite URL',
-        validator: (value) {
-          if (value == null || value.isEmpty) {
-            return 'Please enter invite URL';
-          }
-          return null;
-        },
-        onFieldSubmitted: (value) {
-          submitForm();
-        },
-        suffixIcon: Padding(
-          padding: const EdgeInsets.all(8),
-          child: FilledButton(
-            onPressed: submitForm,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.white,
-            ),
-            child: const Text('JOIN NOW',
-                style: TextStyle(
-                  fontFamily: 'Inter',
-                  fontWeight: FontWeight.w900,
-                  fontSize: 13,
-                  color: Color(0XFF484575),
-                )),
-          ),
-        ),
+    return Expanded(
+        child: ColoredBox(
+      color: const Color(0XFF2F2D57),
+      child: Center(
+        child: SizedBox(
+            width: 400,
+            child: Form(
+              key: formKey,
+              child: InputTextField(
+                autofocus: true,
+                controller: controller,
+                hintText: 'Enter Invite URL',
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter invite URL';
+                  }
+                  return null;
+                },
+                onFieldSubmitted: (value) {
+                  submitForm();
+                },
+                suffixIcon: Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: FilledButton(
+                    onPressed: submitForm,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                    ),
+                    child: const Text('JOIN NOW',
+                        style: TextStyle(
+                          fontFamily: 'Inter',
+                          fontWeight: FontWeight.w900,
+                          fontSize: 13,
+                          color: Color(0XFF484575),
+                        )),
+                  ),
+                ),
+              ),
+            )),
       ),
-    );
+    ));
   }
 }
