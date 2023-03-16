@@ -1,5 +1,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.my_app">
+
+    <uses-permission android:name="com.timu.sharedpreferences.SIGNATURE_READ" />
+    <queries>
+        <package android:name="com.timu" />
+    </queries>
+
    <application
         android:label="my_app"
         android:name="${applicationName}"

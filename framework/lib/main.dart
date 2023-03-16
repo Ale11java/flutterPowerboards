@@ -4,22 +4,25 @@ import 'package:go_router/go_router.dart';
 import 'examples/floating_panel.dart';
 import 'examples/meeting_header.dart';
 import 'test_icons.dart';
-
-import 'ui/auth_model.dart';
-import 'ui/guest_entry_page.dart';
+import 'ui/auth_storage_cache.dart';
+import 'ui/dialog_buttons.dart';
 import 'ui/home_page.dart';
+import 'ui/in_app_page.dart';
 import 'ui/join_text_field.dart';
 import 'ui/list_route_page.dart';
 import 'ui/lobby_page.dart';
+import 'ui/lobby_wait_page.dart';
 import 'ui/notification.dart';
+import 'ui/participant_overlay.dart';
 import 'ui/primary_button.dart';
+import 'ui/require_access.dart';
+import 'ui/sidebar_group.dart';
 import 'ui/storage_login.dart';
 import 'ui/summary_button.dart';
 import 'ui/text.dart';
-import 'ui/dialog_buttons.dart';
-import 'ui/sidebar_group.dart';
-import 'ui/participant_overlay.dart';
 import 'ui/toolbar.dart';
+import 'ui/user_action_card.dart';
+import 'ui/websocket_provider.dart';
 
 void main() {
   runApp(const MyApp());
@@ -35,17 +38,50 @@ List<GoRoute> genRoutes() {
       builder: (BuildContext context, GoRouterState state) =>
           ListRoutesPage(routes: genRoutes()),
     ),
+
     GoRoute(
       name: 'Lobby Page',
       path: '/lobby-page',
       builder: (BuildContext context, GoRouterState state) => const LobbyPage(),
     ),
+
     GoRoute(
-      name: 'Guest Entry Page',
-      path: '/guest-entry-page',
-      builder: (BuildContext context, GoRouterState state) =>
-          const GuestEntryPage(),
-    ),
+        name: 'Lobby Wait Page',
+        path: '/lobby-wait-page',
+        builder: (BuildContext context, GoRouterState state) {
+          final String? url = state.queryParams['nounUrl'];
+
+          if (url != null) {
+            return WebsocketProvider(
+                nounUrl: url, channel: 'lobby', child: const LobbyWaitPage());
+          }
+
+          return const SizedBox.shrink();
+        }),
+
+    GoRoute(
+        name: 'In App Page',
+        path: '/in-app-page',
+        builder: (BuildContext context, GoRouterState state) {
+          final String nounUrl = state.queryParams['nounUrl'] ?? '';
+
+          return RequireAccess(nounUrl: nounUrl, widget: const InAppPage());
+        }),
+
+    GoRoute(
+        name: 'In App Page Prev',
+        path: '/in-app-page-prev',
+        builder: (BuildContext context, GoRouterState state) {
+          final String? url = state.queryParams['nounUrl'];
+
+          if (url != null) {
+            return WebsocketProvider(
+                nounUrl: url, channel: 'lobby', child: const InAppPage());
+          }
+
+          return const SizedBox.shrink();
+        }),
+
     GoRoute(
       name: 'Join Text Field',
       path: '/join-text-field',
@@ -54,7 +90,7 @@ List<GoRoute> genRoutes() {
         body: Center(
           child: SizedBox(
             width: 400,
-            height: 46,
+            height: 500,
             child: Column(
               children: <Widget>[JoinTextField()],
             ),
@@ -81,10 +117,10 @@ List<GoRoute> genRoutes() {
     GoRoute(
       name: 'Home Page',
       path: '/my-home-page',
-      builder: (BuildContext context, GoRouterState state) => StorageProvider(
-          child: const StorageLogin(
+      builder: (BuildContext context, GoRouterState state) =>
+          const StorageLogin(
         childLoggedIn: MyHomePage(title: 'Before you go in, are you the host?'),
-      )),
+      ),
     ),
     GoRoute(
       name: 'Meeting Header',
@@ -297,6 +333,15 @@ List<GoRoute> genRoutes() {
         ),
       ),
     ),
+    GoRoute(
+      name: 'User Action Card',
+      path: '/user-action-card',
+      builder: (BuildContext context, GoRouterState state) => Scaffold(
+          body: Stack(children: <Widget>[
+        ListRoutesPage(routes: genRoutes()),
+        const UserActionCard(userName: 'John Doe'),
+      ])),
+    )
   ];
 }
 
@@ -308,6 +353,8 @@ class MyApp extends StatelessWidget {
     final GoRouter routerConfig = GoRouter(routes: genRoutes());
 
     return MaterialApp.router(
+      builder: (BuildContext context, Widget? child) =>
+          AuthStorageCache(child: child ?? const SizedBox.shrink()),
       theme: ThemeData(primarySwatch: Colors.blue),
       routerConfig: routerConfig,
     );

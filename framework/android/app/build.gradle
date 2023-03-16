@@ -6,6 +6,13 @@ if (localPropertiesFile.exists()) {
     }
 }
 
+// used only for local testing
+def keystoreProperties = new Properties()
+def keystorePropertiesFile = rootProject.file('key.properties')
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+}
+
 def flutterRoot = localProperties.getProperty('flutter.sdk')
 if (flutterRoot == null) {
     throw new GradleException("Flutter SDK not found. Define location with flutter.sdk in the local.properties file.")
@@ -44,7 +51,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId "com.example.my_app"
+        applicationId "com.timu.framework"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
         minSdkVersion 19 //flutter.minSdkVersion
@@ -52,12 +59,33 @@ android {
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }
-
-    buildTypes {
+    signingConfigs {
+        debug {
+            storeFile file('debug.keystore')
+            storePassword 'android'
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
+        }
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
+            if (System.getenv()["CI"]) { // CI=true is exported by Codemagic
+                storeFile file(System.getenv()["CM_KEYSTORE_PATH"])
+                storePassword System.getenv()["CM_KEYSTORE_PASSWORD"]
+                keyAlias System.getenv()["CM_KEY_ALIAS"]
+                keyPassword System.getenv()["CM_KEY_PASSWORD"]
+            } else {
+                storeFile file(TIMU_MESSENGER_RELEASE_STORE_FILE)
+                storePassword TIMU_MESSENGER_RELEASE_STORE_PASSWORD
+                keyAlias TIMU_MESSENGER_RELEASE_KEY_ALIAS
+                keyPassword TIMU_MESSENGER_RELEASE_KEY_PASSWORD
+            }
+        }
+    }
+    buildTypes {
+        debug {
             signingConfig signingConfigs.debug
+        }
+        release {
+            signingConfig signingConfigs.release
         }
     }
 }

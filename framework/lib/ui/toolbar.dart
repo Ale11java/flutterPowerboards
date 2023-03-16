@@ -253,7 +253,7 @@ class ToggleToolbarButton extends ToolbarButton {
       return FilledButton(
         onPressed: onPressed,
         style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.all(const Color(0x2F2D57)),
+          backgroundColor: MaterialStateProperty.all(const Color(0x002f2d57)),
           textStyle: MaterialStateProperty.all(
               const TextStyle(color: Color(0xffffffff))),
           shape: MaterialStateProperty.all(

@@ -30,3 +30,7 @@ class Account {
     );
   }
 }
+
+const ProviderGoogle = 'google';
+const ProviderMicrosoft = 'microsoft';
+const ProviderTimuGuest = 'guest';

@@ -1,1 +1,1 @@
-export 'websocket/websocket.dart';
+export 'timu_api/websocket.dart';

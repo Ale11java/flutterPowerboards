@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+
 import 'join_text_field.dart';
 import 'text.dart';
 
 class GuestEntryPage extends StatelessWidget {
-  const GuestEntryPage({
-    super.key,
-  });
+  const GuestEntryPage(this.onSubmit, {super.key});
+
+  final Function(String, String) onSubmit;
 
   @override
   Widget build(BuildContext context) {
@@ -32,25 +33,7 @@ class GuestEntryPage extends StatelessWidget {
                       const SizedBox(height: 16),
                       const ScreenSubtitle(text: 'Daily meeting'),
                       const SizedBox(height: 44),
-                      const UsernameField(),
-                      const SizedBox(height: 28),
-                      FilledButton(
-                        onPressed: () {
-                          debugPrint(
-                              'Received click text'); // ignore: avoid_print
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          minimumSize: const Size.fromHeight(42),
-                        ),
-                        child: const Text('CONTINUE',
-                            style: TextStyle(
-                              fontFamily: 'Inter',
-                              fontWeight: FontWeight.w900,
-                              fontSize: 13,
-                              color: Color(0xFF484575),
-                            )),
-                      ),
+                      UsernameField(onSubmit),
                     ],
                   ),
                 ),

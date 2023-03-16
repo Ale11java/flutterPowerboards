@@ -1,5 +1,17 @@
 // Define a custom Form widget.
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+
+import '../model/account.dart';
+import '../timu_api/timu_api.dart';
+import 'auth_model.dart';
+import 'auth_storage_cache.dart';
+
+String formatNounUrl(String id) {
+  return '/api/graph/core:event/$id';
+}
 
 class InputTextField extends StatelessWidget {
   const InputTextField({
@@ -7,22 +19,35 @@ class InputTextField extends StatelessWidget {
     this.controller,
     this.hintText,
     this.suffixIcon,
+    this.validator,
+    this.autofocus = false,
+    this.textInputAction = TextInputAction.done,
+    this.onFieldSubmitted,
   });
 
+  final TextInputAction textInputAction;
+  final bool autofocus;
   final TextEditingController? controller;
   final String? hintText;
   final Widget? suffixIcon;
+  final FormFieldValidator<String>? validator;
+
+  final ValueChanged<String>? onFieldSubmitted;
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
+    return TextFormField(
+      autofocus: autofocus,
       controller: controller,
+      textInputAction: textInputAction,
+      onFieldSubmitted: onFieldSubmitted,
       style: const TextStyle(
         fontSize: 16,
         fontWeight: FontWeight.w500,
         fontFamily: 'Roboto',
         color: Colors.white,
       ),
+      validator: validator,
       decoration: InputDecoration(
         hintText: hintText,
         hintStyle: const TextStyle(
@@ -31,10 +56,19 @@ class InputTextField extends StatelessWidget {
           fontFamily: 'Roboto',
           color: Colors.white,
         ),
-        constraints: const BoxConstraints(
-          maxHeight: 46,
-        ),
         contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+        errorBorder: OutlineInputBorder(
+          borderSide: const BorderSide(
+            color: Color(0XFFED6464),
+          ),
+          borderRadius: BorderRadius.circular(50.0),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderSide: const BorderSide(
+            color: Color(0XFFED6464),
+          ),
+          borderRadius: BorderRadius.circular(50.0),
+        ),
         enabledBorder: OutlineInputBorder(
           borderSide: const BorderSide(
             color: Color(0xFFAC95FF),
@@ -43,8 +77,7 @@ class InputTextField extends StatelessWidget {
         ),
         focusedBorder: OutlineInputBorder(
           borderSide: const BorderSide(
-            width: 3,
-            color: Color(0xFFAC95FF),
+            color: Color(0xFFFFFFFF),
           ),
           borderRadius: BorderRadius.circular(23.0),
         ),
@@ -56,7 +89,9 @@ class InputTextField extends StatelessWidget {
 }
 
 class UsernameField extends StatefulWidget {
-  const UsernameField({super.key});
+  const UsernameField(this.onSubmit, {super.key});
+
+  final Function(String, String) onSubmit;
 
   @override
   State<UsernameField> createState() => _UsernameFieldState();
@@ -67,7 +102,7 @@ class _UsernameFieldState extends State<UsernameField> {
   final TextEditingController lastNameCtrl = TextEditingController();
 
   @override
-  void dispose() {
+  dispose() {
     // Clean up the controller when the widget is removed from the
     // widget tree.
     firstNameCtrl.dispose();
@@ -78,17 +113,63 @@ class _UsernameFieldState extends State<UsernameField> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: <Widget>[
-      InputTextField(
-        controller: firstNameCtrl,
-        hintText: 'Enter first name',
+    final formKey = GlobalKey<FormState>();
+
+    submitForm() {
+      if (formKey.currentState!.validate()) {
+        widget.onSubmit(firstNameCtrl.text, lastNameCtrl.text);
+      }
+    }
+
+    onFieldSubmitted(value) {
+      submitForm();
+    }
+
+    return Form(
+      key: formKey,
+      child: Column(children: <Widget>[
+        InputTextField(
+          autofocus: true,
+          controller: firstNameCtrl,
+          hintText: 'Enter first name',
+          textInputAction: TextInputAction.next,
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return 'Please enter your first name';
+            }
+            return null;
+          },
+          onFieldSubmitted: onFieldSubmitted,
         ),
-      const SizedBox(height: 20),
-      InputTextField(
-        controller: lastNameCtrl,
-        hintText: 'Enter last name',
+        const SizedBox(height: 20),
+        InputTextField(
+          controller: lastNameCtrl,
+          hintText: 'Enter last name',
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return 'Please enter your last name';
+            }
+            return null;
+          },
+          onFieldSubmitted: onFieldSubmitted,
         ),
-    ]);
+        const SizedBox(height: 28),
+        FilledButton(
+          onPressed: submitForm,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.white,
+            minimumSize: const Size.fromHeight(42),
+          ),
+          child: const Text('CONTINUE',
+              style: TextStyle(
+                fontFamily: 'Inter',
+                fontWeight: FontWeight.w900,
+                fontSize: 13,
+                color: Color(0xFF484575),
+              )),
+        ),
+      ]),
+    );
   }
 }
 
@@ -107,17 +188,6 @@ class _JoinTextFieldState extends State<JoinTextField> {
   final TextEditingController controller = TextEditingController();
 
   @override
-  void initState() {
-    super.initState();
-
-    controller.addListener(_printLatestValue);
-  }
-
-  void _printLatestValue() {
-    print('Second text field: ${controller.text}'); // ignore: avoid_print
-  }
-
-  @override
   void dispose() {
     // Clean up the controller when the widget is removed from the
     // widget tree.
@@ -128,16 +198,36 @@ class _JoinTextFieldState extends State<JoinTextField> {
 
   @override
   Widget build(BuildContext context) {
-    return InputTextField(
-      controller: controller,
-      hintText: 'Enter Invite URL',
-      suffixIcon:  Padding(
+    final formKey = GlobalKey<FormState>();
+
+    submitForm() async {
+      if (formKey.currentState!.validate()) {
+        context.go(Uri(
+                path: '/in-app-page',
+                queryParameters: {'nounUrl': formatNounUrl(controller.text)})
+            .toString());
+      }
+    }
+
+    return Form(
+      key: formKey,
+      child: InputTextField(
+        autofocus: true,
+        controller: controller,
+        hintText: 'Enter Invite URL',
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Please enter invite URL';
+          }
+          return null;
+        },
+        onFieldSubmitted: (value) {
+          submitForm();
+        },
+        suffixIcon: Padding(
           padding: const EdgeInsets.all(8),
           child: FilledButton(
-            onPressed: () {
-              debugPrint(
-                  'Received click $controller.text'); // ignore: avoid_print
-            },
+            onPressed: submitForm,
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.white,
             ),
@@ -146,9 +236,10 @@ class _JoinTextFieldState extends State<JoinTextField> {
                   fontFamily: 'Inter',
                   fontWeight: FontWeight.w900,
                   fontSize: 13,
-                  color: Color(0xFF484575),
+                  color: Color(0XFF484575),
                 )),
           ),
+        ),
       ),
     );
   }

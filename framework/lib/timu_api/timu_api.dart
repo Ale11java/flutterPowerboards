@@ -4,9 +4,10 @@ library timu_api;
 
 import 'dart:convert';
 import 'package:cross_file/cross_file.dart';
+import 'package:flutter/material.dart';
 
 import 'package:http/http.dart' as http;
-import 'package:uuid/uuid.dart';
+import 'websocket.dart';
 
 class RequiresAuthenticationError implements Exception {}
 
@@ -31,14 +32,42 @@ extension HttpResponse on http.Response {
   }
 }
 
+class TimuApiProvider extends InheritedWidget {
+  const TimuApiProvider({
+    super.key,
+    required super.child,
+    required this.api,
+  });
+
+  final TimuApi api;
+
+  static TimuApiProvider? maybeOf(BuildContext context) {
+    return context.dependOnInheritedWidgetOfExactType<TimuApiProvider>();
+  }
+
+  static TimuApiProvider of(BuildContext context) {
+    final TimuApiProvider? result = maybeOf(context);
+
+    assert(result != null, 'No TimuApiProvider found in context');
+    return result!;
+  }
+
+  @override
+  bool updateShouldNotify(covariant TimuApiProvider oldWidget) {
+    return api != oldWidget.api;
+  }
+}
+
 class TimuApi {
   TimuApi(
-      {required this.defaultNetwork,
+      {this.accessToken = '',
+      this.defaultNetwork,
       required this.host,
       required this.headers,
       this.port = 443});
 
-  final int defaultNetwork;
+  final String accessToken;
+  int? defaultNetwork;
   final String host;
   final int port;
   final Map<String, String> headers;
@@ -49,31 +78,31 @@ class TimuApi {
 
   Future<PreuploadedAttachmentReference> preuploadStream(
       {required String name, required Stream<List<int>> stream}) async {
-    var response = await http.post(
+    final response = await http.post(
         Uri(
-            scheme: "https",
+            scheme: 'https',
             host: host,
             port: port,
-            path: "/api/graph/+preupload"),
+            path: '/api/graph/+preupload'),
         headers: headers,
         body: jsonEncode(<String, dynamic>{
-          "name": name,
+          'name': name,
         }));
 
     if (response.statusCode != 200) {
       throw response.toError();
     }
 
-    var requestData = jsonDecode(response.body);
+    final requestData = jsonDecode(response.body);
 
-    var id = requestData["id"] as String;
-    var url = requestData["url"] as String;
-    var contentType = requestData["contentType"] as String;
+    final String id = requestData['id'];
+    final String url = requestData['url'];
+    final String contentType = requestData['contentType'];
 
-    var bodyBytes = stream;
+    final bodyBytes = stream;
 
-    var upload = http.StreamedRequest("PUT", Uri.parse(url))
-      ..headers.addAll(<String, String>{"Content-Type": contentType});
+    final upload = http.StreamedRequest('PUT', Uri.parse(url))
+      ..headers.addAll(<String, String>{'Content-Type': contentType});
 
     bodyBytes.listen((event) {
       upload.sink.add(event);
@@ -81,7 +110,7 @@ class TimuApi {
       upload.sink.close();
     });
 
-    var uploadResponse = await upload.send();
+    final uploadResponse = await upload.send();
 
     if (uploadResponse.statusCode != 200) {
       throw response.toError();
@@ -97,21 +126,21 @@ class TimuApi {
       List<PreuploadedAttachmentReference>? preuploads,
       bool upsert = false,
       required Map<String, dynamic> data}) async {
-    var req = <String, dynamic>{
+    final req = <String, dynamic>{
       ...data,
-      "network": network ?? defaultNetwork,
-      "type": type,
-      "container": container,
-      "preuploadedAttachments": preuploads
+      'network': network ?? defaultNetwork,
+      'type': type,
+      'container': container,
+      'preuploadedAttachments': preuploads
     };
 
-    var response = await http.post(
+    final response = await http.post(
         Uri(
-            scheme: "https",
+            scheme: 'https',
             host: host,
             port: port,
-            path: "/api/graph/$type",
-            queryParameters: <String, dynamic>{"upsert": upsert.toString()}),
+            path: '/api/graph/$type',
+            queryParameters: <String, dynamic>{'upsert': upsert.toString()}),
         headers: headers,
         body: jsonEncode(req));
 
@@ -122,9 +151,19 @@ class TimuApi {
     return TimuObject(jsonDecode(response.body));
   }
 
+  TimuWebsocket createWebsocket(String url, String channel) {
+    return TimuWebsocket(
+      apiRoot: host,
+      url: url,
+      accessToken: accessToken,
+      network: defaultNetwork,
+      channel: channel,
+    );
+  }
+
   Future<TimuObject> get(TimuObjectUri uri) async {
-    var response = await http.get(
-        Uri(scheme: "https", host: host, port: port, path: uri),
+    final response = await http.get(
+        Uri(scheme: 'https', host: host, port: port, path: uri),
         headers: headers);
 
     if (response.statusCode != 200) {
@@ -134,7 +173,7 @@ class TimuApi {
     return TimuObject(jsonDecode(response.body));
   }
 
-  Future<dynamic> invoke({
+  Future<Map<String, dynamic>> invoke({
     required String name,
     required String nounPath,
     bool public = false,
@@ -142,6 +181,11 @@ class TimuApi {
     Map<String, dynamic> body = const <String, dynamic>{},
   }) async {
     final String method = public ? '+public' : '+invoke';
+    final Map<String, dynamic> p = {};
+
+    if (accessToken != '') {
+      p['access_token'] = accessToken;
+    }
 
     print('host: $host; path: $nounPath/$method/$name');
 
@@ -151,13 +195,17 @@ class TimuApi {
             host: host,
             port: port,
             path: '$nounPath/$method/$name',
-            queryParameters: params),
+            queryParameters: {...params, ...p}),
         headers: headers,
-        body: jsonEncode(body));
+        body: json.encode(body));
 
     if (response.statusCode != 201 && response.statusCode != 200) {
       print(response.statusCode);
       throw response.toError();
+    }
+
+    if (response.body == '') {
+      return {};
     }
 
     return json.decode(response.body);
@@ -200,8 +248,8 @@ class TimuObject {
   }
 
   List<Attachment> getAttachments() {
-    var attachments = <Attachment>[];
-    var json = rawData["attachments"];
+    final attachments = <Attachment>[];
+    final json = rawData["attachments"];
 
     if (json is List<Map<String, dynamic>>) {
       for (var j in json) {

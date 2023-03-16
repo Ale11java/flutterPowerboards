@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../model/storage.dart';
-import 'auth_model.dart';
+import 'auth_storage_cache.dart';
 import 'primary_button.dart';
 
 class StorageLogoutButton extends StatelessWidget {
@@ -11,12 +10,12 @@ class StorageLogoutButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Storage storage = AuthModel.storageOf(context);
-
     return PrimaryButton(
       text: 'Logout',
       onPressed: () {
-        storage.setActiveAccount(null);
+        context
+            .findAncestorStateOfType<AuthStorageCacheState>()!
+            .setActiveAccount(null);
       },
     );
   }

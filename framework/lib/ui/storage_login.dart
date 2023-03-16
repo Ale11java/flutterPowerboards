@@ -4,6 +4,12 @@ import '../model/account.dart';
 import 'auth_model.dart';
 import 'storage_login_page.dart';
 
+/*
+   name: temporary access to
+   url self
+   role: core contributor
+*/
+
 class StorageLogin extends StatelessWidget {
   const StorageLogin({
     super.key,
@@ -14,16 +20,12 @@ class StorageLogin extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final AuthModel props = AuthModel.of(context);
-    final Account? activeAccount = props.activeAccount;
+    final Account? activeAccount = AuthModel.of(context).activeAccount;
 
     if (activeAccount != null) {
       return childLoggedIn;
     } else {
-      return const MaterialApp(
-        key: Key('login'),
-        home: StorageLoginPage(),
-      );
+      return const StorageLoginPage();
     }
   }
 }

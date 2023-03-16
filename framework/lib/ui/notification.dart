@@ -1,13 +1,8 @@
 import 'package:flutter/material.dart';
 
 class NotificationWidget extends StatelessWidget {
-  final ImageProvider avatar;
-  final String title;
-  final String text;
-  final NotificationAction? primaryAction;
-  final NotificationAction? secondaryAction;
-
-  NotificationWidget({
+  const NotificationWidget({
+    super.key,
     required this.avatar,
     required this.title,
     required this.text,
@@ -15,12 +10,18 @@ class NotificationWidget extends StatelessWidget {
     this.secondaryAction,
   });
 
+  final ImageProvider avatar;
+  final String title;
+  final String text;
+  final NotificationAction? primaryAction;
+  final NotificationAction? secondaryAction;
+
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
-        color: Color(0XFF2F2D57),
+        color: const Color(0XFF2F2D57),
         borderRadius: BorderRadius.circular(10.0),
         boxShadow: [
           BoxShadow(
@@ -41,7 +42,7 @@ class NotificationWidget extends StatelessWidget {
           const SizedBox(width: 16.0),
           Container(
             width: 16.0,
-            color: Color(0XFF2F2D57),
+            color: const Color(0XFF2F2D57),
             child: const SizedBox(),
           ),
           Expanded(
@@ -86,8 +87,8 @@ class NotificationWidget extends StatelessWidget {
 }
 
 class NotificationAction {
+  const NotificationAction({required this.label, this.onPressed});
+
   final String label;
   final void Function()? onPressed;
-
-  NotificationAction({required this.label, this.onPressed});
 }

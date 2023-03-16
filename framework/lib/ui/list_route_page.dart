@@ -16,11 +16,14 @@ class ListRoutesPage extends StatelessWidget {
       child: Wrap(
         spacing: 10,
         children: routes.map((GoRoute route) {
-          return SizedBox(
-            width: 200,
-            child: ElevatedButton(
-              onPressed: () => context.push(route.path),
-              child: Text(route.name ?? route.path),
+          return Container(
+            margin: const EdgeInsets.all(10),
+            child: SizedBox(
+              width: 200,
+              child: ElevatedButton(
+                onPressed: () => context.push(route.path),
+                child: Text(route.name ?? route.path),
+              ),
             ),
           );
         }).toList(),
