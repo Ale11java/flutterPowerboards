@@ -17,69 +17,120 @@ class NotificationWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16.0),
-      decoration: BoxDecoration(
-        color: Color(0XFF2F2D57),
+    return Dialog(
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10.0),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.5),
-            spreadRadius: 2,
-            blurRadius: 5,
-            offset: const Offset(0, 3),
-          ),
-        ],
       ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          CircleAvatar(
-            backgroundImage: avatar,
-            radius: 25.0,
-          ),
-          const SizedBox(width: 16.0),
-          Container(
-            width: 16.0,
-            color: Color(0XFF2F2D57),
-            child: const SizedBox(),
-          ),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18.0,
-                      color: Colors.white),
+      child: Container(
+        width: 400,
+        padding: const EdgeInsets.all(16.0),
+        decoration: BoxDecoration(
+          color: Color(0XFF2f2e57),
+          borderRadius: BorderRadius.circular(10.0),
+          // boxShadow: [
+          //   BoxShadow(
+          //     color: Colors.grey.withOpacity(0.5),
+          //     spreadRadius: 2,
+          //     blurRadius: 5,
+          //     offset: const Offset(0, 3),
+          //   ),
+          // ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                CircleAvatar(
+                  backgroundImage: avatar,
+                  radius: 25.0,
                 ),
-                const SizedBox(height: 8.0),
-                Text(
-                  text,
-                  style: const TextStyle(fontSize: 16.0, color: Colors.white),
+                const SizedBox(width: 16.0),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        title,
+                        style: const TextStyle(
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.w800,
+                            fontSize: 14.0,
+                            color: Colors.white,
+                            letterSpacing: 0.4),
+                      ),
+                      const SizedBox(height: 8.0),
+                      Text(
+                        text,
+                        style: const TextStyle(
+                            fontFamily: 'Roboto',
+                            fontWeight: FontWeight.bold,
+                            fontSize: 10.0,
+                            color: Color(0XFFD5DADD),
+                            letterSpacing: 0.4),
+                      ),
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 16.0),
-                Row(
+                if (secondaryAction != null || primaryAction != null)
+                  const SizedBox(height: 16.0),
+                Column(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    if (secondaryAction != null)
-                      TextButton(
-                        onPressed: secondaryAction!.onPressed,
-                        child: Text(secondaryAction!.label),
-                      ),
                     if (primaryAction != null)
-                      ElevatedButton(
-                        onPressed: primaryAction!.onPressed,
-                        child: Text(primaryAction!.label),
+                      SizedBox(
+                        width: 92,
+                        child: FilledButton(
+                          onPressed: primaryAction!.onPressed,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0XFFFFFFFF),
+                            minimumSize: const Size.fromHeight(30),
+                            textStyle: const TextStyle(
+                              fontFamily: 'Inter',
+                              fontSize: 10,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 0.4,
+                            ),
+                            foregroundColor: const Color(0XFF2e2d57),
+                          ),
+                          child: Text(primaryAction!.label.toUpperCase()),
+                        ),
+                      ),
+                    //if (primaryAction != null) const SizedBox(height: 10),
+                    if (secondaryAction != null)
+                      SizedBox(
+                        width: 92,
+                        child: FilledButton(
+                          onPressed: secondaryAction!.onPressed,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0XFF2f2d57),
+                            minimumSize: const Size.fromHeight(30),
+                            textStyle: const TextStyle(
+                              fontFamily: 'Inter',
+                              fontSize: 10,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 0.4,
+                            ),
+                            elevation: 10,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              side: const BorderSide(
+                                color: Colors.white,
+                              ),
+                            ),
+                            foregroundColor: Color(0XFFFFFFFF),
+                          ),
+                          child: Text(secondaryAction!.label.toUpperCase()),
+                        ),
                       ),
                   ],
                 ),
               ],
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -91,3 +142,102 @@ class NotificationAction {
 
   NotificationAction({required this.label, this.onPressed});
 }
+
+
+
+
+// import 'package:flutter/material.dart';
+
+// class NotificationWidget extends StatelessWidget {
+//   final ImageProvider avatar;
+//   final String title;
+//   final String text;
+//   final NotificationAction? primaryAction;
+//   final NotificationAction? secondaryAction;
+
+//   NotificationWidget({
+//     required this.avatar,
+//     required this.title,
+//     required this.text,
+//     this.primaryAction,
+//     this.secondaryAction,
+//   });
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container(
+//       width: 400,
+//       height: 89,
+//       padding: const EdgeInsets.all(16.0),
+//       decoration: BoxDecoration(
+//         color: Color(0XFF2F2D57),
+//         borderRadius: BorderRadius.circular(10.0),
+//         boxShadow: [
+//           BoxShadow(
+//             color: Colors.grey.withOpacity(0.5),
+//             spreadRadius: 2,
+//             blurRadius: 5,
+//             offset: const Offset(0, 3),
+//           ),
+//         ],
+//       ),
+//       child: Column(
+//         crossAxisAlignment: CrossAxisAlignment.start,
+//         children: [
+//           CircleAvatar(
+//             backgroundImage: avatar,
+//             radius: 25.0,
+//           ),
+//           const SizedBox(width: 16.0),
+//           Container(
+//             width: 16.0,
+//             color: Color(0XFF2F2D57),
+//             child: const SizedBox(),
+//           ),
+//           Expanded(
+//             child: Column(
+//               crossAxisAlignment: CrossAxisAlignment.start,
+//               children: [
+//                 Text(
+//                   title,
+//                   style: const TextStyle(
+//                       fontWeight: FontWeight.bold,
+//                       fontSize: 18.0,
+//                       color: Colors.white),
+//                 ),
+//                 const SizedBox(height: 8.0),
+//                 Text(
+//                   text,
+//                   style: const TextStyle(fontSize: 16.0, color: Colors.white),
+//                 ),
+//                 const SizedBox(height: 16.0),
+//                 Row(
+//                   mainAxisAlignment: MainAxisAlignment.end,
+//                   children: [
+//                     if (secondaryAction != null)
+//                       TextButton(
+//                         onPressed: secondaryAction!.onPressed,
+//                         child: Text(secondaryAction!.label),
+//                       ),
+//                     if (primaryAction != null)
+//                       ElevatedButton(
+//                         onPressed: primaryAction!.onPressed,
+//                         child: Text(primaryAction!.label),
+//                       ),
+//                   ],
+//                 ),
+//               ],
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
+
+// class NotificationAction {
+//   final String label;
+//   final void Function()? onPressed;
+
+//   NotificationAction({required this.label, this.onPressed});
+// }

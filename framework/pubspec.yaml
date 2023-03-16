@@ -29,3 +29,4 @@ dev_dependencies:
 flutter:
   assets:
     - lib/assets/
+    - lib/assets/app-timu.png

@@ -1,30 +1,70 @@
 import 'package:flutter/material.dart';
 
-class DialogButton extends StatelessWidget {
-  final VoidCallback onPressed;
-  final Widget child;
-  final Color? bgColor;
+class ButtonSize extends InheritedWidget {
+  const ButtonSize({
+    super.key,
+    required this.size,
+    required super.child,
+  });
 
+  final Size size;
+
+  static ButtonSize? maybeOf(BuildContext context) {
+    return context.dependOnInheritedWidgetOfExactType<ButtonSize>();
+  }
+
+  static ButtonSize of(BuildContext context) {
+    final ButtonSize? size = maybeOf(context);
+
+    assert(size != null, 'there is no ButtonSize above in the tree');
+
+    return size!;
+  }
+
+  @override
+  bool updateShouldNotify(ButtonSize oldWidget) {
+    return size != oldWidget.size;
+  }
+}
+
+class DialogButton extends StatelessWidget {
   const DialogButton({
     Key? key,
     required this.onPressed,
     required this.child,
     this.bgColor,
+    this.textColor,
   }) : super(key: key);
+
+  final VoidCallback onPressed;
+  final Widget child;
+  final Color? bgColor;
+  final Color? textColor;
 
   @override
   Widget build(BuildContext context) {
+    final Size size = ButtonSize.of(context).size;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8.0),
       child: Expanded(
-        child: TextButton(
+        child: ElevatedButton(
           onPressed: onPressed,
-          style: TextButton.styleFrom(
+          style: ElevatedButton.styleFrom(
+            minimumSize: size,
             padding: const EdgeInsets.all(16.0),
             alignment: Alignment.center,
             backgroundColor: bgColor,
+            textStyle: TextStyle(
+              color: Colors.white, // set this to a default value
+            ),
           ),
-          child: child,
+          child: DefaultTextStyle(
+            style: TextStyle(
+              color: textColor,
+            ),
+            child: child,
+          ),
         ),
       ),
     );
@@ -37,7 +77,28 @@ class CancelDialogButton extends DialogButton {
     required VoidCallback onPressed,
     required Widget child,
     Color? bgColor,
+    required Color textColor,
   }) : super(key: key, onPressed: onPressed, child: child, bgColor: bgColor);
+
+  // @override
+  // Widget build(BuildContext context) {
+  //   return Padding(
+  //     padding: const EdgeInsets.symmetric(horizontal: 8.0),
+  //     child: Expanded(
+  //       child: TextButton(
+  //         onPressed: onPressed,
+  //         style: TextButton.styleFrom(
+  //           padding: const EdgeInsets.all(16.0),
+  //           alignment: Alignment.center,
+  //           backgroundColor: bgColor,
+  //           side: const BorderSide(width: 3, color: Color(0XFF7651fb)),
+  //           textStyle: const TextStyle(color: Colors.white),
+  //         ),
+  //         child: child,
+  //       ),
+  //     ),
+  //   );
+  // }
 }
 
 class OkDialogButton extends DialogButton {
@@ -46,16 +107,18 @@ class OkDialogButton extends DialogButton {
     required VoidCallback onPressed,
     required Widget child,
     Color? bgColor,
+    required Color textColor,
   }) : super(key: key, onPressed: onPressed, child: child, bgColor: bgColor);
 }
 
 class EmphasizedDialogButton extends DialogButton {
   const EmphasizedDialogButton({
-    Key? key,
+    super.key,
     required VoidCallback onPressed,
-    required Widget child,
+    required super.child,
     Color? bgColor,
-  }) : super(key: key, onPressed: onPressed, child: child, bgColor: bgColor);
+    required Color textColor,
+  }) : super(onPressed: onPressed, bgColor: bgColor);
 }
 
 class DialogButtonText extends StatelessWidget {
@@ -72,43 +135,15 @@ class DialogButtonText extends StatelessWidget {
   }
 }
 
-class ButtonSize extends InheritedWidget {
-  final double width;
-  final List<Widget> children;
-
-  ButtonSize({
-    Key? key,
-    required this.width,
-    required this.children,
-  }) : super(
-          key: key,
-          child: SizedBox(width: width, child: Row(children: children)),
-        );
-
-  static ButtonSize? of(BuildContext context) {
-    return context.dependOnInheritedWidgetOfExactType<ButtonSize>();
-  }
-
-  @override
-  bool updateShouldNotify(ButtonSize oldWidget) {
-    return width != oldWidget.width || children != oldWidget.children;
-  }
-}
-
 class MaxTextWidthButtonSize extends ButtonSize {
-  final double minWidth;
-  final List<Text> text;
-
-  MaxTextWidthButtonSize({
-    Key? key,
-    required this.minWidth,
+  const MaxTextWidthButtonSize({
+    super.key,
+    required super.size,
     required this.text,
-    required List<Widget> children,
-  }) : super(
-          key: key,
-          width: _calculateWidth(minWidth, text),
-          children: children,
-        );
+    required super.child,
+  });
+  //width: _calculateWidth(200.0, text),
+  final String text;
 
   static double _calculateWidth(double minWidth, List<Text> text) {
     final maxTextWidth = text.fold<double>(0.0, (maxWidth, text) {

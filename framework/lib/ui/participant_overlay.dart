@@ -12,7 +12,7 @@ class ParticipantOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final pixelRatio = MediaQuery.of(context).devicePixelRatio;
+    final double pixelRatio = MediaQuery.of(context).devicePixelRatio;
 
     return Container(
       color: Colors.black.withOpacity(0.3),
@@ -21,13 +21,13 @@ class ParticipantOverlay extends StatelessWidget {
         children: [
           Text(
             name,
-            style: TextStyle(
+            style: const TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.bold,
               fontSize: 20,
             ),
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Icon(
             muted ? Icons.mic_off : Icons.mic,
             color: Colors.white,
