@@ -9,28 +9,28 @@ class LobbyPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const ColoredBox(
-        color: Color(0XFF2F2D57),
-        child: Expanded(
-          child: Center(
-            child: SingleChildScrollView(
-              child: SizedBox(
-                width: 400,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    ScreenTitle(text: 'Join an invite or sign in'),
-                    SizedBox(height: 16),
-                    ScreenSubtitle(
-                      text: 'Enter your invite link',
-                    ),
-                    SizedBox(height: 44),
-                    JoinPage(),
-                  ],
+    return const Expanded(
+        child: ColoredBox(
+      color: Color(0XFF2F2D57),
+      child: Center(
+        child: SingleChildScrollView(
+          child: SizedBox(
+            width: 400,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                ScreenTitle(text: 'Join an invite or sign in'),
+                SizedBox(height: 16),
+                ScreenSubtitle(
+                  text: 'Enter your invite link',
                 ),
-              ),
+                SizedBox(height: 44),
+                JoinPage(),
+              ],
             ),
           ),
-        ));
+        ),
+      ),
+    ));
   }
 }
