@@ -30,7 +30,8 @@ class WebsocketState extends State<WebsocketProvider> {
   static WebsocketState of(BuildContext context) {
     final WebsocketState? result = maybeOf(context);
 
-    assert(result != null, 'No TimuApiProvider found in context');
+    assert(result != null, 'No WebsocketState found in context');
+
     return result!;
   }
 

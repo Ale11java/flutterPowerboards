@@ -38,11 +38,11 @@ String _formatUrl(String apiRoot, String url, String accessToken, int? network,
 }
 
 class Client {
-  Client(
-    this.id,
-    this.profile,
-    this.metadata,
-  );
+  Client({
+    required this.id,
+    required this.metadata,
+    required this.profile,
+  });
 
   final String id;
   final Map<String, dynamic> profile;
@@ -56,16 +56,15 @@ class Client {
   }
 }
 
-final Client emptyClient =
-    Client('_empty_', <String, dynamic>{}, <String, dynamic>{});
+final Client emptyClient = Client(id: '_empty_', metadata: {}, profile: {});
 
 class UniqueClient extends Client {
-  UniqueClient(
-    super.id,
-    super.profile,
-    super.metadata,
-    this.connections,
-  );
+  UniqueClient({
+    required super.id,
+    required super.profile,
+    required super.metadata,
+    required this.connections,
+  });
 
   final List<Client> connections;
 }
@@ -176,8 +175,6 @@ class TimuWebsocket extends Stream<TimuWebsocketEvent> {
     _websocket?.stream.listen((dynamic res) {
       final msg = jsonDecode(res.toString()) as Map<String, dynamic>;
 
-      print('jkk $res'); // ignore: avoid_print
-
       if (msg.containsKey('ListClients') && msg['ListClients'] != null) {
         final Map<String, dynamic> data =
             msg['ListClients'] as Map<String, dynamic>;
@@ -187,9 +184,9 @@ class TimuWebsocket extends Stream<TimuWebsocketEvent> {
           final Map<String, dynamic> item = client as Map<String, dynamic>;
 
           clients.add(Client(
-            item['id'].toString(),
-            item['metadata'] as Map<String, dynamic>,
-            item['profile'] as Map<String, dynamic>,
+            id: item['id'].toString(),
+            metadata: item['metadata'] as Map<String, dynamic>,
+            profile: item['profile'] as Map<String, dynamic>,
           ));
         }
         _clientsController.sink.add(clients);
@@ -198,19 +195,21 @@ class TimuWebsocket extends Stream<TimuWebsocketEvent> {
       } else if (msg.containsKey('Published') && msg['Published'] != null) {
         final Map<String, dynamic> published =
             msg['Published'] as Map<String, dynamic>;
-
+        final String dt = published['Data'] as String;
         final Map<String, dynamic> data =
-            jsonDecode(published.toString()) as Map<String, dynamic>;
+            json.decode(dt) as Map<String, dynamic>;
 
         if (data.containsKey('Added')) {
           clients.add(Client(
-            published['Sender'].toString(),
-            data['Metadata'] as Map<String, dynamic>,
-            data['Added'] as Map<String, dynamic>,
+            id: published['Sender'].toString(),
+            metadata: data['Metadata'] as Map<String, dynamic>,
+            profile: data['Added'] as Map<String, dynamic>,
           ));
+          _clientsController.sink.add(clients);
         } else if (data.containsKey('Removed')) {
           final String id = published['Sender'].toString();
           clients.removeWhere((Client c) => c.id == id);
+          _clientsController.sink.add(clients);
         } else if (data.containsKey('Typing')) {
           final String id = published['Sender'].toString();
           final Client client = clients.firstWhere((Client c) => c.id == id,
@@ -247,6 +246,18 @@ class TimuWebsocket extends Stream<TimuWebsocketEvent> {
         connect();
       }
     });
+  }
+
+  void publish(Map<String, dynamic> data, Map<String, dynamic> acl) {
+    _websocket?.sink.add(json.encode(
+        {
+          'Publish': {
+            'Url': '/v2/$url/+channel/$channel',
+            'Data': json.encode(data),
+            'Acl': acl,
+          }
+        }
+    ));
   }
 
   void _ping() {

@@ -22,8 +22,6 @@ class StorageLogin extends StatelessWidget {
   Widget build(BuildContext context) {
     final Account? activeAccount = AuthModel.of(context).activeAccount;
 
-    print('jkkk active account $activeAccount');
-
     if (activeAccount != null) {
       return childLoggedIn;
     } else {

@@ -42,10 +42,10 @@ class AuthStorageCacheState extends State<_AuthStorageCacheInner> {
     final storage = super.context.findAncestorStateOfType<AuthStorage>()!;
 
     storage.getAccounts().then((acts) {
-      return storage.getActiveAccount().then((activeAccount) {
+      return storage.getActiveAccount().then((account) {
         setState(() {
           accounts = acts;
-          activeAccount = activeAccount;
+          activeAccount = account;
         });
       });
     });
