@@ -12,7 +12,7 @@ class ParticipantOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final pixelRatio = MediaQuery.of(context).devicePixelRatio;
+    final double pixelRatio = MediaQuery.of(context).devicePixelRatio;
 
     return ColoredBox(
       color: Colors.black.withOpacity(0.3),

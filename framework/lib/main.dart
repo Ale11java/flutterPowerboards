@@ -240,13 +240,13 @@ List<GoRoute> genRoutes() {
         title: 'Participant Name',
         text: 'is waiting in lobby...',
         primaryAction: NotificationAction(
-          label: 'View',
+          label: 'Admit',
           onPressed: () {
             // handle the action when the user taps the primary button
           },
         ),
         secondaryAction: NotificationAction(
-          label: 'Dismiss',
+          label: 'Remove',
           onPressed: () {
             // handle the action when the user taps the secondary button
           },
@@ -260,39 +260,56 @@ List<GoRoute> genRoutes() {
       builder: (BuildContext context, GoRouterState state) => Scaffold(
         body: Center(
           child: ButtonSize(
-            width: 200.0,
-            children: [
-              EmphasizedDialogButton(
-                bgColor: Color(0xFFED6464),
-                onPressed: () {},
-                child: const DialogButtonText(text: 'JOIN NOW'),
-              ),
-              MaxTextWidthButtonSize(
-                minWidth: 200.0,
-                text: const [
-                  Text('Button with really long text that needs to be wrapped'),
-                  Text('Another button with long text'),
-                ],
-                children: [
-                  CancelDialogButton(
-                    bgColor: Color(0xff2f2d57),
+            size: const Size(96, 34),
+            child: SizedBox(
+              width: 400,
+              height: 200,
+              child: Center(
+                  child: Row(children: <Widget>[
+                EmphasizedDialogButton(
+                  bgColor: const Color(0xFFED6464),
+                  onPressed: () {},
+                  textColor: Colors.white,
+                  child: const DialogButtonText(text: 'JOIN NOW'),
+                ),
+                CancelDialogButton(
+                    bgColor: const Color(0xff2f2d57),
                     onPressed: () {},
                     child: const DialogButtonText(text: 'NO'),
+                    textColor: Colors.white),
+                OkDialogButton(
+                  bgColor: const Color(0xFF7752FF),
+                  onPressed: () {},
+                  child: const DialogButtonText(text: 'YES'),
+                  textColor: Colors.white,
+                ),
+
+/*
+              MaxTextWidthButtonSize(minWidth: 200.0, [
+                Text('Button with really long text that needs to be wrapped'),
+                Text('Another button with long text'),
+              ], children: [
+                CancelDialogButton(
+                  bgColor: const Color(0xff2f2d57),
+                  onPressed: () {},
+                  child: const DialogButtonText(text: 'NO'),
+                ),
+                OkDialogButton(
+                  bgColor: const Color(0xFF7752FF),
+                  onPressed: () {},
+                  child: const DialogButtonText(
+                    text: 'YES',
                   ),
-                  OkDialogButton(
-                    bgColor: Color(0xFF7752FF),
-                    onPressed: () {},
-                    child: const DialogButtonText(
-                      text: 'YES',
-                    ),
-                  ),
-                ],
-              ),
-            ],
+                ),
+              ])
+*/
+              ])),
+            ),
           ),
         ),
       ),
     ),
+
     GoRoute(
       name: 'Sidebar Group',
       path: '/sidebar-group',
@@ -302,7 +319,7 @@ List<GoRoute> genRoutes() {
           title: 'Create/View/Present/Share',
           children: [
             SidebarGroupButton(
-              icon: AssetImage('assets/create.png'),
+              icon: AssetImage('assets/app-timu.png'),
               text: 'Create',
             ),
             SidebarGroupButton(
