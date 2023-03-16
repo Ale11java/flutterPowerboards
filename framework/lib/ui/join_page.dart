@@ -226,8 +226,7 @@ class _JoinPageState extends State<JoinPage> {
       }
     }
 
-    return Expanded(
-        child: ColoredBox(
+    return ColoredBox(
       color: const Color(0XFF2F2D57),
       child: Center(
         child: SizedBox(
@@ -266,6 +265,6 @@ class _JoinPageState extends State<JoinPage> {
               ),
             )),
       ),
-    ));
+    );
   }
 }
