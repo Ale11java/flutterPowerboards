@@ -33,7 +33,7 @@ flutter:
     - lib/assets/
 
   fonts:
-    - family:  Timu
+    - family: Timu
       fonts:
         - asset: lib/timu_icons/fonts/Timu.ttf
     
