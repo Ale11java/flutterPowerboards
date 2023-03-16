@@ -6,6 +6,7 @@ import '../model/auth_storage.dart';
 import '../timu_api/timu_api.dart';
 import 'app_lifecycle_detector.dart';
 import 'auth_model.dart';
+import 'object_access_token.dart';
 
 class AuthStorageCache extends StatelessWidget {
   const AuthStorageCache({super.key, required this.child});
@@ -84,7 +85,8 @@ class AuthStorageCacheState extends State<_AuthStorageCacheInner> {
                 headers: <String, String>{
                   'Content-Type': 'application/json',
                 }),
-            child: widget.child,
+            child: ObjectAccessTokenProvider(child: widget.child),
+            
           ),
           onResumed: () {
             updateState();

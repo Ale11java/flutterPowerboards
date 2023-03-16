@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
 
@@ -21,10 +20,10 @@ enum Progress {
 }
 
 class RequireAccess extends StatefulWidget {
-  const RequireAccess({super.key, required this.nounUrl, required this.widget});
+  const RequireAccess({super.key, required this.nounUrl, required this.child});
 
   final String nounUrl;
-  final Widget widget;
+  final Widget child;
 
   @override
   State<RequireAccess> createState() => _RequireAccessState();
@@ -48,8 +47,8 @@ class _RequireAccessState extends State<RequireAccess> {
       final String? token = res['token'];
 
       if (token != null) {
-        final storage =
-            context.findAncestorStateOfType<AuthStorageCacheState>();
+        final storage = context.findAncestorStateOfType<AuthStorageCacheState>();
+
         storage?.addAccount(Account(
             key: 'register-as-user',
             email: 'guest',
@@ -105,9 +104,11 @@ class _RequireAccessState extends State<RequireAccess> {
 
   @override
   Widget build(BuildContext context) {
+    print('jkkk progress set to $progress');
+
     switch (progress) {
       case Progress.lggedIn:
-        return widget.widget;
+        return widget.child;
 
       case Progress.needsAccess:
         return GuestEntryPage(onRegisterUser);
@@ -128,15 +129,15 @@ class _RequireAccessState extends State<RequireAccess> {
         return WebsocketProvider(
             nounUrl: widget.nounUrl,
             channel: 'lobby',
-            child: _NotificationPopup(widget: widget.widget));
+            child: _NotificationPopup(child: widget.child));
     }
   }
 }
 
 class _NotificationPopup extends StatefulWidget {
-  const _NotificationPopup({required this.widget});
+  const _NotificationPopup({required this.child});
 
-  final Widget widget;
+  final Widget child;
 
   @override
   State<_NotificationPopup> createState() => _NotificationPopupState();
@@ -171,7 +172,7 @@ class _NotificationPopupState extends State<_NotificationPopup> {
   @override
   Widget build(BuildContext context) {
     return Stack(children: [
-      widget.widget,
+      widget.child,
 
       Overlay(
         initialEntries: <OverlayEntry>[
@@ -206,15 +207,13 @@ class _ClientWidget extends StatelessWidget {
           name: 'grant-access',
           nounPath: parent.nounUrl,
           body: {
-            'identityID': client.id
+            'id': client.profile['id']
           },
         );
 
-        final String jwt = response['jwt'] as String;
+        final String jwt = response['token'] as String;
 
-        ws?.publish({'jwt': jwt}, {});
-
-        print('jkkk response $response');
+        ws?.publish({'token': jwt}, {});
       }
     }
 
@@ -237,7 +236,7 @@ class _ClientWidget extends StatelessWidget {
               child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(client.id,
+                Text('${client.profile['firstName']} ${client.profile['lastName']}' ,
                   style: const TextStyle(
                     fontFamily: 'Inter',
                     fontWeight: FontWeight.w800,

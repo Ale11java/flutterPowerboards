@@ -65,7 +65,7 @@ List<GoRoute> genRoutes() {
         builder: (BuildContext context, GoRouterState state) {
           final String nounUrl = state.queryParams['nounUrl'] ?? '';
 
-          return RequireAccess(nounUrl: nounUrl, widget: const InAppPage());
+          return RequireAccess(nounUrl: nounUrl, child: const InAppPage());
         }),
 
     GoRoute(
