@@ -35,6 +35,6 @@ flutter:
     - lib/assets/app-timu.png
 
   fonts:
-    - family:  Timu
+    - family: Timu
       fonts:
         - asset: lib/timu_icons/fonts/Timu.ttf

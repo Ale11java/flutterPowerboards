@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../timu_icons/timu_icons.dart';
 
-const _floatingPanelBackground = Color.fromARGB(0xff, 0x2F, 0x2D, 0x57);
+const _floatingPanelBackground = Color.fromARGB(0xff, 0xff, 0xff, 0xff);
 const _closeIconColor = Color.fromARGB(0xff, 0x92, 0xA1, 0xB5);
 final _floatingPanelTitleFont = GoogleFonts.inter(
     textStyle: const TextStyle(
@@ -16,18 +16,18 @@ class FloatingPanelWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DecoratedBox(
-        decoration: BoxDecoration(
-            boxShadow: [
-              BoxShadow(
-                  offset: const Offset(0, 2),
-                  blurRadius: 20,
-                  color: Color.fromARGB((255 * 0.228148).toInt(), 0, 0, 0))
-            ],
-            color: _floatingPanelBackground,
-            borderRadius: BorderRadius.circular(20)),
-        child: DefaultTextStyle(
-            style: const TextStyle(color: Colors.white), child: child));
+    return SizedBox(
+        width: 400,
+        height: 400,
+        child: DecoratedBox(
+            decoration: BoxDecoration(
+                border: Border.all(
+                    color: const Color(0xffcccccc),
+                    strokeAlign: BorderSide.strokeAlignOutside),
+                color: _floatingPanelBackground,
+                borderRadius: BorderRadius.circular(0)),
+            child: DefaultTextStyle(
+                style: const TextStyle(color: Colors.black), child: child)));
   }
 }
 
@@ -42,7 +42,7 @@ class FloatingPanelScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-        padding: const EdgeInsets.all(38),
+        padding: const EdgeInsets.all(8),
         child: Align(
             alignment: Alignment.topCenter,
             child: Column(children: [

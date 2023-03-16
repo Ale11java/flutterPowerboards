@@ -7,6 +7,7 @@ const _meetingHeaderButtonOnColor = Color.fromARGB(0xff, 0x77, 0x52, 0xFF);
 const _meetingHeaderButtonColor = Color.fromARGB(0xff, 0x4A, 0x46, 0x98);
 const _meetingHeaderAltColor = Color.fromARGB(0xff, 0x60, 0x73, 0x8B);
 const _meetingHeaderTitleColor = Color.fromARGB(0xff, 0x2F, 0x2D, 0x57);
+const _meetingHeaderBorderColor = const Color(0xffcccccc);
 
 final _meetingHeaderFont = GoogleFonts.robotoFlex(
     textStyle: const TextStyle(
@@ -42,7 +43,12 @@ class MeetingHeader extends StatelessWidget {
     return Container(
         alignment: Alignment.center,
         height: 102,
-        color: Colors.white,
+        decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border(
+                bottom: BorderSide(
+                    color: _meetingHeaderBorderColor,
+                    strokeAlign: BorderSide.strokeAlignInside))),
         child: Padding(
             padding: const EdgeInsets.fromLTRB(38, 0, 38, 0),
             child: Row(children: <Widget>[
