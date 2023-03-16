@@ -32,9 +32,9 @@ dev_dependencies:
 flutter:
   assets:
     - lib/assets/
+    - lib/assets/app-timu.png
 
   fonts:
     - family:  Timu
       fonts:
         - asset: lib/timu_icons/fonts/Timu.ttf
-    
