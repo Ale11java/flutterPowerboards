@@ -217,7 +217,7 @@ class AuthStorageImpl extends AuthStorage {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(children: <Widget>[
+    return Stack(alignment: Alignment.topLeft, children: <Widget>[
       SizedBox.shrink(
           child: HtmlElementView(
               viewType: viewType,
