@@ -101,7 +101,7 @@ class PongStream extends Stream<int> implements StreamSink<int> {
 }
 
 class TimuWebsocketEvent {
-  TimuWebsocketEvent(this.sender, this.data);
+  TimuWebsocketEvent({ required this.sender, required this.data});
 
   final String sender;
   final Map<String, dynamic> data;
@@ -119,8 +119,8 @@ class TimuWebsocket extends Stream<TimuWebsocketEvent> {
         clients = <Client>[],
         uniqueClients = <Client>[],
         _pongStream = PongStream(),
-        _messages = StreamController<TimuWebsocketEvent>(),
-        _clientsController = StreamController<List<Client>>();
+        _messages = StreamController<TimuWebsocketEvent>.broadcast(),
+        _clientsController = StreamController<List<Client>>.broadcast();
 
   final String apiRoot;
   final String url;
@@ -190,11 +190,14 @@ class TimuWebsocket extends Stream<TimuWebsocketEvent> {
           ));
         }
         _clientsController.sink.add(clients);
+
       } else if (msg.containsKey('Pong') && msg['Pong'] != null) {
         _pongStream.add(pongCount++);
+
       } else if (msg.containsKey('Published') && msg['Published'] != null) {
         final Map<String, dynamic> published =
             msg['Published'] as Map<String, dynamic>;
+
         final String dt = published['Data'] as String;
         final Map<String, dynamic> data =
             json.decode(dt) as Map<String, dynamic>;
@@ -206,19 +209,21 @@ class TimuWebsocket extends Stream<TimuWebsocketEvent> {
             profile: data['Added'] as Map<String, dynamic>,
           ));
           _clientsController.sink.add(clients);
+
         } else if (data.containsKey('Removed')) {
           final String id = published['Sender'].toString();
           clients.removeWhere((Client c) => c.id == id);
           _clientsController.sink.add(clients);
+
         } else if (data.containsKey('Typing')) {
           final String id = published['Sender'].toString();
           final Client client = clients.firstWhere((Client c) => c.id == id,
               orElse: () => emptyClient);
           client.sendTyping();
         } else {
-          _messages.add(TimuWebsocketEvent(
-            published['Sender'].toString(),
-            data,
+          _messages.sink.add(TimuWebsocketEvent(
+            sender: published['Sender'].toString(),
+            data: data,
           ));
         }
       }

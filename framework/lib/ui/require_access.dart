@@ -17,6 +17,23 @@ enum Progress {
   needsAccess,
   hasAccess,
   waitingForApproval,
+  processing,
+}
+
+extension IterableExt<T> on Iterable<T> {
+  Iterable<T> superJoin(T separator) {
+    final iterator = this.iterator;
+    if (!iterator.moveNext()) {
+      return [];
+    }
+
+    final l = [iterator.current];
+    while (iterator.moveNext()) {
+      l..add(separator)..add(iterator.current);
+    }
+
+    return l;
+  }
 }
 
 class RequireAccess extends StatefulWidget {
@@ -32,8 +49,12 @@ class RequireAccess extends StatefulWidget {
 class _RequireAccessState extends State<RequireAccess> {
   Progress progress = Progress.init;
 
-  Future<void> onRegisterUser(String firstName, String lastName) async {
+  onRegisterUser(String firstName, String lastName) {
     final api = TimuApiProvider.of(super.context).api;
+
+    setState(() {
+      progress = Progress.processing;
+    });
 
     api.invoke(
       name: 'register-as-guest',
@@ -57,11 +78,11 @@ class _RequireAccessState extends State<RequireAccess> {
             accessToken: token,
             method: 'register',
             provider: 'guest'));
-      }
-    });
 
-    setState(() {
-      progress = Progress.waitingForApproval;
+        setState(() {
+          progress = Progress.waitingForApproval;
+        });
+      }
     });
   }
 
@@ -81,7 +102,11 @@ class _RequireAccessState extends State<RequireAccess> {
         });
       } on AccessDeniedError {
         setState(() {
-          progress = Progress.needsAccess;
+          progress = Progress.waitingForApproval;
+        });
+      } on RequiresAuthenticationError {
+        setState(() {
+          progress = Progress.waitingForApproval;
         });
       }
     } else {
@@ -104,8 +129,6 @@ class _RequireAccessState extends State<RequireAccess> {
 
   @override
   Widget build(BuildContext context) {
-    print('jkkk progress set to $progress');
-
     switch (progress) {
       case Progress.lggedIn:
         return widget.child;
@@ -120,6 +143,7 @@ class _RequireAccessState extends State<RequireAccess> {
           child: const LobbyWaitPage(),
         );
 
+      case Progress.processing: // Fallthrough
       case Progress.init:
         return const Center(
             child: SizedBox(
@@ -130,6 +154,7 @@ class _RequireAccessState extends State<RequireAccess> {
             nounUrl: widget.nounUrl,
             channel: 'lobby',
             child: _NotificationPopup(child: widget.child));
+
     }
   }
 }
@@ -177,11 +202,13 @@ class _NotificationPopupState extends State<_NotificationPopup> {
       Overlay(
         initialEntries: <OverlayEntry>[
           OverlayEntry(builder: (BuildContext context) {
-            return Positioned(
-              top: 100,
-              right: 100,
-              child: Stack(children: waitingGuests.map((client) => _ClientWidget(client)).toList(growable: false)),
-            );
+          return Positioned(
+            top: 50,
+            right: 50,
+            child: Column(children: waitingGuests
+                .map<Widget>((client) => _ClientWidget(client))
+                .superJoin(const SizedBox(height: 10))
+                .toList(growable: false)));
           })
         ]
       ),

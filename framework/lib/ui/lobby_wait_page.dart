@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import '../model/account.dart';
+import 'auth_storage_cache.dart';
 import 'text.dart';
 import 'websocket_provider.dart';
 
@@ -22,7 +24,20 @@ class LobbyWaitState extends State<LobbyWaitPage> {
 
     sub?.cancel();
     sub = ws?.listen((event) {
-      print('we get accept event message $event');
+      if (event.data.containsKey('token')) {
+        final storage =
+            context.findAncestorStateOfType<AuthStorageCacheState>();
+        final token = event.data['token'];
+
+        storage?.addAccount(Account(
+            key: 'approved-guest',
+            email: 'guest',
+            firstName: storage.activeAccount?.firstName ?? 'Guest',
+            lastName: storage.activeAccount?.lastName ?? 'User',
+            accessToken: token,
+            method: 'register',
+            provider: 'guest'));
+      }
     });
   }
 

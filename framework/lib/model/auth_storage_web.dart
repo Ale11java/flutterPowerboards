@@ -189,8 +189,6 @@ class AuthStorageImpl extends AuthStorage {
     // ignore: UNDEFINED_PREFIXED_NAME, avoid_dynamic_calls
     ui.platformViewRegistry.registerViewFactory(viewType, (int viewId) {
       element.onLoad.first.then((evt) {
-        print('jkkk evt $evt; $viewId; $viewType');
-
         if (!ready.isCompleted) {
           ready.complete();
         }

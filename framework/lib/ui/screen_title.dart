@@ -13,8 +13,8 @@ class ScreenTitle extends StatelessWidget {
       text,
       style: const TextStyle(
         color: Colors.white,
-        fontSize: 21,
         fontFamily: 'Inter',
+        fontSize: 21,
         fontWeight: FontWeight.w800,
         height: 1.33,
         letterSpacing: 0,
