@@ -9,8 +9,7 @@ class LobbyPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Expanded(
-        child: ColoredBox(
+    return const ColoredBox(
       color: Color(0XFF2F2D57),
       child: Center(
         child: SingleChildScrollView(
@@ -31,6 +30,6 @@ class LobbyPage extends StatelessWidget {
           ),
         ),
       ),
-    ));
+    );
   }
 }
