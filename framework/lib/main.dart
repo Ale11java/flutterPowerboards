@@ -85,8 +85,7 @@ List<GoRoute> genRoutes() {
     GoRoute(
       name: 'Join Text Field',
       path: '/join-text-field',
-      builder: (BuildContext context, GoRouterState state) =>
-          const Material(child: JoinPage()),
+      builder: (BuildContext context, GoRouterState state) => JoinPage(),
     ),
 //    GoRoute(
 //      name: 'Test',
@@ -359,12 +358,13 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final GoRouter routerConfig = GoRouter(routes: genRoutes());
 
-    return MaterialApp.router(
+    return Material(
+        child: MaterialApp.router(
       builder: (BuildContext context, Widget? child) =>
           AuthStorageCache(child: child ?? const SizedBox.shrink()),
       theme: ThemeData(primarySwatch: Colors.blue),
       routerConfig: routerConfig,
-    );
+    ));
 
     // child: StorageLogin(
     //   childLoggedIn: MaterialApp(

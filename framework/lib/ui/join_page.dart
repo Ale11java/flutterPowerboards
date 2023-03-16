@@ -13,6 +13,14 @@ String formatNounUrl(String id) {
   return '/api/graph/core:event/$id';
 }
 
+String parseMeetingCode(String code) {
+  if (code.contains("#")) {
+    return code.substring(code.indexOf("#") + 1);
+  } else {
+    return code;
+  }
+}
+
 class InputTextField extends StatelessWidget {
   const InputTextField({
     super.key,
@@ -213,7 +221,8 @@ class _JoinPageState extends State<JoinPage> {
 
     submitForm() async {
       if (formKey.currentState!.validate()) {
-        context.go(widget.redirectBuilder(eventID: controller.text));
+        context.go(
+            widget.redirectBuilder(eventID: parseMeetingCode(controller.text)));
       }
     }
 
