@@ -1,5 +1,104 @@
 workflows:
-    sample-workflow:
-        name: Codemagic Sample Workflow
-        max_build_duration: 120
-        instance_type: mac_mini_m1
+
+  ios-workflow:
+    name: iOS Workflow
+    max_build_duration: 120
+
+    integrations:
+      app_store_connect: codemagic
+
+    environment:
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.timu.framework
+
+      vars:
+        APP_ID: 6446292569
+
+      flutter: beta
+
+    scripts:
+    - name: Set up code signing settings on Xcode project
+      script: | 
+        xcode-project use-profiles
+
+    - name: Get Flutter Packages
+      script: |
+        cd framework && flutter packages pub get
+
+    - name: Flutter build ipa
+      script: |
+          cd framework
+          BUILD_NUMBER=$(($(app-store-connect get-latest-testflight-build-number "$APP_ID") + 1))
+          flutter build ipa --release --build-name=1.0.$BUILD_NUMBER --build-number=$BUILD_NUMBER --export-options-plist=/Users/builder/export_options.plist
+    
+    artifacts:
+      - framework/build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+      - flutter_drive.log
+
+    publishing:
+      email:
+        recipients:
+        - brandon.bethke@timu.com
+        #- owen.garmire@timu.com
+        notify:
+          success: true
+          failure: true
+
+      app_store_connect:
+        auth: integration
+
+        submit_to_testflight: true
+
+  android-workflow:
+    name: Android Workflow
+
+    scripts:
+    - name: Write local.properties File
+      script: | 
+        echo "flutter.sdk=$HOME/programs/flutter" > "$CM_BUILD_DIR/framework/android/local.properties"
+    
+    - name: Get Flutter Packages
+      script: |
+        cd framework && flutter packages pub get
+    
+    - name: Build AAB with Flutter
+      script: | 
+        BUILD_NUMBER=$(($(google-play get-latest-build-number --package-name "$PACKAGE_NAME" --tracks="$GOOGLE_PLAY_TRACK") + 1))      
+        cd framework && flutter build appbundle --release --build-name=1.0.$BUILD_NUMBER --build-number=$BUILD_NUMBER
+    
+    artifacts:
+    - framework/build/**/outputs/**/*.aab
+    - framework/build/**/outputs/**/mapping.txt
+    
+    publishing: 
+
+      google_play:
+        credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+        track: $GOOGLE_PLAY_TRACK
+        submit_as_draft: false
+
+      email:
+        recipients:
+        - brandon.bethke@timu.com
+        #- owen.garmire@timu.com
+        notify:
+          success: true
+          failure: true
+
+    environment:
+      groups:
+      - google_play
+
+      android_signing:
+      - my-release-key.keystore
+
+      flutter: beta
+
+      vars:
+        PACKAGE_NAME: "com.timu.framework"
+        GOOGLE_PLAY_TRACK: alpha
+    
+    max_build_duration: 120
+    instance_type: mac_mini_m1
