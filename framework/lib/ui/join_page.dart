@@ -9,6 +9,7 @@ import '../timu_api/timu_api.dart';
 import '../short_uuid/short_uuid.dart';
 import 'auth_model.dart';
 import 'auth_storage_cache.dart';
+import 'text.dart';
 
 String formatNounUrl(String id) {
   return '/api/graph/core:event/$id';
@@ -256,48 +257,57 @@ class _JoinPageState extends State<JoinPage> {
     }
 
     return ColoredBox(
-      color: const Color(0XFF2F2D57),
-      child: Center(
-        child: IntrinsicWidth(
-            child: Row(children: [
-          SizedBox(
-              width: 400,
-              child: Form(
-                key: formKey,
-                child: InputTextField(
-                  autofocus: true,
-                  controller: controller,
-                  hintText: 'Enter Invite URL',
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter invite URL';
-                    }
-                    return null;
-                  },
-                  onFieldSubmitted: (value) {
-                    submitForm();
-                  },
-                  suffixIcon: Padding(
-                    padding: const EdgeInsets.all(8),
-                    child: FilledButton(
-                      onPressed: submitForm,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
+        color: const Color(0XFF2F2D57),
+        child: Center(
+            child: SingleChildScrollView(
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+              const ScreenTitle(text: 'Join an invite or sign in'),
+              const SizedBox(height: 16),
+              const ScreenSubtitle(
+                text: 'Enter your invite link',
+              ),
+              const SizedBox(height: 44),
+              IntrinsicWidth(
+                  child: Row(children: [
+                SizedBox(
+                    width: 400,
+                    child: Form(
+                      key: formKey,
+                      child: InputTextField(
+                        autofocus: true,
+                        controller: controller,
+                        hintText: 'Enter Invite URL',
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter invite URL';
+                          }
+                          return null;
+                        },
+                        onFieldSubmitted: (value) {
+                          submitForm();
+                        },
+                        suffixIcon: Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: FilledButton(
+                            onPressed: submitForm,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white,
+                            ),
+                            child: const Text('JOIN NOW',
+                                style: TextStyle(
+                                  fontFamily: 'Inter',
+                                  fontWeight: FontWeight.w900,
+                                  fontSize: 13,
+                                  color: Color(0XFF484575),
+                                )),
+                          ),
+                        ),
                       ),
-                      child: const Text('JOIN NOW',
-                          style: TextStyle(
-                            fontFamily: 'Inter',
-                            fontWeight: FontWeight.w900,
-                            fontSize: 13,
-                            color: Color(0XFF484575),
-                          )),
-                    ),
-                  ),
-                ),
-              )),
-          ...extra
-        ])),
-      ),
-    );
+                    )),
+                ...extra
+              ]))
+            ]))));
   }
 }

@@ -10,7 +10,6 @@ import 'ui/home_page.dart';
 import 'ui/in_app_page.dart';
 import 'ui/join_page.dart';
 import 'ui/list_route_page.dart';
-import 'ui/lobby_page.dart';
 import 'ui/lobby_wait_page.dart';
 import 'ui/notification.dart';
 import 'ui/participant_overlay.dart';
@@ -37,12 +36,6 @@ List<GoRoute> genRoutes() {
       path: '/',
       builder: (BuildContext context, GoRouterState state) =>
           ListRoutesPage(routes: genRoutes()),
-    ),
-
-    GoRoute(
-      name: 'Lobby Page',
-      path: '/lobby-page',
-      builder: (BuildContext context, GoRouterState state) => const LobbyPage(),
     ),
 
     GoRoute(
