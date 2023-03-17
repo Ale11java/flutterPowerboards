@@ -58,6 +58,38 @@ class TimuApiProvider extends InheritedWidget {
   }
 }
 
+class MyApiProvider extends StatelessWidget {
+  const MyApiProvider({super.key, required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final apiProvider = TimuApiProvider.of(context);
+    final api = apiProvider.api;
+
+    return FutureBuilder<TimuObject>(
+        future: api.me(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return TimuApiProvider(
+                api: TimuApi(
+                    host: api.host,
+                    headers: api.headers,
+                    defaultNetwork: snapshot.data!.network),
+                child: child);
+          } else if (snapshot.hasError) {
+            return Container(
+                color: Colors.red,
+                alignment: Alignment.center,
+                child: Text("Unable to load, please try again"));
+          } else {
+            return const CircularProgressIndicator();
+          }
+        });
+  }
+}
+
 class TimuApi {
   TimuApi(
       {this.accessToken = '',
@@ -161,6 +193,18 @@ class TimuApi {
     );
   }
 
+  Future<TimuObject> me() async {
+    final response = await http.get(
+        Uri(scheme: 'https', host: host, port: port, path: '/api/graph/me'),
+        headers: headers);
+
+    if (response.statusCode != 200) {
+      throw response.toError();
+    }
+
+    return TimuObject(jsonDecode(response.body));
+  }
+
   Future<TimuObject> get(TimuObjectUri uri) async {
     final response = await http.get(
         Uri(scheme: 'https', host: host, port: port, path: uri),
@@ -214,6 +258,10 @@ class TimuApi {
 
 class TimuObject {
   TimuObject(this.rawData);
+
+  int get network {
+    return rawData["network"]!.toInt();
+  }
 
   String get id {
     return rawData["id"]!;

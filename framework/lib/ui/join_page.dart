@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 
 import '../model/account.dart';
 import '../timu_api/timu_api.dart';
+import '../short_uuid/short_uuid.dart';
 import 'auth_model.dart';
 import 'auth_storage_cache.dart';
 
@@ -215,6 +216,13 @@ class _JoinPageState extends State<JoinPage> {
     super.dispose();
   }
 
+  void createNew() async {
+    var noun = await TimuApiProvider.of(context)
+        .api
+        .create(type: "core:event", data: {"name": "Untitled"});
+    widget.redirectBuilder(eventID: fromUUID(noun.id));
+  }
+
   @override
   Widget build(BuildContext context) {
     final formKey = GlobalKey<FormState>();
@@ -226,44 +234,69 @@ class _JoinPageState extends State<JoinPage> {
       }
     }
 
+    final extra = <Widget>[];
+
+    AuthModel auth = AuthModel.of(context);
+
+    if (auth.activeAccount != null) {
+      extra.add(SizedBox(width: 10));
+      extra.add(FilledButton(
+        onPressed: createNew,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.white,
+        ),
+        child: const Text('New Powerboard',
+            style: TextStyle(
+              fontFamily: 'Inter',
+              fontWeight: FontWeight.w900,
+              fontSize: 13,
+              color: Color(0XFF484575),
+            )),
+      ));
+    }
+
     return ColoredBox(
       color: const Color(0XFF2F2D57),
       child: Center(
-        child: SizedBox(
-            width: 400,
-            child: Form(
-              key: formKey,
-              child: InputTextField(
-                autofocus: true,
-                controller: controller,
-                hintText: 'Enter Invite URL',
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter invite URL';
-                  }
-                  return null;
-                },
-                onFieldSubmitted: (value) {
-                  submitForm();
-                },
-                suffixIcon: Padding(
-                  padding: const EdgeInsets.all(8),
-                  child: FilledButton(
-                    onPressed: submitForm,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
+        child: IntrinsicWidth(
+            child: Row(children: [
+          SizedBox(
+              width: 400,
+              child: Form(
+                key: formKey,
+                child: InputTextField(
+                  autofocus: true,
+                  controller: controller,
+                  hintText: 'Enter Invite URL',
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter invite URL';
+                    }
+                    return null;
+                  },
+                  onFieldSubmitted: (value) {
+                    submitForm();
+                  },
+                  suffixIcon: Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: FilledButton(
+                      onPressed: submitForm,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                      ),
+                      child: const Text('JOIN NOW',
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.w900,
+                            fontSize: 13,
+                            color: Color(0XFF484575),
+                          )),
                     ),
-                    child: const Text('JOIN NOW',
-                        style: TextStyle(
-                          fontFamily: 'Inter',
-                          fontWeight: FontWeight.w900,
-                          fontSize: 13,
-                          color: Color(0XFF484575),
-                        )),
                   ),
                 ),
-              ),
-            )),
+              )),
+          ...extra
+        ])),
       ),
     );
   }
