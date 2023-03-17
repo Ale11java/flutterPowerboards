@@ -27,6 +27,8 @@ extension HttpResponse on http.Response {
         return RequiresAuthenticationError();
       case 403:
         return AccessDeniedError();
+      case 404:
+        return NotFoundError();
     }
     return UnexpectedStatusCode(statusCode);
   }

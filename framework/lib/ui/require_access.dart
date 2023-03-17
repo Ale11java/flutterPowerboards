@@ -19,6 +19,7 @@ enum Progress {
   waitingForApproval,
   processing,
   denied,
+  meetingNotFound,
 }
 
 extension IterableExt<T> on Iterable<T> {
@@ -112,6 +113,10 @@ class _RequireAccessState extends State<RequireAccess> {
         setState(() {
           progress = Progress.waitingForApproval;
         });
+      } on NotFoundError {
+        setState(() {
+          progress = Progress.meetingNotFound;
+        });
       }
     } else {
       setState(() {
@@ -163,6 +168,7 @@ class _RequireAccessState extends State<RequireAccess> {
         );
 
       case Progress.processing: // Fallthrough
+      case Progress.meetingNotFound: // Fallthrough
       case Progress.init:
         return const Center(
             child: SizedBox(
