@@ -31,6 +31,7 @@ class _AuthStorageCacheInner extends StatefulWidget {
 class AuthStorageCacheState extends State<_AuthStorageCacheInner> {
   List<Account>? accounts;
   Account? activeAccount;
+  bool initialized = false;
 
   @override
   void didChangeDependencies() {
@@ -47,6 +48,7 @@ class AuthStorageCacheState extends State<_AuthStorageCacheInner> {
         setState(() {
           accounts = acts;
           activeAccount = account;
+          initialized = true;
         });
       });
     });
@@ -78,16 +80,21 @@ class AuthStorageCacheState extends State<_AuthStorageCacheInner> {
       accounts: accounts ?? [],
       activeAccount: activeAccount,
       child: AppLifecycleDetector(
-          child: TimuApiProvider(
-            api: TimuApi(
-                accessToken: activeAccount?.accessToken ?? '',
-                host: 'usa.timu.life',
-                headers: <String, String>{
-                  'Content-Type': 'application/json',
-                }),
-            child: ObjectAccessTokenProvider(child: widget.child),
-            
-          ),
+          child: initialized
+              ? TimuApiProvider(
+                  api: TimuApi(
+                      accessToken: activeAccount?.accessToken ?? '',
+                      host: 'usa.timu.life',
+                      headers: <String, String>{
+                        'Content-Type': 'application/json',
+                      }),
+                  child: ObjectAccessTokenProvider(child: widget.child),
+                )
+              : const Center(
+                  child: SizedBox(
+                      width: 50,
+                      height: 50,
+                      child: CircularProgressIndicator())),
           onResumed: () {
             updateState();
           }),
