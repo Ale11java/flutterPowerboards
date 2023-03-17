@@ -178,17 +178,18 @@ class AuthStorageImpl extends AuthStorage {
   void initState() {
     super.initState();
 
-    final IFrameElement element = IFrameElement()
-      ..id = 'message-frame'
-      ..width = '0'
-      ..height = '0'
-      // ignore: unsafe_html
-      ..src = url
-      ..style.border = 'none';
-
     // ignore: UNDEFINED_PREFIXED_NAME, avoid_dynamic_calls
     ui.platformViewRegistry.registerViewFactory(viewType, (int viewId) {
+      final IFrameElement element = IFrameElement()
+        ..id = 'message-frame'
+        ..width = '0'
+        ..height = '0'
+        // ignore: unsafe_html
+        ..src = url
+        ..style.border = 'none';
+      print("iframe loading");
       element.onLoad.first.then((evt) {
+        print("iframe loaded");
         if (!ready.isCompleted) {
           ready.complete();
         }

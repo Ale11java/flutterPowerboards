@@ -143,9 +143,9 @@ class _RequireAccessState extends State<RequireAccess> {
 
     final Account? activeAccount = AuthModel.of(super.context).activeAccount;
 
-    if (progress == Progress.init) {
-      checkAccess(activeAccount);
-    }
+    progress = Progress.init;
+    print("initializing require access");
+    checkAccess(activeAccount);
   }
 
   @override
