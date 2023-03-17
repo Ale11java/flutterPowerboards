@@ -66,7 +66,7 @@ class LobbyWaitState extends State<LobbyWaitPage> {
             children: <Widget>[
               ScreenTitle(text: 'Please wait for the host to let you in.'),
               SizedBox(height: 16),
-              ScreenSubtitle(text: 'Daily design meetup'),
+              ScreenSubtitle(text: 'Please wait for the host to let you in.'),
             ],
           ),
         ),

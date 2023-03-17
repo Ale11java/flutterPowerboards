@@ -9,6 +9,7 @@ import 'auth_model.dart';
 import 'auth_storage_cache.dart';
 import 'guest_entry_page.dart';
 import 'lobby_wait_page.dart';
+import 'notification.dart';
 import 'websocket_provider.dart';
 
 enum Progress {
@@ -52,6 +53,7 @@ class RequireAccess extends StatefulWidget {
 
 class _RequireAccessState extends State<RequireAccess> {
   Progress progress = Progress.init;
+  bool isRegistering = false;
 
   onRegisterUser(String firstName, String lastName) {
     final api = TimuApiProvider.of(super.context).api;
@@ -86,6 +88,7 @@ class _RequireAccessState extends State<RequireAccess> {
 
         setState(() {
           progress = Progress.waitingForApproval;
+          isRegistering = true;
         });
       }
     });
@@ -95,28 +98,34 @@ class _RequireAccessState extends State<RequireAccess> {
     if (activeAccount != null) {
       final api = TimuApiProvider.of(super.context).api;
 
-      try {
-        await api.invoke(
-            name: 'demand-role',
-            nounPath: widget.nounUrl,
-            public: true,
-            body: {'role': 'core:contributor'});
+      if (isRegistering) {
+        setState(() {
+          progress = Progress.waitingForApproval;
+        });
+      } else {
+        try {
+          await api.invoke(
+              name: 'demand-role',
+              nounPath: widget.nounUrl,
+              public: true,
+              body: {'role': 'core:contributor'});
 
-        setState(() {
-          progress = Progress.hasAccess;
-        });
-      } on AccessDeniedError {
-        setState(() {
-          progress = Progress.waitingForApproval;
-        });
-      } on RequiresAuthenticationError {
-        setState(() {
-          progress = Progress.waitingForApproval;
-        });
-      } on NotFoundError {
-        setState(() {
-          progress = Progress.meetingNotFound;
-        });
+          setState(() {
+            progress = Progress.hasAccess;
+          });
+        } on AccessDeniedError {
+          setState(() {
+            progress = Progress.waitingForApproval;
+          });
+        } on RequiresAuthenticationError {
+          setState(() {
+            progress = Progress.waitingForApproval;
+          });
+        } on NotFoundError {
+          setState(() {
+            progress = Progress.meetingNotFound;
+          });
+        }
       }
     } else {
       setState(() {
@@ -128,6 +137,7 @@ class _RequireAccessState extends State<RequireAccess> {
   onApprove() {
     setState(() {
       progress = Progress.loggedIn;
+      isRegistering = false;
     });
   }
 
@@ -144,7 +154,7 @@ class _RequireAccessState extends State<RequireAccess> {
     final Account? activeAccount = AuthModel.of(super.context).activeAccount;
 
     progress = Progress.init;
-    print("initializing require access");
+    print('initializing require access');
     checkAccess(activeAccount);
   }
 
@@ -254,6 +264,7 @@ class _ClientWidget extends StatelessWidget {
 
       if (parent != null) {
         final api = TimuApiProvider.of(context).api;
+        final userId = client.profile['id'];
 
         final response = await api.invoke(
           name: 'grant-access',
@@ -263,79 +274,50 @@ class _ClientWidget extends StatelessWidget {
 
         final String jwt = response['token'] as String;
 
-        ws?.publish({'token': jwt}, {});
+        ws?.publish({
+          'token': jwt
+        }, {
+          'claims': [
+            {
+              'name': 'id',
+              'value': userId,
+            }
+          ]
+        });
       }
     }
 
-    return Container(
-      width: 400,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          color: const Color(0XFF2F2D57),
-          boxShadow: const <BoxShadow>[
-            BoxShadow(
-              color: Color(0x3a000000),
-              blurRadius: 20,
-              offset: Offset(0, 2),
-            ),
-          ]),
-      child: Row(children: [
-        Expanded(
-          child:
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(
-              '${client.profile['firstName']} ${client.profile['lastName']}',
-              style: const TextStyle(
-                  fontFamily: 'Inter',
-                  fontWeight: FontWeight.w800,
-                  fontSize: 14,
-                  color: Colors.white),
-            ),
-            const Text(
-              'Is waiting in lobby...',
-              style: TextStyle(
-                  fontFamily: 'Inter',
-                  fontWeight: FontWeight.w800,
-                  fontSize: 14,
-                  color: Colors.white),
-            )
-          ]),
-        ),
-        SizedBox(
-          width: 100,
-          child: Column(children: [
-            FilledButton(
-              onPressed: () => grantAccess(client),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-                minimumSize: const Size.fromHeight(42),
-              ),
-              child: const Text('APPROVE',
-                  style: TextStyle(
-                    fontFamily: 'Inter',
-                    fontWeight: FontWeight.w900,
-                    fontSize: 13,
-                    color: Color(0xFF484575),
-                  )),
-            ),
-            FilledButton(
-              onPressed: () => print('deny'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-                minimumSize: const Size.fromHeight(42),
-              ),
-              child: const Text('DENY',
-                  style: TextStyle(
-                    fontFamily: 'Inter',
-                    fontWeight: FontWeight.w900,
-                    fontSize: 13,
-                    color: Color(0xFF484575),
-                  )),
-            ),
-          ]),
-        ),
-      ]),
+    deny(Client client) {
+      final ws = WebsocketState.of(context).websocket;
+      final userId = client.profile['id'];
+
+      ws?.publish({
+        'denied': true,
+      }, {
+        'claims': [
+          {
+            'name': 'id',
+            'value': userId,
+          }
+        ]
+      });
+    }
+
+    final String firstName = client.profile['firstName'];
+    final String lastName = client.profile['lastName'];
+
+    return NotificationWidget(
+      initials: firstName[0].toUpperCase() + lastName[0].toUpperCase(),
+      title: '$firstName $lastName',
+      text: 'is waiting in the lobby',
+      primaryAction: NotificationAction(
+        label: 'Approve',
+        onPressed: () => grantAccess(client),
+      ),
+      secondaryAction: NotificationAction(
+        label: 'Deny',
+        onPressed: () => deny(client),
+      ),
     );
   }
 }
