@@ -220,7 +220,7 @@ class _JoinPageState extends State<JoinPage> {
     var noun = await TimuApiProvider.of(context)
         .api
         .create(type: "core:event", data: {"name": "Untitled"});
-    widget.redirectBuilder(eventID: fromUUID(noun.id));
+    context.go(widget.redirectBuilder(eventID: fromUUID(noun.id)));
   }
 
   @override
