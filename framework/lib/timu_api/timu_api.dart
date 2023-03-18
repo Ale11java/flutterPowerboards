@@ -60,19 +60,60 @@ class TimuApiProvider extends InheritedWidget {
   }
 }
 
+class MyApiProvider extends StatelessWidget {
+  const MyApiProvider({super.key, required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final apiProvider = TimuApiProvider.of(context);
+    final api = apiProvider.api;
+
+    return FutureBuilder<TimuObject>(
+        future: api.me(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return TimuApiProvider(
+                api: TimuApi(
+                    host: api.host,
+                    headers: api.headers,
+                    accessToken: api.accessToken,
+                    defaultNetwork: snapshot.data!.network),
+                child: child);
+          } else if (snapshot.hasError) {
+            return Container(
+                color: Colors.red,
+                alignment: Alignment.center,
+                child: Text("Unable to load, please try again"));
+          } else {
+            return const CircularProgressIndicator();
+          }
+        });
+  }
+}
+
 class TimuApi {
   TimuApi(
       {this.accessToken = '',
       this.defaultNetwork,
       required this.host,
       required this.headers,
-      this.port = 443});
+      this.port = 443})
+      : queryParameters = {
+          "access_token": accessToken,
+          ...(defaultNetwork != null
+              ? {"network": defaultNetwork.toString()}
+              : {})
+        };
 
   final String accessToken;
   int? defaultNetwork;
   final String host;
   final int port;
   final Map<String, String> headers;
+
+  final Map<String, String> queryParameters;
 
   Future<PreuploadedAttachmentReference> preupload(XFile file) async {
     return preuploadStream(name: file.name, stream: file.openRead());
@@ -85,7 +126,8 @@ class TimuApi {
             scheme: 'https',
             host: host,
             port: port,
-            path: '/api/graph/+preupload'),
+            path: '/api/graph/+preupload',
+            queryParameters: queryParameters),
         headers: headers,
         body: jsonEncode(<String, dynamic>{
           'name': name,
@@ -142,7 +184,10 @@ class TimuApi {
             host: host,
             port: port,
             path: '/api/graph/$type',
-            queryParameters: <String, dynamic>{'upsert': upsert.toString()}),
+            queryParameters: <String, dynamic>{
+              'upsert': upsert.toString(),
+              ...queryParameters
+            }),
         headers: headers,
         body: jsonEncode(req));
 
@@ -163,9 +208,31 @@ class TimuApi {
     );
   }
 
+  Future<TimuObject> me() async {
+    final response = await http.get(
+        Uri(
+            scheme: 'https',
+            host: host,
+            port: port,
+            path: '/api/graph/me',
+            queryParameters: queryParameters),
+        headers: headers);
+
+    if (response.statusCode != 200) {
+      throw response.toError();
+    }
+
+    return TimuObject(jsonDecode(response.body));
+  }
+
   Future<TimuObject> get(TimuObjectUri uri) async {
     final response = await http.get(
-        Uri(scheme: 'https', host: host, port: port, path: uri),
+        Uri(
+            scheme: 'https',
+            host: host,
+            port: port,
+            path: uri,
+            queryParameters: queryParameters),
         headers: headers);
 
     if (response.statusCode != 200) {
@@ -183,11 +250,7 @@ class TimuApi {
     Map<String, dynamic> body = const <String, dynamic>{},
   }) async {
     final String method = public ? '+public' : '+invoke';
-    final Map<String, dynamic> p = {};
-
-    if (accessToken != '') {
-      p['access_token'] = accessToken;
-    }
+    final Map<String, dynamic> p = {...queryParameters};
 
     print('host: $host; path: $nounPath/$method/$name');
 
@@ -216,6 +279,10 @@ class TimuApi {
 
 class TimuObject {
   TimuObject(this.rawData);
+
+  int get network {
+    return rawData["network"]!.toInt();
+  }
 
   String get id {
     return rawData["id"]!;

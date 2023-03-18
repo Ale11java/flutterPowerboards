@@ -54,7 +54,7 @@ class IframeResponseMsg {
   final Map<String, dynamic> rawData;
 
   String get requestId {
-    return rawData['requestId'];
+    return rawData['requestId'] ?? '';
   }
 
   Iterable<Token> get tokens {

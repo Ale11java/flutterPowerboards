@@ -60,20 +60,22 @@ class LobbyWaitState extends State<LobbyWaitPage> {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: SingleChildScrollView(
-        child: SizedBox(
-          width: 400,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              ScreenTitle(text: 'Please wait for the host to let you in.'),
-              SizedBox(height: 16),
-              ScreenSubtitle(text: 'Please wait for the host to let you in.'),
-            ],
+    return const ColoredBox(
+        color: Color(0XFF2F2D57),
+        child: Center(
+          child: SingleChildScrollView(
+            child: SizedBox(
+              width: 400,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  ScreenTitle(text: 'Please wait for the host to let you in.'),
+                  SizedBox(height: 16),
+                  ScreenSubtitle(text: 'Daily design meetup'),
+                ],
+              ),
+            ),
           ),
-        ),
-      ),
-    );
+        ));
   }
 }
