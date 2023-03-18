@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'join_page.dart';
-import 'text.dart';
 
 class LobbyPage extends StatelessWidget {
   const LobbyPage({
@@ -18,10 +17,6 @@ class LobbyPage extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                ScreenTitle(text: 'Join an invite or sign in'),
-                SizedBox(height: 16),
-                ScreenSubtitle(text: 'Enter your invite link'),
-                SizedBox(height: 44),
                 JoinPage(),
               ],
             ),

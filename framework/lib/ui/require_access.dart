@@ -118,11 +118,11 @@ class _RequireAccessState extends State<RequireAccess> {
         });
       } on AccessDeniedError {
         setState(() {
-          progress = Progress.waitingForApproval;
+          progress = Progress.needsAccess;
         });
       } on RequiresAuthenticationError {
         setState(() {
-          progress = Progress.waitingForApproval;
+          progress = Progress.needsAccess;
         });
       } on NotFoundError {
         setState(() {
