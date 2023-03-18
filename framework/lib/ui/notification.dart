@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class NotificationWidget extends StatelessWidget {
   const NotificationWidget({
     super.key,
-    required this.avatar,
+    this.avatar,
+    this.initials,
     required this.title,
     required this.text,
     this.primaryAction,
     this.secondaryAction,
   });
 
-  final ImageProvider avatar;
+  final ImageProvider? avatar;
+  final String? initials;
   final String title;
   final String text;
   final NotificationAction? primaryAction;
@@ -18,6 +21,11 @@ class NotificationWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final Widget? avatarInitials = initials == null
+        ? null
+        : Text(initials!,
+            style: GoogleFonts.inter(textStyle: const TextStyle(fontSize: 14)));
+
     return Container(
       width: 400,
       padding: const EdgeInsets.all(16.0),
@@ -43,6 +51,7 @@ class NotificationWidget extends StatelessWidget {
               CircleAvatar(
                 backgroundImage: avatar,
                 radius: 25.0,
+                child: avatar == null ? avatarInitials : null,
               ),
               const SizedBox(width: 16.0),
               Expanded(
@@ -51,18 +60,18 @@ class NotificationWidget extends StatelessWidget {
                   children: <Widget>[
                     Text(
                       title,
-                      style: const TextStyle(
-                          fontFamily: 'Inter',
-                          fontWeight: FontWeight.w800,
-                          fontSize: 14.0,
-                          color: Colors.white,
-                          letterSpacing: 0.4),
+                      style: GoogleFonts.inter(
+                          textStyle: const TextStyle(
+                        fontWeight: FontWeight.w800,
+                        fontSize: 14.0,
+                        color: Colors.white,
+                        letterSpacing: 0.4,
+                      )),
                     ),
                     const SizedBox(height: 8.0),
                     Text(
                       text,
                       style: const TextStyle(
-                          fontFamily: 'Roboto',
                           fontWeight: FontWeight.bold,
                           fontSize: 10.0,
                           color: Color(0XFFD5DADD),
@@ -84,18 +93,19 @@ class NotificationWidget extends StatelessWidget {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0XFFFFFFFF),
                           minimumSize: const Size.fromHeight(30),
-                          textStyle: const TextStyle(
-                            fontFamily: 'Inter',
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          textStyle: GoogleFonts.inter(
+                              textStyle: const TextStyle(
                             fontSize: 10,
                             fontWeight: FontWeight.w900,
                             letterSpacing: 0.4,
-                          ),
+                          )),
                           foregroundColor: const Color(0XFF2e2d57),
                         ),
                         child: Text(primaryAction!.label.toUpperCase()),
                       ),
                     ),
-                  //if (primaryAction != null) const SizedBox(height: 10),
+                  if (primaryAction != null) const SizedBox(height: 10),
                   if (secondaryAction != null)
                     SizedBox(
                       width: 92,
@@ -104,12 +114,13 @@ class NotificationWidget extends StatelessWidget {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0XFF2f2d57),
                           minimumSize: const Size.fromHeight(30),
-                          textStyle: const TextStyle(
-                            fontFamily: 'Inter',
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          textStyle: GoogleFonts.inter(
+                              textStyle: const TextStyle(
                             fontSize: 10,
                             fontWeight: FontWeight.w900,
                             letterSpacing: 0.4,
-                          ),
+                          )),
                           elevation: 10,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),

@@ -3,21 +3,29 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../model/account.dart';
+import '../model/auth_storage.dart';
 import '../timu_api/timu_api.dart';
 import '../timu_api/websocket.dart';
+import 'account_prompt_page.dart';
 import 'auth_model.dart';
 import 'auth_storage_cache.dart';
 import 'guest_entry_page.dart';
 import 'lobby_wait_page.dart';
+import 'login_prompt_page.dart';
+import 'notification.dart';
+import 'object_access_token.dart';
+import 'storage_login_page.dart';
 import 'websocket_provider.dart';
 
 enum Progress {
-  init,
-  loggedIn,
+  processing,
   needsAccess,
+  registerGuest,
+  accountPrompt,
+  selectAccount,
+
   hasAccess,
   waitingForApproval,
-  processing,
   denied,
   meetingNotFound,
 }
@@ -51,7 +59,7 @@ class RequireAccess extends StatefulWidget {
 }
 
 class _RequireAccessState extends State<RequireAccess> {
-  Progress progress = Progress.init;
+  Progress progress = Progress.processing;
 
   onRegisterUser(String firstName, String lastName) {
     final api = TimuApiProvider.of(super.context).api;
@@ -94,6 +102,7 @@ class _RequireAccessState extends State<RequireAccess> {
   Future<void> checkAccess(Account? activeAccount) async {
     if (activeAccount != null) {
       final api = TimuApiProvider.of(super.context).api;
+      final oat = ObjectAccessTokenProviderState.of(super.context);
 
       try {
         await api.invoke(
@@ -101,6 +110,8 @@ class _RequireAccessState extends State<RequireAccess> {
             nounPath: widget.nounUrl,
             public: true,
             body: {'role': 'core:contributor'});
+
+        oat.setAccount(widget.nounUrl, activeAccount);
 
         setState(() {
           progress = Progress.hasAccess;
@@ -125,9 +136,29 @@ class _RequireAccessState extends State<RequireAccess> {
     }
   }
 
-  onApprove() {
+  onApprove() {}
+
+  onLogin() {
+    final storage = AuthStorageCacheState.of(super.context);
+
+    if (storage.hasAccounts) {
+      setState(() {
+        progress = Progress.accountPrompt;
+      });
+    } else {
+      redirectToLogin(super.context);
+    }
+  }
+
+  onSelectAccount() {
     setState(() {
-      progress = Progress.loggedIn;
+      progress = Progress.selectAccount;
+    });
+  }
+
+  onContinueAsGuest() {
+    setState(() {
+      progress = Progress.registerGuest;
     });
   }
 
@@ -142,19 +173,37 @@ class _RequireAccessState extends State<RequireAccess> {
     super.didChangeDependencies();
 
     final Account? activeAccount = AuthModel.of(super.context).activeAccount;
+    final storage = AuthStorageCacheState.of(super.context);
+    final oat = ObjectAccessTokenProviderState.of(super.context);
+    final curAccount = oat.getAccount(widget.nounUrl);
 
-    progress = Progress.init;
-    print("initializing require access");
-    checkAccess(activeAccount);
+    progress = Progress.processing;
+    print('initializing require access');
+
+    if (curAccount != null &&
+        (activeAccount == null || curAccount.key != activeAccount.key)) {
+      storage.setActiveAccount(curAccount);
+    } else {
+      checkAccess(activeAccount);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    print('jkkk build process $progress');
     switch (progress) {
-      case Progress.loggedIn:
-        return widget.child;
-
       case Progress.needsAccess:
+        return LoginPromptPage(
+            onLogin: onLogin, onContinueAsGuest: onContinueAsGuest);
+
+      case Progress.accountPrompt:
+        return AccountPromptPage(
+            onSelectAccount: onSelectAccount, onLogin: onLogin);
+
+      case Progress.selectAccount:
+        return const StorageLoginPage();
+
+      case Progress.registerGuest:
         return GuestEntryPage(onRegisterUser);
 
       case Progress.waitingForApproval:
@@ -167,9 +216,8 @@ class _RequireAccessState extends State<RequireAccess> {
           ),
         );
 
-      case Progress.processing: // Fallthrough
       case Progress.meetingNotFound: // Fallthrough
-      case Progress.init:
+      case Progress.processing:
         return const Center(
             child: SizedBox(
                 width: 50, height: 50, child: CircularProgressIndicator()));
@@ -254,6 +302,7 @@ class _ClientWidget extends StatelessWidget {
 
       if (parent != null) {
         final api = TimuApiProvider.of(context).api;
+        final userId = client.profile['id'];
 
         final response = await api.invoke(
           name: 'grant-access',
@@ -263,79 +312,50 @@ class _ClientWidget extends StatelessWidget {
 
         final String jwt = response['token'] as String;
 
-        ws?.publish({'token': jwt}, {});
+        ws?.publish({
+          'token': jwt
+        }, {
+          'claims': [
+            {
+              'name': 'id',
+              'value': userId,
+            }
+          ]
+        });
       }
     }
 
-    return Container(
-      width: 400,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          color: const Color(0XFF2F2D57),
-          boxShadow: const <BoxShadow>[
-            BoxShadow(
-              color: Color(0x3a000000),
-              blurRadius: 20,
-              offset: Offset(0, 2),
-            ),
-          ]),
-      child: Row(children: [
-        Expanded(
-          child:
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(
-              '${client.profile['firstName']} ${client.profile['lastName']}',
-              style: const TextStyle(
-                  fontFamily: 'Inter',
-                  fontWeight: FontWeight.w800,
-                  fontSize: 14,
-                  color: Colors.white),
-            ),
-            const Text(
-              'Is waiting in lobby...',
-              style: TextStyle(
-                  fontFamily: 'Inter',
-                  fontWeight: FontWeight.w800,
-                  fontSize: 14,
-                  color: Colors.white),
-            )
-          ]),
-        ),
-        SizedBox(
-          width: 100,
-          child: Column(children: [
-            FilledButton(
-              onPressed: () => grantAccess(client),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-                minimumSize: const Size.fromHeight(42),
-              ),
-              child: const Text('APPROVE',
-                  style: TextStyle(
-                    fontFamily: 'Inter',
-                    fontWeight: FontWeight.w900,
-                    fontSize: 13,
-                    color: Color(0xFF484575),
-                  )),
-            ),
-            FilledButton(
-              onPressed: () => print('deny'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-                minimumSize: const Size.fromHeight(42),
-              ),
-              child: const Text('DENY',
-                  style: TextStyle(
-                    fontFamily: 'Inter',
-                    fontWeight: FontWeight.w900,
-                    fontSize: 13,
-                    color: Color(0xFF484575),
-                  )),
-            ),
-          ]),
-        ),
-      ]),
+    deny(Client client) {
+      final ws = WebsocketState.of(context).websocket;
+      final userId = client.profile['id'];
+
+      ws?.publish({
+        'denied': true,
+      }, {
+        'claims': [
+          {
+            'name': 'id',
+            'value': userId,
+          }
+        ]
+      });
+    }
+
+    final String firstName = client.profile['firstName'];
+    final String lastName = client.profile['lastName'];
+
+    return NotificationWidget(
+      initials: firstName[0].toUpperCase() + lastName[0].toUpperCase(),
+      title: '$firstName $lastName',
+      text: 'is waiting in the lobby',
+      primaryAction: NotificationAction(
+        label: 'Approve',
+        onPressed: () => grantAccess(client),
+      ),
+      secondaryAction: NotificationAction(
+        label: 'Deny',
+        onPressed: () => deny(client),
+      ),
     );
   }
 }

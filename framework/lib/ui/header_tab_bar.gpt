@@ -1,0 +1,5 @@
+I am building a dart application.
+\source header_tab.dart
+Write me a class HeaderTabBar which renders an icon only TabBar using a required list of HeaderTabs (named tabs). It should also accept a TabController as a required parameter. HeaderTab should be imported from it's file. The active color of the tab should be 7752FF. The inactive color should be 4A4698. The icon should have a size of 16. The tab should be 48 tall and at least 28 wide. When active, the tab should have a indicator of 3px with the active color of the tab. Add a tooltip using the HeaderTab's semanticLabel.
+Then try moving the constructor declaration before all other members.
+Remember that flutter doesn't use @required anymore.

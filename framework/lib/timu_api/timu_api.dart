@@ -70,6 +70,10 @@ class MyApiProvider extends StatelessWidget {
     final apiProvider = TimuApiProvider.of(context);
     final api = apiProvider.api;
 
+    if (api.accessToken == "") {
+      return child;
+    }
+
     return FutureBuilder<TimuObject>(
         future: api.me(),
         builder: (context, snapshot) {

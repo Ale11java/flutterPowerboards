@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import 'examples/floating_panel.dart';
 import 'examples/header_tab_bar.dart';
+import 'examples/login_prompt_page.dart';
 import 'examples/meeting_header.dart';
+
+import 'model/auth_storage.dart';
 import 'test_icons.dart';
 import 'ui/auth_storage_cache.dart';
 import 'ui/dialog_buttons.dart';
 import 'ui/home_page.dart';
 import 'ui/in_app_page.dart';
 import 'ui/join_page.dart';
+import 'ui/lobby_page.dart';
 import 'ui/list_route_page.dart';
 import 'ui/lobby_wait_page.dart';
 import 'ui/notification.dart';
@@ -43,6 +48,19 @@ List<GoRoute> genRoutes() {
       path: '/header-tab-bar',
       builder: (BuildContext context, GoRouterState state) =>
           const HeaderTabBarExample(),
+    ),
+
+    GoRoute(
+      name: 'Lobby Page',
+      path: '/lobby-page',
+      builder: (BuildContext context, GoRouterState state) => const LobbyPage(),
+    ),
+
+    GoRoute(
+      name: 'Login Prompt Page',
+      path: '/login-prompt-page',
+      builder: (BuildContext context, GoRouterState state) =>
+          const LoginPromptPageExample(),
     ),
 
     GoRoute(
@@ -232,22 +250,23 @@ List<GoRoute> genRoutes() {
     GoRoute(
       name: 'Notification',
       path: '/notification',
-      builder: (BuildContext context, GoRouterState state) =>
-          NotificationWidget(
-        avatar: NetworkImage('https://www.example.com/avatar.jpg'),
-        title: 'Participant Name',
-        text: 'is waiting in lobby...',
-        primaryAction: NotificationAction(
-          label: 'Admit',
-          onPressed: () {
-            // handle the action when the user taps the primary button
-          },
-        ),
-        secondaryAction: NotificationAction(
-          label: 'Remove',
-          onPressed: () {
-            // handle the action when the user taps the secondary button
-          },
+      builder: (BuildContext context, GoRouterState state) => Center(
+        child: NotificationWidget(
+          initials: 'JK',
+          title: 'Participant Name',
+          text: 'is waiting in lobby...',
+          primaryAction: NotificationAction(
+            label: 'Admit',
+            onPressed: () {
+              // handle the action when the user taps the primary button
+            },
+          ),
+          secondaryAction: NotificationAction(
+            label: 'Remove',
+            onPressed: () {
+              // handle the action when the user taps the secondary button
+            },
+          ),
         ),
       ),
     ),
@@ -367,13 +386,21 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final GoRouter routerConfig = GoRouter(routes: genRoutes());
 
-    return Material(
-        child: MaterialApp.router(
-      builder: (BuildContext context, Widget? child) =>
-          AuthStorageCache(child: child ?? const SizedBox.shrink()),
+    return BaseUrl(
+        child: Material(
+            child: MaterialApp.router(
+      builder: (BuildContext context, Widget? child) => AuthStorageCache(
+          child: DefaultTextStyle(
+              style: GoogleFonts.roboto(
+                  textStyle: const TextStyle(
+                fontSize: 11.0,
+                fontWeight: FontWeight.normal,
+                letterSpacing: 0.4,
+              )),
+              child: child ?? const SizedBox.shrink())),
       theme: ThemeData(primarySwatch: Colors.blue),
       routerConfig: routerConfig,
-    ));
+    )));
 
     // child: StorageLogin(
     //   childLoggedIn: MaterialApp(
