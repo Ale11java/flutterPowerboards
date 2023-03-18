@@ -20,9 +20,7 @@ class LobbyPage extends StatelessWidget {
               children: <Widget>[
                 ScreenTitle(text: 'Join an invite or sign in'),
                 SizedBox(height: 16),
-                ScreenSubtitle(
-                  text: 'Enter your invite link',
-                ),
+                ScreenSubtitle(text: 'Enter your invite link'),
                 SizedBox(height: 44),
                 JoinPage(),
               ],

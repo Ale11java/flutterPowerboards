@@ -33,6 +33,26 @@ class AuthStorageCacheState extends State<_AuthStorageCacheInner> {
   Account? activeAccount;
   bool initialized = false;
 
+  static AuthStorageCacheState? maybeOf(BuildContext context) {
+    return context.findAncestorStateOfType<AuthStorageCacheState>();
+  }
+
+  static AuthStorageCacheState of(BuildContext context) {
+    final result = maybeOf(context);
+
+    assert(result != null, 'AuthStorageCacheState not found in widget tree');
+
+    return result!;
+  }
+
+  bool get isLoggedIn {
+    return activeAccount != null;
+  }
+
+  bool get hasAccounts {
+    return !(accounts?.isEmpty ?? false);
+  }
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -81,15 +101,16 @@ class AuthStorageCacheState extends State<_AuthStorageCacheInner> {
       activeAccount: activeAccount,
       child: AppLifecycleDetector(
           child: initialized
-              ? TimuApiProvider(
+              ? BaseUrl(
+                  child: TimuApiProvider(
                   api: TimuApi(
                       accessToken: activeAccount?.accessToken ?? '',
-                      host: 'usa.timu.life',
+                      host: BaseUrl.apiHost,
                       headers: <String, String>{
                         'Content-Type': 'application/json',
                       }),
                   child: ObjectAccessTokenProvider(child: widget.child),
-                )
+                ))
               : const Center(
                   child: SizedBox(
                       width: 50,

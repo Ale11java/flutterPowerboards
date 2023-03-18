@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:uuid/uuid.dart';
+
 import '../model/account.dart';
 import 'auth_storage_cache.dart';
 import 'text.dart';
@@ -33,8 +35,9 @@ class LobbyWaitState extends State<LobbyWaitPage> {
             context.findAncestorStateOfType<AuthStorageCacheState>();
         final token = event.data['token'];
 
+        const uuid = Uuid();
         storage?.addAccount(Account(
-            key: 'approved-guest',
+            key: uuid.v4(),
             email: 'guest',
             firstName: storage.activeAccount?.firstName ?? 'Guest',
             lastName: storage.activeAccount?.lastName ?? 'User',

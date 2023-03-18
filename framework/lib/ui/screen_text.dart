@@ -43,13 +43,17 @@ class ScreenText extends StatelessWidget {
   const ScreenText({
     super.key,
     required this.text,
+    this.textAlign = TextAlign.left,
   });
+
   final String text;
+  final TextAlign textAlign;
 
   @override
   Widget build(BuildContext context) {
     return Text(
       text,
+      textAlign: textAlign,
       style: const TextStyle(
         color: Color.fromRGBO(171, 148, 255, 1),
         fontSize: 11,

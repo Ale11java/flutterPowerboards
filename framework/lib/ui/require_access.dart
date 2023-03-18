@@ -3,22 +3,29 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../model/account.dart';
+import '../model/auth_storage.dart';
 import '../timu_api/timu_api.dart';
 import '../timu_api/websocket.dart';
+import 'account_prompt_page.dart';
 import 'auth_model.dart';
 import 'auth_storage_cache.dart';
 import 'guest_entry_page.dart';
 import 'lobby_wait_page.dart';
+import 'login_prompt_page.dart';
 import 'notification.dart';
+import 'object_access_token.dart';
+import 'storage_login_page.dart';
 import 'websocket_provider.dart';
 
 enum Progress {
-  init,
-  loggedIn,
+  processing,
   needsAccess,
+  registerGuest,
+  accountPrompt,
+  selectAccount,
+
   hasAccess,
   waitingForApproval,
-  processing,
   denied,
   meetingNotFound,
 }
@@ -52,8 +59,7 @@ class RequireAccess extends StatefulWidget {
 }
 
 class _RequireAccessState extends State<RequireAccess> {
-  Progress progress = Progress.init;
-  bool isRegistering = false;
+  Progress progress = Progress.processing;
 
   onRegisterUser(String firstName, String lastName) {
     final api = TimuApiProvider.of(super.context).api;
@@ -88,7 +94,6 @@ class _RequireAccessState extends State<RequireAccess> {
 
         setState(() {
           progress = Progress.waitingForApproval;
-          isRegistering = true;
         });
       }
     });
@@ -97,35 +102,32 @@ class _RequireAccessState extends State<RequireAccess> {
   Future<void> checkAccess(Account? activeAccount) async {
     if (activeAccount != null) {
       final api = TimuApiProvider.of(super.context).api;
+      final oat = ObjectAccessTokenProviderState.of(super.context);
 
-      if (isRegistering) {
+      try {
+        await api.invoke(
+            name: 'demand-role',
+            nounPath: widget.nounUrl,
+            public: true,
+            body: {'role': 'core:contributor'});
+
+        oat.setAccount(widget.nounUrl, activeAccount);
+
+        setState(() {
+          progress = Progress.hasAccess;
+        });
+      } on AccessDeniedError {
         setState(() {
           progress = Progress.waitingForApproval;
         });
-      } else {
-        try {
-          await api.invoke(
-              name: 'demand-role',
-              nounPath: widget.nounUrl,
-              public: true,
-              body: {'role': 'core:contributor'});
-
-          setState(() {
-            progress = Progress.hasAccess;
-          });
-        } on AccessDeniedError {
-          setState(() {
-            progress = Progress.waitingForApproval;
-          });
-        } on RequiresAuthenticationError {
-          setState(() {
-            progress = Progress.waitingForApproval;
-          });
-        } on NotFoundError {
-          setState(() {
-            progress = Progress.meetingNotFound;
-          });
-        }
+      } on RequiresAuthenticationError {
+        setState(() {
+          progress = Progress.waitingForApproval;
+        });
+      } on NotFoundError {
+        setState(() {
+          progress = Progress.meetingNotFound;
+        });
       }
     } else {
       setState(() {
@@ -134,10 +136,29 @@ class _RequireAccessState extends State<RequireAccess> {
     }
   }
 
-  onApprove() {
+  onApprove() {}
+
+  onLogin() {
+    final storage = AuthStorageCacheState.of(super.context);
+
+    if (storage.hasAccounts) {
+      setState(() {
+        progress = Progress.accountPrompt;
+      });
+    } else {
+      redirectToLogin(super.context);
+    }
+  }
+
+  onSelectAccount() {
     setState(() {
-      progress = Progress.loggedIn;
-      isRegistering = false;
+      progress = Progress.selectAccount;
+    });
+  }
+
+  onContinueAsGuest() {
+    setState(() {
+      progress = Progress.registerGuest;
     });
   }
 
@@ -152,19 +173,37 @@ class _RequireAccessState extends State<RequireAccess> {
     super.didChangeDependencies();
 
     final Account? activeAccount = AuthModel.of(super.context).activeAccount;
+    final storage = AuthStorageCacheState.of(super.context);
+    final oat = ObjectAccessTokenProviderState.of(super.context);
+    final curAccount = oat.getAccount(widget.nounUrl);
 
-    progress = Progress.init;
+    progress = Progress.processing;
     print('initializing require access');
-    checkAccess(activeAccount);
+
+    if (curAccount != null &&
+        (activeAccount == null || curAccount.key != activeAccount.key)) {
+      storage.setActiveAccount(curAccount);
+    } else {
+      checkAccess(activeAccount);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    print('jkkk build process $progress');
     switch (progress) {
-      case Progress.loggedIn:
-        return widget.child;
-
       case Progress.needsAccess:
+        return LoginPromptPage(
+            onLogin: onLogin, onContinueAsGuest: onContinueAsGuest);
+
+      case Progress.accountPrompt:
+        return AccountPromptPage(
+            onSelectAccount: onSelectAccount, onLogin: onLogin);
+
+      case Progress.selectAccount:
+        return const StorageLoginPage();
+
+      case Progress.registerGuest:
         return GuestEntryPage(onRegisterUser);
 
       case Progress.waitingForApproval:
@@ -177,9 +216,8 @@ class _RequireAccessState extends State<RequireAccess> {
           ),
         );
 
-      case Progress.processing: // Fallthrough
       case Progress.meetingNotFound: // Fallthrough
-      case Progress.init:
+      case Progress.processing:
         return const Center(
             child: SizedBox(
                 width: 50, height: 50, child: CircularProgressIndicator()));

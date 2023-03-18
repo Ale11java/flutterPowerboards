@@ -6,9 +6,7 @@ import 'auth_model.dart';
 import 'auth_storage_cache.dart';
 
 class StorageLoginPage extends StatelessWidget {
-  const StorageLoginPage({
-    super.key,
-  });
+  const StorageLoginPage({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'account.dart';
 import 'auth_storage_not_implemented.dart'
@@ -32,4 +33,45 @@ class AuthStorageProvider extends StatefulWidget {
   final Widget child;
   @override
   State<StatefulWidget> createState() => AuthStorage();
+}
+
+class BaseUrl extends StatelessWidget {
+  BaseUrl({super.key, required this.child});
+
+  final Uri baseUri = Uri.parse('http://localhost:8002');
+  final Uri loginUri = Uri.parse('https://www.timu.life/login');
+  static const apiHost = 'usa.timu.life';
+
+  final Widget child;
+
+  static BaseUrl? maybeOf(BuildContext context) {
+    return context.findAncestorWidgetOfExactType<BaseUrl>();
+  }
+
+  static BaseUrl of(BuildContext context) {
+    final result = maybeOf(context);
+
+    assert(result != null, 'BaseUrl not found in the tree');
+
+    return result!;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return child;
+  }
+}
+
+Future<void> redirectToLogin(BuildContext context) async {
+  final base = context.findAncestorWidgetOfExactType<BaseUrl>();
+
+  if (base != null) {
+    final Uri redirectUri = base.baseUri;
+    final Uri url = base.loginUri
+        .replace(queryParameters: {'redirect_uri': redirectUri.toString()});
+
+    if (!await launchUrl(url, webOnlyWindowName: '_self')) {
+      throw Exception('Could not launch $url');
+    }
+  }
 }

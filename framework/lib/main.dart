@@ -3,7 +3,10 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'examples/floating_panel.dart';
+import 'examples/login_prompt_page.dart';
 import 'examples/meeting_header.dart';
+
+import 'model/auth_storage.dart';
 import 'test_icons.dart';
 import 'ui/auth_storage_cache.dart';
 import 'ui/dialog_buttons.dart';
@@ -44,6 +47,13 @@ List<GoRoute> genRoutes() {
       name: 'Lobby Page',
       path: '/lobby-page',
       builder: (BuildContext context, GoRouterState state) => const LobbyPage(),
+    ),
+
+    GoRoute(
+      name: 'Login Prompt Page',
+      path: '/login-prompt-page',
+      builder: (BuildContext context, GoRouterState state) =>
+          const LoginPromptPageExample(),
     ),
 
     GoRoute(
@@ -369,8 +379,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final GoRouter routerConfig = GoRouter(routes: genRoutes());
 
-    return Material(
-        child: MaterialApp.router(
+    return BaseUrl(
+        child: Material(
+            child: MaterialApp.router(
       builder: (BuildContext context, Widget? child) => AuthStorageCache(
           child: DefaultTextStyle(
               style: GoogleFonts.roboto(
@@ -382,7 +393,7 @@ class MyApp extends StatelessWidget {
               child: child ?? const SizedBox.shrink())),
       theme: ThemeData(primarySwatch: Colors.blue),
       routerConfig: routerConfig,
-    ));
+    )));
 
     // child: StorageLogin(
     //   childLoggedIn: MaterialApp(
