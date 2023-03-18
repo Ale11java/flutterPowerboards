@@ -263,10 +263,10 @@ class _JoinPageState extends State<JoinPage> {
                 child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-              const ScreenTitle(text: 'Join an invite or sign in'),
+              const ScreenTitle(text: 'Welcome to Powerboards'),
               const SizedBox(height: 16),
               const ScreenSubtitle(
-                text: 'Enter your invite link',
+                text: 'Enter a board link or create a new board to continue',
               ),
               const SizedBox(height: 44),
               IntrinsicWidth(
@@ -278,7 +278,7 @@ class _JoinPageState extends State<JoinPage> {
                       child: InputTextField(
                         autofocus: true,
                         controller: controller,
-                        hintText: 'Enter Invite URL',
+                        hintText: 'Enter URL or Code',
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter invite URL';

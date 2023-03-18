@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import 'examples/floating_panel.dart';
+import 'examples/header_tab_bar.dart';
 import 'examples/meeting_header.dart';
 import 'test_icons.dart';
 import 'ui/auth_storage_cache.dart';
@@ -36,6 +37,12 @@ List<GoRoute> genRoutes() {
       path: '/',
       builder: (BuildContext context, GoRouterState state) =>
           ListRoutesPage(routes: genRoutes()),
+    ),
+    GoRoute(
+      name: 'Header Tab Bar',
+      path: '/header-tab-bar',
+      builder: (BuildContext context, GoRouterState state) =>
+          const HeaderTabBarExample(),
     ),
 
     GoRoute(
