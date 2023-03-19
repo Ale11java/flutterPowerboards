@@ -16,6 +16,7 @@ import 'ui/in_app_page.dart';
 import 'ui/join_page.dart';
 import 'ui/lobby_page.dart';
 import 'ui/list_route_page.dart';
+import 'ui/lobby_page.dart';
 import 'ui/lobby_wait_page.dart';
 import 'ui/notification.dart';
 import 'ui/participant_overlay.dart';
