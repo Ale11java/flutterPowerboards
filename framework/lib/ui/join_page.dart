@@ -218,9 +218,24 @@ class _JoinPageState extends State<JoinPage> {
   }
 
   void createNew() async {
-    var noun = await TimuApiProvider.of(context)
-        .api
-        .create(type: "core:event", data: {"name": "Untitled"});
+    var noun =
+        await TimuApiProvider.of(context).api.create(type: "core:event", data: {
+      "name": "Untitled",
+      "localAclAdditions": {
+        "claims": [
+          {
+            "name": "type",
+            "role": "core:reader",
+            "value": "core:guest",
+          },
+          {
+            "name": "type",
+            "role": "core:reader",
+            "value": "core:user",
+          }
+        ]
+      }
+    });
     context.go(widget.redirectBuilder(eventID: fromUUID(noun.id)));
   }
 

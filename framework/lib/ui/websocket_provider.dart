@@ -10,11 +10,13 @@ class WebsocketProvider extends StatefulWidget {
     required this.child,
     required this.nounUrl,
     required this.channel,
+    this.metadata,
   });
 
   final Widget child;
   final String nounUrl;
   final String channel;
+  final Map<String, dynamic>? metadata;
 
   @override
   State<WebsocketProvider> createState() => WebsocketState();
@@ -40,7 +42,8 @@ class WebsocketState extends State<WebsocketProvider> {
     super.didChangeDependencies();
 
     final api = TimuApiProvider.of(super.context).api;
-    final ws = api.createWebsocket(widget.nounUrl, widget.channel);
+    final ws = api.createWebsocket(widget.nounUrl, widget.channel,
+        metadata: widget.metadata);
 
     websocket?.close();
 

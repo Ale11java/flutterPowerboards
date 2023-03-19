@@ -209,13 +209,13 @@ class _RequireAccessState extends State<RequireAccess> {
 
       case Progress.waitingForApproval:
         return WebsocketProvider(
-          nounUrl: widget.nounUrl,
-          channel: 'lobby',
-          child: LobbyWaitPage(
-            onApproved: onApprove,
-            onDenied: onDeined,
-          ),
-        );
+            nounUrl: widget.nounUrl,
+            channel: 'lobby',
+            child: LobbyWaitPage(
+              onApproved: onApprove,
+              onDenied: onDeined,
+            ),
+            metadata: <String, dynamic>{"waiting": true});
 
       case Progress.meetingNotFound: // Fallthrough
       case Progress.processing:
@@ -260,7 +260,7 @@ class _NotificationPopupState extends State<_NotificationPopup> {
     sub = ws?.listenClients((clients) {
       setState(() {
         waitingGuests = clients
-            .where((client) => client.profile["id"] != me.profile.id)
+            .where((client) => client.metadata["waiting"] == true)
             .toList(growable: false);
       });
     });
