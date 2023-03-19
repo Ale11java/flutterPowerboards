@@ -23,11 +23,6 @@ final _meetingHeaderClockFont = GoogleFonts.robotoFlex(
         fontSize: 16,
         fontWeight: FontWeight.w600,
         color: _meetingHeaderAltColor));
-final _meetingHeaderButtonFont = GoogleFonts.robotoFlex(
-    textStyle: const TextStyle(
-        fontWeight: FontWeight.w600,
-        fontSize: 11,
-        color: _meetingHeaderButtonColor));
 
 class MeetingHeader extends StatelessWidget {
   const MeetingHeader(
@@ -48,7 +43,7 @@ class MeetingHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
         alignment: Alignment.center,
-        height: 102,
+        height: 48,
         decoration: BoxDecoration(
             color: Colors.white,
             border: Border(
@@ -56,12 +51,12 @@ class MeetingHeader extends StatelessWidget {
                     color: _meetingHeaderBorderColor,
                     strokeAlign: BorderSide.strokeAlignInside))),
         child: Padding(
-            padding: const EdgeInsets.fromLTRB(38, 0, 38, 0),
+            padding: const EdgeInsets.fromLTRB(12, 0, 0, 0),
             child: Row(children: <Widget>[
-              Expanded(
-                  child: IntrinsicHeight(
-                      child: MeetingHeaderTitle(start: start, text: title))),
+              IntrinsicHeight(
+                  child: MeetingHeaderTitle(start: start, text: title)),
               IntrinsicHeight(child: Row(children: buttons)),
+              Expanded(child: Spacer()),
               IntrinsicWidth(
                   child: HeaderTabBar(tabs: tabs, controller: tabController))
             ])));
@@ -81,28 +76,22 @@ class MeetingHeaderButton extends FilledButton {
                 shape: MaterialStateProperty.all(RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(5))),
                 backgroundColor: MaterialStateProperty.all(Colors.transparent)),
-            child: Column(children: <Widget>[
-              SizedBox(
-                  width: 42,
-                  height: 42,
-                  child: DecoratedBox(
-                      decoration: BoxDecoration(
-                          color: on
-                              ? _meetingHeaderButtonOnColor
-                              : Colors.transparent,
-                          borderRadius: BorderRadius.circular(5)),
-                      child: Icon(
-                        icon,
-                        size: 32,
-                        color: on ? Colors.white : _meetingHeaderButtonColor,
-                      ))),
-              const SizedBox(height: 8),
-              Text(text,
-                  style: _meetingHeaderButtonFont.apply(
-                      color: on
-                          ? _meetingHeaderButtonOnColor
-                          : _meetingHeaderButtonColor))
-            ]));
+            child: Tooltip(
+                message: text,
+                child: SizedBox(
+                    width: 42,
+                    height: 42,
+                    child: DecoratedBox(
+                        decoration: BoxDecoration(
+                            color: on
+                                ? _meetingHeaderButtonOnColor
+                                : Colors.transparent,
+                            borderRadius: BorderRadius.circular(5)),
+                        child: Icon(
+                          icon,
+                          size: 32,
+                          color: on ? Colors.white : _meetingHeaderButtonColor,
+                        )))));
 
   final String text;
   final IconData icon;
@@ -153,11 +142,11 @@ class MeetingHeaderTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+    return Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           Text(text, style: _meetingHeaderFont),
-          const SizedBox(height: 7),
+          SizedBox(width: 10),
           MeetingHeaderClock(start: start)
         ]);
   }

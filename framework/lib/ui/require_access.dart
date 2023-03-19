@@ -117,8 +117,9 @@ class _RequireAccessState extends State<RequireAccess> {
           progress = Progress.hasAccess;
         });
       } on AccessDeniedError {
+        // TODO: need a screen here that lets me choose to continue as existing user, as guest, or switch accounts
         setState(() {
-          progress = Progress.needsAccess;
+          progress = Progress.waitingForApproval;
         });
       } on RequiresAuthenticationError {
         setState(() {
@@ -251,13 +252,15 @@ class _NotificationPopupState extends State<_NotificationPopup> {
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    final ws = WebsocketState.of(super.context).websocket;
+    final ws = WebsocketState.of(context).websocket;
+    final Account? activeAccount = AuthModel.of(context).activeAccount;
+    final me = MyProfileProvider.of(context);
 
     sub?.cancel();
     sub = ws?.listenClients((clients) {
       setState(() {
         waitingGuests = clients
-            .where((client) => client.profile['type'] == 'core:guest')
+            .where((client) => client.profile["id"] != me.profile.id)
             .toList(growable: false);
       });
     });
