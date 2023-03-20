@@ -38,7 +38,7 @@ class AuthStorageProvider extends StatefulWidget {
 class BaseUrl extends StatelessWidget {
   BaseUrl({super.key, required this.child});
 
-  final Uri baseUri = Uri.parse('https://meet.timu.life/');
+  final Uri baseUri = Uri.parse('https://board.timu.life/');
   final Uri loginUri = Uri.parse('https://www.timu.life/login');
   static const apiHost = 'usa.timu.life';
 

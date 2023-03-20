@@ -60,6 +60,25 @@ class TimuApiProvider extends InheritedWidget {
   }
 }
 
+class MyProfileProvider extends InheritedWidget {
+  const MyProfileProvider(
+      {required this.profile, required super.child, super.key});
+  final TimuObject profile;
+
+  static MyProfileProvider? maybeOf(BuildContext context) {
+    return context.dependOnInheritedWidgetOfExactType<MyProfileProvider>();
+  }
+
+  static MyProfileProvider of(BuildContext context) {
+    return context.dependOnInheritedWidgetOfExactType<MyProfileProvider>()!;
+  }
+
+  @override
+  bool updateShouldNotify(MyProfileProvider oldWidget) {
+    return oldWidget.profile.id != profile.id;
+  }
+}
+
 class MyApiProvider extends StatelessWidget {
   const MyApiProvider({super.key, required this.child});
 
@@ -84,12 +103,11 @@ class MyApiProvider extends StatelessWidget {
                     headers: api.headers,
                     accessToken: api.accessToken,
                     defaultNetwork: snapshot.data!.network),
-                child: child);
+                child:
+                    MyProfileProvider(profile: snapshot.data!, child: child));
           } else if (snapshot.hasError) {
             return Container(
-                color: Colors.red,
-                alignment: Alignment.center,
-                child: Text("Unable to load, please try again"));
+                color: Colors.red, alignment: Alignment.center, child: child);
           } else {
             return const CircularProgressIndicator();
           }
@@ -202,13 +220,15 @@ class TimuApi {
     return TimuObject(jsonDecode(response.body));
   }
 
-  TimuWebsocket createWebsocket(String url, String channel) {
+  TimuWebsocket createWebsocket(String url, String channel,
+      {Map<String, dynamic>? metadata}) {
     return TimuWebsocket(
       apiRoot: host,
       url: url,
       accessToken: accessToken,
       network: defaultNetwork,
       channel: channel,
+      metadata: metadata,
     );
   }
 
