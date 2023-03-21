@@ -101,7 +101,7 @@ class PongStream extends Stream<int> implements StreamSink<int> {
 }
 
 class TimuWebsocketEvent {
-  TimuWebsocketEvent({ required this.sender, required this.data});
+  TimuWebsocketEvent({required this.sender, required this.data});
 
   final String sender;
   final Map<String, dynamic> data;
@@ -157,14 +157,15 @@ class TimuWebsocket extends Stream<TimuWebsocketEvent> {
         cancelOnError: cancelOnError,
       );
 
-  StreamSubscription listenClients(void Function(List<Client>)? onClientsChange,
-          {Function? onError, void Function()? onDone, bool? cancelOnError}) =>
-      _clientsController.stream.listen(
-        onClientsChange,
-        onError: onError,
-        onDone: onDone,
-        cancelOnError: cancelOnError,
-      );
+  StreamSubscription listenClients(void Function(List<Client>) onClientsChange,
+      {Function? onError, void Function()? onDone, bool? cancelOnError}) {
+    return _clientsController.stream.startWith(clients).listen(
+          onClientsChange,
+          onError: onError,
+          onDone: onDone,
+          cancelOnError: cancelOnError,
+        );
+  }
 
   void connect() {
     _websocket?.sink.close();
@@ -190,10 +191,8 @@ class TimuWebsocket extends Stream<TimuWebsocketEvent> {
           ));
         }
         _clientsController.sink.add(clients);
-
       } else if (msg.containsKey('Pong') && msg['Pong'] != null) {
         _pongStream.add(pongCount++);
-
       } else if (msg.containsKey('Published') && msg['Published'] != null) {
         final Map<String, dynamic> published =
             msg['Published'] as Map<String, dynamic>;
@@ -209,12 +208,10 @@ class TimuWebsocket extends Stream<TimuWebsocketEvent> {
             profile: data['Added'] as Map<String, dynamic>,
           ));
           _clientsController.sink.add(clients);
-
         } else if (data.containsKey('Removed')) {
           final String id = published['Sender'].toString();
           clients.removeWhere((Client c) => c.id == id);
           _clientsController.sink.add(clients);
-
         } else if (data.containsKey('Typing')) {
           final String id = published['Sender'].toString();
           final Client client = clients.firstWhere((Client c) => c.id == id,
@@ -254,15 +251,13 @@ class TimuWebsocket extends Stream<TimuWebsocketEvent> {
   }
 
   void publish(Map<String, dynamic> data, Map<String, dynamic> acl) {
-    _websocket?.sink.add(json.encode(
-        {
-          'Publish': {
-            'Url': '/v2/$url/+channel/$channel',
-            'Data': json.encode(data),
-            'Acl': acl,
-          }
-        }
-    ));
+    _websocket?.sink.add(json.encode({
+      'Publish': {
+        'Url': '/v2/$url/+channel/$channel',
+        'Data': json.encode(data),
+        'Acl': acl,
+      }
+    }));
   }
 
   void _ping() {
