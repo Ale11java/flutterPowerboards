@@ -16,6 +16,7 @@ import 'notification.dart';
 import 'object_access_token.dart';
 import 'storage_login_page.dart';
 import 'user_has_no_access.dart';
+import 'user_meeting_access_denied.dart';
 import 'websocket_provider.dart';
 
 enum Progress {
@@ -235,7 +236,7 @@ class _RequireAccessState extends State<RequireAccess> {
             child: _NotificationPopup(child: widget.child));
 
       case Progress.denied:
-        return const Center();
+        return const UserMeetingAccessDenied();
 
       case Progress.loginHasNoAccess:
         return UserHasNoAccess(
