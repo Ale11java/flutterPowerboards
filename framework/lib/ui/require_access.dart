@@ -262,14 +262,14 @@ class _NotificationPopup extends StatefulWidget {
 class _NotificationPopupState extends State<_NotificationPopup> {
   @override
   Widget build(BuildContext context) {
-    return WebsocketClients(builder: (context, clients) {
-      final waitingGuests = clients
-          .where((client) => client.metadata['waiting'] == true)
-          .toList(growable: false);
-      return Stack(children: [
-        widget.child,
-        Overlay(initialEntries: <OverlayEntry>[
-          OverlayEntry(builder: (BuildContext context) {
+    return Stack(children: [
+      widget.child,
+      Overlay(initialEntries: <OverlayEntry>[
+        OverlayEntry(builder: (BuildContext context) {
+          return WebsocketClients(builder: (context, clients) {
+            final waitingGuests = clients
+                .where((client) => client.metadata['waiting'] == true)
+                .toList(growable: false);
             return Positioned(
                 top: 50,
                 right: 50,
@@ -278,10 +278,10 @@ class _NotificationPopupState extends State<_NotificationPopup> {
                         .map<Widget>((client) => _ClientWidget(client))
                         .superJoin(const SizedBox(height: 10))
                         .toList(growable: false)));
-          })
-        ]),
-      ]);
-    });
+          });
+        })
+      ]),
+    ]);
   }
 }
 
