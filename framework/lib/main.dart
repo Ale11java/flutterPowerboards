@@ -6,7 +6,6 @@ import 'examples/floating_panel.dart';
 import 'examples/header_tab_bar.dart';
 import 'examples/login_prompt_page.dart';
 import 'examples/meeting_header.dart';
-
 import 'model/auth_storage.dart';
 import 'test_icons.dart';
 import 'ui/auth_storage_cache.dart';
@@ -14,7 +13,6 @@ import 'ui/dialog_buttons.dart';
 import 'ui/home_page.dart';
 import 'ui/in_app_page.dart';
 import 'ui/join_page.dart';
-import 'ui/lobby_page.dart';
 import 'ui/list_route_page.dart';
 import 'ui/lobby_page.dart';
 import 'ui/lobby_wait_page.dart';

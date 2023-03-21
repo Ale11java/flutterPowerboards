@@ -211,11 +211,11 @@ class _RequireAccessState extends State<RequireAccess> {
         return WebsocketProvider(
             nounUrl: widget.nounUrl,
             channel: 'lobby',
+            metadata: const <String, dynamic>{'waiting': true},
             child: LobbyWaitPage(
               onApproved: onApprove,
               onDenied: onDeined,
-            ),
-            metadata: <String, dynamic>{"waiting": true});
+            ));
 
       case Progress.meetingNotFound: // Fallthrough
       case Progress.processing:
@@ -253,14 +253,12 @@ class _NotificationPopupState extends State<_NotificationPopup> {
     super.didChangeDependencies();
 
     final ws = WebsocketState.of(context).websocket;
-    final Account? activeAccount = AuthModel.of(context).activeAccount;
-    final me = MyProfileProvider.of(context);
 
     sub?.cancel();
     sub = ws?.listenClients((clients) {
       setState(() {
         waitingGuests = clients
-            .where((client) => client.metadata["waiting"] == true)
+            .where((client) => client.metadata['waiting'] == true)
             .toList(growable: false);
       });
     });

@@ -3,8 +3,10 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../model/account.dart';
+import '../model/auth_storage.dart';
 import '../timu_api/timu_api.dart';
 import '../short_uuid/short_uuid.dart';
 import 'auth_model.dart';
@@ -218,7 +220,7 @@ class _JoinPageState extends State<JoinPage> {
   }
 
   void createNew() async {
-    var noun =
+    final noun =
         await TimuApiProvider.of(context).api.create(type: "core:event", data: {
       "name": "Untitled",
       "localAclAdditions": {
@@ -250,25 +252,39 @@ class _JoinPageState extends State<JoinPage> {
       }
     }
 
-    final extra = <Widget>[];
-
-    AuthModel auth = AuthModel.of(context);
+    late Widget bottomButton;
+    final auth = AuthModel.of(context);
 
     if (auth.activeAccount != null) {
-      extra.add(SizedBox(width: 10));
-      extra.add(FilledButton(
+      bottomButton = FilledButton(
         onPressed: createNew,
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.white,
+          minimumSize: const Size.fromHeight(42),
         ),
-        child: const Text('New Powerboard',
-            style: TextStyle(
-              fontFamily: 'Inter',
+        child: Text('NEW POWERBOARD',
+            style: GoogleFonts.inter(
+                textStyle: const TextStyle(
               fontWeight: FontWeight.w900,
               fontSize: 13,
               color: Color(0XFF484575),
-            )),
-      ));
+            ))),
+      );
+    } else {
+      bottomButton = FilledButton(
+        onPressed: () => redirectToLogin(context),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.white,
+          minimumSize: const Size.fromHeight(42),
+        ),
+        child: Text('LOGIN',
+            style: GoogleFonts.inter(
+                textStyle: const TextStyle(
+              fontWeight: FontWeight.w900,
+              fontSize: 13,
+              color: Color(0XFF484575),
+            ))),
+      );
     }
 
     return ColoredBox(
@@ -310,19 +326,20 @@ class _JoinPageState extends State<JoinPage> {
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.white,
                             ),
-                            child: const Text('JOIN NOW',
-                                style: TextStyle(
-                                  fontFamily: 'Inter',
+                            child: Text('JOIN NOW',
+                                style: GoogleFonts.inter(
+                                    textStyle: const TextStyle(
                                   fontWeight: FontWeight.w900,
                                   fontSize: 13,
                                   color: Color(0XFF484575),
-                                )),
+                                ))),
                           ),
                         ),
                       ),
                     )),
-                ...extra
-              ]))
+              ])),
+              const SizedBox(height: 30),
+              bottomButton,
             ]))));
   }
 }
