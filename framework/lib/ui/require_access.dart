@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 
@@ -15,6 +16,7 @@ import 'login_prompt_page.dart';
 import 'notification.dart';
 import 'object_access_token.dart';
 import 'storage_login_page.dart';
+import 'websocket_clients.dart';
 import 'websocket_provider.dart';
 
 enum Progress {
@@ -245,48 +247,28 @@ class _NotificationPopup extends StatefulWidget {
 }
 
 class _NotificationPopupState extends State<_NotificationPopup> {
-  StreamSubscription? sub;
-  List<Client> waitingGuests = [];
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-
-    final ws = WebsocketState.of(context).websocket;
-
-    sub?.cancel();
-    sub = ws?.listenClients((clients) {
-      setState(() {
-        waitingGuests = clients
-            .where((client) => client.metadata['waiting'] == true)
-            .toList(growable: false);
-      });
-    });
-  }
-
-  @override
-  void dispose() {
-    sub?.cancel();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Stack(children: [
-      widget.child,
-      Overlay(initialEntries: <OverlayEntry>[
-        OverlayEntry(builder: (BuildContext context) {
-          return Positioned(
-              top: 50,
-              right: 50,
-              child: Column(
-                  children: waitingGuests
-                      .map<Widget>((client) => _ClientWidget(client))
-                      .superJoin(const SizedBox(height: 10))
-                      .toList(growable: false)));
-        })
-      ]),
-    ]);
+    return WebsocketClients(builder: (context, clients) {
+      final waitingGuests = clients
+          .where((client) => client.metadata['waiting'] == true)
+          .toList(growable: false);
+      return Stack(children: [
+        widget.child,
+        Overlay(initialEntries: <OverlayEntry>[
+          OverlayEntry(builder: (BuildContext context) {
+            return Positioned(
+                top: 50,
+                right: 50,
+                child: Column(
+                    children: waitingGuests
+                        .map<Widget>((client) => _ClientWidget(client))
+                        .superJoin(const SizedBox(height: 10))
+                        .toList(growable: false)));
+          })
+        ]),
+      ]);
+    });
   }
 }
 
