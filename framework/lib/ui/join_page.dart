@@ -1,16 +1,12 @@
 // Define a custom Form widget.
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../model/account.dart';
 import '../model/auth_storage.dart';
-import '../timu_api/timu_api.dart';
 import '../short_uuid/short_uuid.dart';
+import '../timu_api/timu_api.dart';
 import 'auth_model.dart';
-import 'auth_storage_cache.dart';
 import 'text.dart';
 
 String formatNounUrl(String id) {
@@ -18,8 +14,8 @@ String formatNounUrl(String id) {
 }
 
 String parseMeetingCode(String code) {
-  if (code.contains("#")) {
-    return code.substring(code.indexOf("#") + 1);
+  if (code.contains('#')) {
+    return code.substring(code.indexOf('#') + 1);
   } else {
     return code;
   }
@@ -172,13 +168,13 @@ class _UsernameFieldState extends State<UsernameField> {
             backgroundColor: Colors.white,
             minimumSize: const Size.fromHeight(42),
           ),
-          child: const Text('CONTINUE',
-              style: TextStyle(
-                fontFamily: 'Inter',
+          child: Text('CONTINUE',
+              style: GoogleFonts.inter(
+                  textStyle: const TextStyle(
                 fontWeight: FontWeight.w900,
                 fontSize: 13,
                 color: Color(0xFF484575),
-              )),
+              ))),
         ),
       ]),
     );
@@ -219,21 +215,21 @@ class _JoinPageState extends State<JoinPage> {
     super.dispose();
   }
 
-  void createNew() async {
+  Future<void> createNew() async {
     final noun =
-        await TimuApiProvider.of(context).api.create(type: "core:event", data: {
-      "name": "Untitled",
-      "localAclAdditions": {
-        "claims": [
+        await TimuApiProvider.of(context).api.create(type: 'core:event', data: {
+      'name': 'Untitled',
+      'localAclAdditions': {
+        'claims': [
           {
-            "name": "type",
-            "role": "core:reader",
-            "value": "core:guest",
+            'name': 'type',
+            'role': 'core:reader',
+            'value': 'core:guest',
           },
           {
-            "name": "type",
-            "role": "core:reader",
-            "value": "core:user",
+            'name': 'type',
+            'role': 'core:reader',
+            'value': 'core:user',
           }
         ]
       }

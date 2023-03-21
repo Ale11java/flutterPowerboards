@@ -15,6 +15,7 @@ import 'login_prompt_page.dart';
 import 'notification.dart';
 import 'object_access_token.dart';
 import 'storage_login_page.dart';
+import 'user_has_no_access.dart';
 import 'websocket_provider.dart';
 
 enum Progress {
@@ -26,6 +27,7 @@ enum Progress {
 
   hasAccess,
   waitingForApproval,
+  loginHasNoAccess,
   denied,
   meetingNotFound,
 }
@@ -60,12 +62,14 @@ class RequireAccess extends StatefulWidget {
 
 class _RequireAccessState extends State<RequireAccess> {
   Progress progress = Progress.processing;
+  bool registerAsGuest = false;
 
   onRegisterUser(String firstName, String lastName) {
     final api = TimuApiProvider.of(super.context).api;
 
     setState(() {
       progress = Progress.processing;
+      registerAsGuest = true;
     });
 
     api.invoke(
@@ -91,10 +95,6 @@ class _RequireAccessState extends State<RequireAccess> {
             accessToken: token,
             method: 'register',
             provider: 'guest'));
-
-        setState(() {
-          progress = Progress.waitingForApproval;
-        });
       }
     });
   }
@@ -117,9 +117,10 @@ class _RequireAccessState extends State<RequireAccess> {
           progress = Progress.hasAccess;
         });
       } on AccessDeniedError {
-        // TODO: need a screen here that lets me choose to continue as existing user, as guest, or switch accounts
         setState(() {
-          progress = Progress.waitingForApproval;
+          progress = registerAsGuest
+              ? Progress.waitingForApproval
+              : Progress.loginHasNoAccess;
         });
       } on RequiresAuthenticationError {
         setState(() {
@@ -163,7 +164,13 @@ class _RequireAccessState extends State<RequireAccess> {
     });
   }
 
-  onDeined() {
+  onContinueToLobby() {
+    setState(() {
+      progress = Progress.waitingForApproval;
+    });
+  }
+
+  onDenied() {
     setState(() {
       progress = Progress.denied;
     });
@@ -179,7 +186,6 @@ class _RequireAccessState extends State<RequireAccess> {
     final curAccount = oat.getAccount(widget.nounUrl);
 
     progress = Progress.processing;
-    print('initializing require access');
 
     if (curAccount != null &&
         (activeAccount == null || curAccount.key != activeAccount.key)) {
@@ -191,7 +197,6 @@ class _RequireAccessState extends State<RequireAccess> {
 
   @override
   Widget build(BuildContext context) {
-    print('jkkk build process $progress');
     switch (progress) {
       case Progress.needsAccess:
         return LoginPromptPage(
@@ -214,7 +219,7 @@ class _RequireAccessState extends State<RequireAccess> {
             metadata: const <String, dynamic>{'waiting': true},
             child: LobbyWaitPage(
               onApproved: onApprove,
-              onDenied: onDeined,
+              onDenied: onDenied,
             ));
 
       case Progress.meetingNotFound: // Fallthrough
@@ -231,6 +236,12 @@ class _RequireAccessState extends State<RequireAccess> {
 
       case Progress.denied:
         return const Center();
+
+      case Progress.loginHasNoAccess:
+        return UserHasNoAccess(
+            onContinueToLobby: onContinueToLobby,
+            onContinueAsGuest: onContinueAsGuest,
+            onSelectAccount: onSelectAccount);
     }
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class PrimaryButton extends StatelessWidget {
   const PrimaryButton({
@@ -24,13 +25,13 @@ class PrimaryButton extends StatelessWidget {
       child: Text(
         text.toUpperCase(),
         textAlign: TextAlign.center,
-        style: const TextStyle(
+        style: GoogleFonts.inter(
+            textStyle: const TextStyle(
           color: Color.fromRGBO(72, 69, 117, 1),
           fontSize: 13,
-          fontFamily: 'Inter',
           fontWeight: FontWeight.w900,
           decoration: TextDecoration.none,
-        ),
+        )),
       ),
     );
   }
