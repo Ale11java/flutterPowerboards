@@ -8,6 +8,7 @@ import 'examples/login_prompt_page.dart';
 import 'examples/meeting_header.dart';
 import 'model/auth_storage.dart';
 import 'test_icons.dart';
+import 'timu_icons/timu_icons.dart';
 import 'ui/auth_storage_cache.dart';
 import 'ui/dialog_buttons.dart';
 import 'ui/home_page.dart';
@@ -25,7 +26,6 @@ import 'ui/storage_login.dart';
 import 'ui/summary_button.dart';
 import 'ui/text.dart';
 import 'ui/toolbar.dart';
-import 'ui/user_action_card.dart';
 import 'ui/websocket_provider.dart';
 
 void main() {
@@ -228,17 +228,15 @@ List<GoRoute> genRoutes() {
               children: [
                 ToolbarButton(
                   onPressed: () => print('here'),
-                  child:
-                      const Icon(TestIcons.account_circle, color: Colors.white),
+                  child: const Icon(TimuIcons.add_apps, color: Colors.white),
                 ),
                 ToolbarButton(
                   onPressed: () => print('here'),
-                  child: const Icon(TestIcons.add_a_photo, color: Colors.white),
+                  child: const Icon(TimuIcons.cancel, color: Colors.white),
                 ),
                 EmphasizedToolbarButton(
                   onPressed: () => print('here'),
-                  child:
-                      const Icon(TestIcons.access_alarms, color: Colors.white),
+                  child: const Icon(TimuIcons.email, color: Colors.white),
                 ),
               ],
             ),
@@ -366,15 +364,6 @@ List<GoRoute> genRoutes() {
         ),
       ),
     ),
-    GoRoute(
-      name: 'User Action Card',
-      path: '/user-action-card',
-      builder: (BuildContext context, GoRouterState state) => Scaffold(
-          body: Stack(children: <Widget>[
-        ListRoutesPage(routes: genRoutes()),
-        const UserActionCard(userName: 'John Doe'),
-      ])),
-    )
   ];
 }
 
@@ -400,20 +389,5 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(primarySwatch: Colors.blue),
       routerConfig: routerConfig,
     )));
-
-    // child: StorageLogin(
-    //   childLoggedIn: MaterialApp(
-    //     // title: 'TIMU Powerboards',
-    //     theme: ThemeData(
-    //       primarySwatch: Colors.blue,
-    //     ),
-    //     routes: {
-    //       '/': (BuildContext context) =>
-    //           const MyHomePage(title: 'Before you go in, are you the host?'),
-    //       '/settings': (BuildContext context) =>
-    //           const MyHomePage(title: 'Settings'),
-    //     },
-    //   ),
-    // ),
   }
 }

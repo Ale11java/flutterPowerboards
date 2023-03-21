@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class BasicSummaryButton extends StatelessWidget {
   const BasicSummaryButton({
@@ -158,16 +159,14 @@ class SummaryButtonTitleText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(text,
-        style: const TextStyle(
-          color: Color(
-            0xffffffff,
-          ),
+        style: GoogleFonts.inter(
+            textStyle: const TextStyle(
+          color: Colors.white,
           fontSize: 12,
           fontWeight: FontWeight.w800,
-          fontFamily: 'Inter',
           height: 1,
           letterSpacing: 0,
-        ));
+        )));
   }
 }
 

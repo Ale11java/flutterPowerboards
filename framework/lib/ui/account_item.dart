@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../ui.dart';
 import '../model/account.dart';
@@ -57,12 +58,12 @@ class AccountItem extends StatelessWidget {
                     children: <Widget>[
                       Text(
                         account.email,
-                        style: const TextStyle(
+                        style: GoogleFonts.inter(
+                            textStyle: const TextStyle(
                           color: Colors.white,
                           fontSize: 12,
-                          fontFamily: 'Inter',
                           fontWeight: FontWeight.w800,
-                        ),
+                        )),
                       ),
                       SizedBox(
                         width: double.infinity,
