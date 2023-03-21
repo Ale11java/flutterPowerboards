@@ -46,7 +46,7 @@ class LobbyWaitState extends State<LobbyWaitPage> {
             provider: 'guest'));
 
         widget.onApproved();
-      } else if (event.data.containsKey('deny')) {
+      } else if (event.data.containsKey('denied')) {
         widget.onDenied();
       }
     });
