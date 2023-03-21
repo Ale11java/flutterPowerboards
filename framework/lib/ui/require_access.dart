@@ -15,6 +15,7 @@ import 'lobby_wait_page.dart';
 import 'login_prompt_page.dart';
 import 'notification.dart';
 import 'object_access_token.dart';
+import 'profile_avatar.dart';
 import 'storage_login_page.dart';
 import 'websocket_clients.dart';
 import 'user_has_no_access.dart';
@@ -340,7 +341,7 @@ class _ClientWidget extends StatelessWidget {
     final String lastName = client.profile['lastName'];
 
     return NotificationWidget(
-      initials: firstName[0].toUpperCase() + lastName[0].toUpperCase(),
+      avatar: ProfileAvatar(profile: TimuObject(client.profile), size: 50),
       title: '$firstName $lastName',
       text: 'is waiting in the lobby',
       primaryAction: NotificationAction(
