@@ -6,6 +6,7 @@ import '../model/account.dart';
 import '../model/auth_storage.dart';
 import '../timu_api/timu_api.dart';
 import '../timu_api/websocket.dart';
+
 import 'account_prompt_page.dart';
 import 'auth_model.dart';
 import 'auth_storage_cache.dart';
@@ -16,7 +17,6 @@ import 'notification.dart';
 import 'object_access_token.dart';
 import 'profile_avatar.dart';
 import 'storage_login_page.dart';
-import 'user_meeting_access_denied.dart';
 import 'websocket_clients.dart';
 import 'websocket_provider.dart';
 
@@ -30,7 +30,6 @@ enum Progress {
   joining,
   waiting,
   granted,
-  denied,
   meetingNotFound,
 }
 
@@ -194,9 +193,7 @@ class _RequireAccessState extends State<RequireAccess> {
   }
 
   onDenied() {
-    setState(() {
-      progress = Progress.denied;
-    });
+    // Don't do anything
   }
 
   @override
@@ -270,9 +267,6 @@ class _RequireAccessState extends State<RequireAccess> {
                 channel: 'lobby',
                 child:
                     _NotificationPopup(child: wrap(widget.granted(context)))));
-
-      case Progress.denied:
-        return const UserMeetingAccessDenied();
     }
   }
 }
@@ -287,25 +281,30 @@ class _NotificationPopup extends StatefulWidget {
 }
 
 class _NotificationPopupState extends State<_NotificationPopup> {
+  Set<String> dismissed = {};
+
   @override
   Widget build(BuildContext context) {
     return Stack(children: [
       widget.child,
       Overlay(initialEntries: <OverlayEntry>[
         OverlayEntry(builder: (BuildContext context) {
-          return WebsocketClients(builder: (context, clients) {
-            final waitingGuests = clients
-                .where((client) => client.metadata['waiting'] == true)
-                .toList(growable: false);
-            return Positioned(
-                top: 50,
-                right: 50,
-                child: Column(
-                    children: waitingGuests
-                        .map<Widget>((client) => _ClientWidget(client))
-                        .superJoin(const SizedBox(height: 10))
-                        .toList(growable: false)));
-          });
+          return WebsocketClients(
+              builder: (context, clients) => Positioned(
+                  top: 50,
+                  right: 50,
+                  child: Column(
+                      children: clients
+                          .where((client) =>
+                              client.metadata['waiting'] == true &&
+                              !dismissed.contains(client.id))
+                          .map<Widget>((client) => _ClientWidget(client, () {
+                                setState(() {
+                                  dismissed.add(client.id);
+                                });
+                              }))
+                          .superJoin(const SizedBox(height: 10))
+                          .toList(growable: false))));
         })
       ]),
     ]);
@@ -313,15 +312,18 @@ class _NotificationPopupState extends State<_NotificationPopup> {
 }
 
 class _ClientWidget extends StatelessWidget {
-  const _ClientWidget(this.client);
+  const _ClientWidget(this.client, this.onDismiss);
 
   final Client client;
+  final void Function() onDismiss;
 
   @override
   Widget build(BuildContext context) {
-    Future<void> grantAccess(Client client) async {
+    Future<void> grantAccess() async {
       final parent = context.findAncestorWidgetOfExactType<RequireAccess>();
       final ws = WebsocketState.of(context).websocket;
+
+      onDismiss();
 
       if (parent != null) {
         final api = TimuApiProvider.of(context).api;
@@ -348,9 +350,11 @@ class _ClientWidget extends StatelessWidget {
       }
     }
 
-    deny(Client client) {
+    deny() {
       final ws = WebsocketState.of(context).websocket;
       final userId = client.profile['id'];
+
+      onDismiss();
 
       ws?.publish({
         'denied': true,
@@ -373,11 +377,11 @@ class _ClientWidget extends StatelessWidget {
       text: 'is waiting in the lobby',
       primaryAction: NotificationAction(
         label: 'Approve',
-        onPressed: () => grantAccess(client),
+        onPressed: grantAccess,
       ),
       secondaryAction: NotificationAction(
-        label: 'Deny',
-        onPressed: () => deny(client),
+        label: 'Ignore',
+        onPressed: deny,
       ),
     );
   }
