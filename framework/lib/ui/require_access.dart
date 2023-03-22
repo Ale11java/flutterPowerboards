@@ -15,7 +15,6 @@ import 'login_prompt_page.dart';
 import 'notification.dart';
 import 'object_access_token.dart';
 import 'storage_login_page.dart';
-import 'user_has_no_access.dart';
 import 'user_meeting_access_denied.dart';
 import 'websocket_provider.dart';
 
@@ -26,9 +25,9 @@ enum Progress {
   accountPrompt,
   selectAccount,
 
-  hasAccess,
-  waitingForApproval,
-  loginHasNoAccess,
+  joining,
+  waiting,
+  granted,
   denied,
   meetingNotFound,
 }
@@ -51,11 +50,23 @@ extension IterableExt<T> on Iterable<T> {
   }
 }
 
+typedef JoiningBuilder = Widget Function(BuildContext, void Function());
+typedef WaitingBuilder = Widget Function(BuildContext);
+typedef GrantedBuilder = Widget Function(BuildContext);
+
 class RequireAccess extends StatefulWidget {
-  const RequireAccess({super.key, required this.nounUrl, required this.child});
+  const RequireAccess(
+      {super.key,
+      required this.nounUrl,
+      required this.joining,
+      required this.waiting,
+      required this.granted});
 
   final String nounUrl;
-  final Widget child;
+
+  final JoiningBuilder joining;
+  final WaitingBuilder waiting;
+  final GrantedBuilder granted;
 
   @override
   State<RequireAccess> createState() => _RequireAccessState();
@@ -63,14 +74,14 @@ class RequireAccess extends StatefulWidget {
 
 class _RequireAccessState extends State<RequireAccess> {
   Progress progress = Progress.processing;
-  bool registerAsGuest = false;
+  Completer<bool> accessComp = Completer<bool>();
+  bool joined = false;
 
   onRegisterUser(String firstName, String lastName) {
     final api = TimuApiProvider.of(super.context).api;
 
     setState(() {
       progress = Progress.processing;
-      registerAsGuest = true;
     });
 
     api.invoke(
@@ -115,13 +126,15 @@ class _RequireAccessState extends State<RequireAccess> {
         oat.setAccount(widget.nounUrl, activeAccount);
 
         setState(() {
-          progress = Progress.hasAccess;
+          if (!accessComp.isCompleted) {
+            accessComp.complete(true);
+          }
+
+          progress = joined ? Progress.granted : Progress.joining;
         });
       } on AccessDeniedError {
         setState(() {
-          progress = registerAsGuest
-              ? Progress.waitingForApproval
-              : Progress.loginHasNoAccess;
+          progress = Progress.joining;
         });
       } on RequiresAuthenticationError {
         setState(() {
@@ -139,7 +152,9 @@ class _RequireAccessState extends State<RequireAccess> {
     }
   }
 
-  onApprove() {}
+  onApprove() {
+    accessComp.complete(true);
+  }
 
   onLogin() {
     final storage = AuthStorageCacheState.of(super.context);
@@ -167,7 +182,7 @@ class _RequireAccessState extends State<RequireAccess> {
 
   onContinueToLobby() {
     setState(() {
-      progress = Progress.waitingForApproval;
+      progress = Progress.waiting;
     });
   }
 
@@ -185,8 +200,6 @@ class _RequireAccessState extends State<RequireAccess> {
     final storage = AuthStorageCacheState.of(super.context);
     final oat = ObjectAccessTokenProviderState.of(super.context);
     final curAccount = oat.getAccount(widget.nounUrl);
-
-    progress = Progress.processing;
 
     if (curAccount != null &&
         (activeAccount == null || curAccount.key != activeAccount.key)) {
@@ -213,7 +226,37 @@ class _RequireAccessState extends State<RequireAccess> {
       case Progress.registerGuest:
         return GuestEntryPage(onRegisterUser);
 
-      case Progress.waitingForApproval:
+      case Progress.meetingNotFound: // Fallthrough
+      case Progress.processing:
+        return const Center(
+            child: SizedBox(
+                width: 50, height: 50, child: CircularProgressIndicator()));
+
+      case Progress.joining:
+        return WebsocketProvider(
+            nounUrl: widget.nounUrl,
+            channel: 'lobby',
+            metadata: accessComp.isCompleted
+                ? const <String, dynamic>{}
+                : const <String, dynamic>{'waiting': true},
+            child: LobbyWaitPage(
+              onApproved: onApprove,
+              onDenied: onDenied,
+              child: widget.joining(context, () {
+                setState(() {
+                  joined = true;
+                  progress = Progress.waiting;
+                });
+
+                accessComp.future.then((allowed) {
+                  setState(() {
+                    progress = allowed ? Progress.granted : Progress.denied;
+                  });
+                });
+              }),
+            ));
+
+      case Progress.waiting:
         return WebsocketProvider(
             nounUrl: widget.nounUrl,
             channel: 'lobby',
@@ -221,28 +264,17 @@ class _RequireAccessState extends State<RequireAccess> {
             child: LobbyWaitPage(
               onApproved: onApprove,
               onDenied: onDenied,
+              child: widget.waiting(context),
             ));
 
-      case Progress.meetingNotFound: // Fallthrough
-      case Progress.processing:
-        return const Center(
-            child: SizedBox(
-                width: 50, height: 50, child: CircularProgressIndicator()));
-
-      case Progress.hasAccess:
+      case Progress.granted:
         return WebsocketProvider(
             nounUrl: widget.nounUrl,
             channel: 'lobby',
-            child: _NotificationPopup(child: widget.child));
+            child: _NotificationPopup(child: widget.granted(context)));
 
       case Progress.denied:
         return const UserMeetingAccessDenied();
-
-      case Progress.loginHasNoAccess:
-        return UserHasNoAccess(
-            onContinueToLobby: onContinueToLobby,
-            onContinueAsGuest: onContinueAsGuest,
-            onSelectAccount: onSelectAccount);
     }
   }
 }

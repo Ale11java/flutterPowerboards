@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'join_page.dart';
 
 class LobbyPage extends StatelessWidget {
-  const LobbyPage({
-    super.key,
-  });
+  const LobbyPage({super.key});
 
   @override
   Widget build(BuildContext context) {
