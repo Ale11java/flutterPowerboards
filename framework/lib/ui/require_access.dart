@@ -52,7 +52,7 @@ extension IterableExt<T> on Iterable<T> {
   }
 }
 
-typedef JoiningBuilder = Widget Function(BuildContext, void Function());
+typedef JoiningBuilder = Widget Function(BuildContext, bool, void Function());
 typedef WaitingBuilder = Widget Function(BuildContext);
 typedef GrantedBuilder = Widget Function(BuildContext);
 
@@ -76,8 +76,8 @@ class RequireAccess extends StatefulWidget {
 
 class _RequireAccessState extends State<RequireAccess> {
   Progress progress = Progress.processing;
+  bool hasAccess = false;
   Completer<bool> accessComp = Completer<bool>();
-  bool joined = false;
 
   onRegisterUser(String firstName, String lastName) {
     final api = TimuApiProvider.of(super.context).api;
@@ -133,7 +133,7 @@ class _RequireAccessState extends State<RequireAccess> {
             body: {'role': 'core:contributor'});
 
         setState(() {
-          accessComp.complete(true);
+          hasAccess = true;
 
           progress = Progress.joining;
         });
@@ -207,8 +207,7 @@ class _RequireAccessState extends State<RequireAccess> {
 
     setState(() {
       progress = Progress.processing;
-      accessComp = Completer<bool>();
-      joined = false;
+      hasAccess = false;
     });
 
     checkAccess(activeAccount);
@@ -238,18 +237,11 @@ class _RequireAccessState extends State<RequireAccess> {
                 width: 50, height: 50, child: CircularProgressIndicator()));
 
       case Progress.joining:
-        return widget.joining(context, () {
+        return wrap(widget.joining(context, hasAccess, () {
           setState(() {
-            joined = true;
-            progress = Progress.waiting;
+            progress = hasAccess ? Progress.granted : Progress.waiting;
           });
-
-          accessComp.future.then((allowed) {
-            setState(() {
-              progress = allowed ? Progress.granted : Progress.denied;
-            });
-          });
-        });
+        }));
 
       case Progress.waiting:
         return WebsocketProvider(
@@ -259,7 +251,7 @@ class _RequireAccessState extends State<RequireAccess> {
             child: LobbyWaitPage(
               onApproved: onApprove,
               onDenied: onDenied,
-              child: widget.waiting(context),
+              child: wrap(widget.waiting(context)),
             ));
 
       case Progress.granted:
@@ -276,7 +268,8 @@ class _RequireAccessState extends State<RequireAccess> {
             child: WebsocketProvider(
                 nounUrl: widget.nounUrl,
                 channel: 'lobby',
-                child: _NotificationPopup(child: widget.granted(context))));
+                child:
+                    _NotificationPopup(child: wrap(widget.granted(context)))));
 
       case Progress.denied:
         return const UserMeetingAccessDenied();
@@ -388,4 +381,12 @@ class _ClientWidget extends StatelessWidget {
       ),
     );
   }
+}
+
+Widget wrap(Widget child) {
+  return ColoredBox(
+      color: const Color(0XFF2F2D57),
+      child: Center(
+          child: SingleChildScrollView(
+              child: SizedBox(width: 400, child: child))));
 }

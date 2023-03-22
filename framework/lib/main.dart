@@ -93,51 +93,39 @@ List<GoRoute> genRoutes() {
 
           return RequireAccess(
               nounUrl: nounUrl,
-              joining: (BuildContext context, void Function() join) {
-                return ColoredBox(
-                    color: const Color(0XFF2F2D57),
-                    child: Center(
-                      child: SingleChildScrollView(
-                        child: SizedBox(
-                          width: 400,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              const ScreenTitle(text: 'Join meeting'),
-                              const SizedBox(height: 16),
-                              const ScreenSubtitle(text: 'Daily design meetup'),
-                              const SizedBox(height: 16),
-                              PrimaryButton(text: 'JOIN', onPressed: join)
-                            ],
-                          ),
-                        ),
-                      ),
-                    ));
+              joining:
+                  (BuildContext context, bool hasAccess, void Function() join) {
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    const ScreenTitle(text: 'Join meeting'),
+                    const SizedBox(height: 16),
+                    const ScreenSubtitle(text: 'Daily design meetup'),
+                    const SizedBox(height: 16),
+                    PrimaryButton(text: 'JOIN', onPressed: join)
+                  ],
+                );
               },
               waiting: (BuildContext context) {
-                return const ColoredBox(
-                    color: Color(0XFF2F2D57),
-                    child: Center(
-                      child: SingleChildScrollView(
-                        child: SizedBox(
-                          width: 400,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              ScreenTitle(
-                                  text:
-                                      'Please wait for the host to let you in.'),
-                              SizedBox(height: 16),
-                              ScreenSubtitle(text: 'Daily design meetup'),
-                              SizedBox(height: 16),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ));
+                return const Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    ScreenTitle(
+                        text: 'Please wait for the host to let you in.'),
+                    SizedBox(height: 16),
+                    ScreenSubtitle(text: 'Daily design meetup'),
+                  ],
+                );
               },
               granted: (BuildContext context) {
-                return const InAppPage();
+                return const Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    ScreenTitle(text: 'In App'),
+                    SizedBox(height: 16),
+                    ScreenSubtitle(text: 'Daily design meetup'),
+                  ],
+                );
               });
         }),
 

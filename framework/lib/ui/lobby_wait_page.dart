@@ -1,10 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:uuid/uuid.dart';
-
-import '../model/account.dart';
-import 'auth_storage_cache.dart';
 import 'object_access_token.dart';
 import 'websocket_provider.dart';
 
