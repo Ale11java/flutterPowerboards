@@ -302,7 +302,7 @@ class _NotificationPopupState extends State<_NotificationPopup> {
                                 setState(() {
                                   dismissed.add(client.id);
                                 });
-                              }))
+                              }, key: ValueKey(client.id)))
                           .superJoin(const SizedBox(height: 10))
                           .toList(growable: false))));
         })
@@ -312,7 +312,7 @@ class _NotificationPopupState extends State<_NotificationPopup> {
 }
 
 class _ClientWidget extends StatelessWidget {
-  const _ClientWidget(this.client, this.onDismiss);
+  const _ClientWidget(this.client, this.onDismiss, {super.key});
 
   final Client client;
   final void Function() onDismiss;
@@ -350,24 +350,6 @@ class _ClientWidget extends StatelessWidget {
       }
     }
 
-    deny() {
-      final ws = WebsocketState.of(context).websocket;
-      final userId = client.profile['id'];
-
-      onDismiss();
-
-      ws?.publish({
-        'denied': true,
-      }, {
-        'claims': [
-          {
-            'name': 'id',
-            'value': userId,
-          }
-        ]
-      });
-    }
-
     final String firstName = client.profile['firstName'];
     final String lastName = client.profile['lastName'];
 
@@ -381,7 +363,7 @@ class _ClientWidget extends StatelessWidget {
       ),
       secondaryAction: NotificationAction(
         label: 'Ignore',
-        onPressed: deny,
+        onPressed: onDismiss,
       ),
     );
   }
