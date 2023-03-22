@@ -114,9 +114,16 @@ class _RequireAccessState extends State<RequireAccess> {
   }
 
   Future<void> checkAccess(Account? activeAccount) async {
+    final oat = ObjectAccessTokenProviderState.of(context);
+    final token = oat.getToken(widget.nounUrl);
+
+    if (token != null) {
+      progress = Progress.granted;
+      return;
+    }
+
     if (activeAccount != null) {
       final api = TimuApiProvider.of(super.context).api;
-      final oat = ObjectAccessTokenProviderState.of(super.context);
 
       try {
         await api.invoke(
@@ -125,14 +132,10 @@ class _RequireAccessState extends State<RequireAccess> {
             public: true,
             body: {'role': 'core:contributor'});
 
-        oat.setAccount(widget.nounUrl, activeAccount);
-
         setState(() {
-          if (!accessComp.isCompleted) {
-            accessComp.complete(true);
-          }
+          accessComp.complete(true);
 
-          progress = joined ? Progress.granted : Progress.joining;
+          progress = Progress.joining;
         });
       } on AccessDeniedError {
         setState(() {
@@ -155,7 +158,9 @@ class _RequireAccessState extends State<RequireAccess> {
   }
 
   onApprove() {
-    accessComp.complete(true);
+    setState(() {
+      progress = Progress.granted;
+    });
   }
 
   onLogin() {
@@ -199,16 +204,14 @@ class _RequireAccessState extends State<RequireAccess> {
     super.didChangeDependencies();
 
     final Account? activeAccount = AuthModel.of(super.context).activeAccount;
-    final storage = AuthStorageCacheState.of(super.context);
-    final oat = ObjectAccessTokenProviderState.of(super.context);
-    final curAccount = oat.getAccount(widget.nounUrl);
 
-    if (curAccount != null &&
-        (activeAccount == null || curAccount.key != activeAccount.key)) {
-      storage.setActiveAccount(curAccount);
-    } else {
-      checkAccess(activeAccount);
-    }
+    setState(() {
+      progress = Progress.processing;
+      accessComp = Completer<bool>();
+      joined = false;
+    });
+
+    checkAccess(activeAccount);
   }
 
   @override
@@ -235,28 +238,18 @@ class _RequireAccessState extends State<RequireAccess> {
                 width: 50, height: 50, child: CircularProgressIndicator()));
 
       case Progress.joining:
-        return WebsocketProvider(
-            nounUrl: widget.nounUrl,
-            channel: 'lobby',
-            metadata: accessComp.isCompleted
-                ? const <String, dynamic>{}
-                : const <String, dynamic>{'waiting': true},
-            child: LobbyWaitPage(
-              onApproved: onApprove,
-              onDenied: onDenied,
-              child: widget.joining(context, () {
-                setState(() {
-                  joined = true;
-                  progress = Progress.waiting;
-                });
+        return widget.joining(context, () {
+          setState(() {
+            joined = true;
+            progress = Progress.waiting;
+          });
 
-                accessComp.future.then((allowed) {
-                  setState(() {
-                    progress = allowed ? Progress.granted : Progress.denied;
-                  });
-                });
-              }),
-            ));
+          accessComp.future.then((allowed) {
+            setState(() {
+              progress = allowed ? Progress.granted : Progress.denied;
+            });
+          });
+        });
 
       case Progress.waiting:
         return WebsocketProvider(
@@ -270,10 +263,20 @@ class _RequireAccessState extends State<RequireAccess> {
             ));
 
       case Progress.granted:
-        return WebsocketProvider(
-            nounUrl: widget.nounUrl,
-            channel: 'lobby',
-            child: _NotificationPopup(child: widget.granted(context)));
+        final token =
+            ObjectAccessTokenProviderState.of(context).getToken(widget.nounUrl);
+        final Account activeAccount =
+            AuthModel.of(super.context).activeAccount!;
+        final api = TimuApiProvider.of(context)
+            .api
+            .withToken(token ?? activeAccount.accessToken!);
+
+        return TimuApiProvider(
+            api: api,
+            child: WebsocketProvider(
+                nounUrl: widget.nounUrl,
+                channel: 'lobby',
+                child: _NotificationPopup(child: widget.granted(context))));
 
       case Progress.denied:
         return const UserMeetingAccessDenied();

@@ -137,6 +137,15 @@ class TimuApi {
 
   final Map<String, String> queryParameters;
 
+  TimuApi withToken(String token) {
+    return TimuApi(
+        host: host,
+        headers: headers,
+        accessToken: token,
+        defaultNetwork: defaultNetwork,
+        port: port);
+  }
+
   Future<PreuploadedAttachmentReference> preupload(XFile file) async {
     return preuploadStream(name: file.name, stream: file.openRead());
   }

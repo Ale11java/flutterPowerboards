@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../model/account.dart';
-
 class ObjectAccessTokenProvider extends StatefulWidget {
   const ObjectAccessTokenProvider({super.key, required this.child});
 
@@ -13,7 +11,7 @@ class ObjectAccessTokenProvider extends StatefulWidget {
 }
 
 class ObjectAccessTokenProviderState extends State<ObjectAccessTokenProvider> {
-  Map<String, Account> objectTokens = {};
+  Map<String, String> objectTokens = {};
 
   static ObjectAccessTokenProviderState? maybeOf(BuildContext context) {
     return context.findAncestorStateOfType<ObjectAccessTokenProviderState>();
@@ -28,11 +26,11 @@ class ObjectAccessTokenProviderState extends State<ObjectAccessTokenProvider> {
     return result!;
   }
 
-  Account? getAccount(String nounUrl) {
+  String? getToken(String nounUrl) {
     return objectTokens[nounUrl];
   }
 
-  setAccount(String nounUrl, Account account) {
+  setToken(String nounUrl, String account) {
     setState(() {
       objectTokens = {...objectTokens, nounUrl: account};
     });

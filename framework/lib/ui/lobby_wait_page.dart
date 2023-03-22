@@ -5,6 +5,7 @@ import 'package:uuid/uuid.dart';
 
 import '../model/account.dart';
 import 'auth_storage_cache.dart';
+import 'object_access_token.dart';
 import 'websocket_provider.dart';
 
 class LobbyWaitPage extends StatefulWidget {
@@ -29,26 +30,17 @@ class LobbyWaitState extends State<LobbyWaitPage> {
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    final ws = WebsocketState.of(super.context).websocket;
+    final ws = WebsocketState.of(context).websocket;
+    final oat = ObjectAccessTokenProviderState.of(context);
 
     sub?.cancel();
     sub = ws?.listen((event) {
       if (event.data.containsKey('token')) {
-        final storage =
-            context.findAncestorStateOfType<AuthStorageCacheState>();
         final token = event.data['token'];
 
         widget.onApproved();
 
-        const uuid = Uuid();
-        storage?.addAccount(Account(
-            key: uuid.v4(),
-            email: 'guest',
-            firstName: storage.activeAccount?.firstName ?? 'Guest',
-            lastName: storage.activeAccount?.lastName ?? 'User',
-            accessToken: token,
-            method: 'register',
-            provider: 'guest'));
+        oat.setToken(ws.url, token);
       } else if (event.data.containsKey('denied')) {
         widget.onDenied();
       }
