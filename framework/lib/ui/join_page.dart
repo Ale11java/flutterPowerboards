@@ -335,7 +335,7 @@ class _JoinPageState extends State<JoinPage> {
                     )),
               ])),
               const SizedBox(height: 30),
-              bottomButton,
+              SizedBox(width: 400, child: bottomButton)
             ]))));
   }
 }

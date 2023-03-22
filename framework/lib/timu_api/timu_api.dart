@@ -301,6 +301,8 @@ class TimuApi {
   }
 }
 
+const missingAttachment = Attachment(name: '', size: 0, url: '');
+
 class TimuObject {
   TimuObject(this.rawData);
 

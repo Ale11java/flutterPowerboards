@@ -291,29 +291,29 @@ List<GoRoute> genRoutes() {
         ),
       ),
     ),
-    GoRoute(
-      name: 'Notification',
-      path: '/notification',
-      builder: (BuildContext context, GoRouterState state) => Center(
-        child: NotificationWidget(
-          initials: 'JK',
-          title: 'Participant Name',
-          text: 'is waiting in lobby...',
-          primaryAction: NotificationAction(
-            label: 'Admit',
-            onPressed: () {
-              // handle the action when the user taps the primary button
-            },
-          ),
-          secondaryAction: NotificationAction(
-            label: 'Remove',
-            onPressed: () {
-              // handle the action when the user taps the secondary button
-            },
-          ),
-        ),
-      ),
-    ),
+//    GoRoute(
+//      name: 'Notification',
+//      path: '/notification',
+//      builder: (BuildContext context, GoRouterState state) => Center(
+//        child: NotificationWidget(
+//
+//          title: 'Participant Name',
+//          text: 'is waiting in lobby...',
+//          primaryAction: NotificationAction(
+//            label: 'Admit',
+//            onPressed: () {
+//              // handle the action when the user taps the primary button
+//            },
+//          ),
+//          secondaryAction: NotificationAction(
+//            label: 'Remove',
+//            onPressed: () {
+//              // handle the action when the user taps the secondary button
+//            },
+//          ),
+//        ),
+//      ),
+//    ),
 
     GoRoute(
       name: 'Dialog Buttons',
