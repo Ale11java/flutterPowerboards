@@ -268,8 +268,7 @@ class _RequireAccessState extends State<RequireAccess> {
             child: WebsocketProvider(
                 nounUrl: widget.nounUrl,
                 channel: 'lobby',
-                child:
-                    _NotificationPopup(child: wrap(widget.granted(context)))));
+                child: _NotificationPopup(child: widget.granted(context))));
 
       case Progress.denied:
         return const UserMeetingAccessDenied();

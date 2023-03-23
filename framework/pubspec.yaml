@@ -17,6 +17,7 @@ dependencies:
   uuid: ^3.0.7
   web_socket_channel: ^2.3.0
   android_content_provider: ^0.3.0
+  soundpool: ^2.3.0
 
 dev_dependencies:
   recase: ^4.0.0
