@@ -12,26 +12,28 @@ class SharedPreferences {
 
     String? value;
 
-    try {
-      final end =
-          (await cursor!.batchedGet().getCount().commit()).first! as int;
-      final batch = cursor.batchedGet().getString(0).getString(1);
+    if (cursor != null) {
+      try {
+        final end =
+            (await cursor.batchedGet().getCount().commit()).first! as int;
+        final batch = cursor.batchedGet().getString(0).getString(1);
 
-      late List<List<Object?>> preferencesData;
+        late List<List<Object?>> preferencesData;
 
-      preferencesData = await batch.commitRange(0, end);
+        preferencesData = await batch.commitRange(0, end);
 
-      final preferences = preferencesData
-          .map((data) => SharePreferenceData.fromCursorData(data))
-          .toList();
+        final preferences = preferencesData
+            .map((data) => SharePreferenceData.fromCursorData(data))
+            .toList();
 
-      for (final SharePreferenceData d in preferences) {
-        if (d.key == key) {
-          value = d.value;
+        for (final SharePreferenceData d in preferences) {
+          if (d.key == key) {
+            value = d.value;
+          }
         }
+      } finally {
+        cursor.close();
       }
-    } finally {
-      cursor?.close();
     }
 
     return value;
@@ -49,6 +51,7 @@ class SharePreferenceData {
         key: data[0]! as String,
         value: data[1]! as String,
       );
+
   final String key;
   final String value;
 }
