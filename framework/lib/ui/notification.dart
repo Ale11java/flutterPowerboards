@@ -4,14 +4,16 @@ import 'package:google_fonts/google_fonts.dart';
 class NotificationWidget extends StatelessWidget {
   const NotificationWidget({
     super.key,
-    required this.avatar,
+    this.avatar,
+    this.initials,
     required this.title,
     required this.text,
     this.primaryAction,
     this.secondaryAction,
   });
 
-  final Widget avatar;
+  final ImageProvider? avatar;
+  final String? initials;
   final String title;
   final String text;
   final NotificationAction? primaryAction;
@@ -19,6 +21,11 @@ class NotificationWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final Widget? avatarInitials = initials == null
+        ? null
+        : Text(initials!,
+            style: GoogleFonts.inter(textStyle: const TextStyle(fontSize: 14)));
+
     return Container(
       width: 400,
       padding: const EdgeInsets.all(16.0),
@@ -41,7 +48,11 @@ class NotificationWidget extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              avatar,
+              CircleAvatar(
+                backgroundImage: avatar,
+                radius: 25.0,
+                child: avatar == null ? avatarInitials : null,
+              ),
               const SizedBox(width: 16.0),
               Expanded(
                 child: Column(
