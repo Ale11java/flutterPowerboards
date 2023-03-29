@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import '../timu_icons/timu_icons.dart';
 
 class ParticipantOverlay extends StatelessWidget {
   const ParticipantOverlay({
-    super.key,
+    Key? key,
     required this.name,
     required this.muted,
-  });
+  }) : super(key: key);
 
   final String name;
   final bool muted;
@@ -14,31 +15,54 @@ class ParticipantOverlay extends StatelessWidget {
   Widget build(BuildContext context) {
     final double pixelRatio = MediaQuery.of(context).devicePixelRatio;
 
-    return ColoredBox(
-      color: Colors.black.withOpacity(0.3),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            name,
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-              fontSize: 20,
+    return Positioned(
+      bottom: 20,
+      left: 10,
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(3),
+          color: Color(0x992f2d57),
+        ),
+        padding: const EdgeInsets.only(
+          left: 6,
+          right: 9,
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(
+              width: 16,
+              height: 24,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Icon(
+                muted ? TimuIcons.audio_mute : TimuIcons.audio,
+                color: Colors.white,
+                size: 16,
+              ),
             ),
-          ),
-          const SizedBox(height: 10),
-          Icon(
-            muted ? Icons.mic_off : Icons.mic,
-            color: Colors.white,
-            size: 40,
-          ),
-          Image.asset(
-            'assets/icons/mic-${pixelRatio}x.png',
-            width: 24 * pixelRatio,
-            height: 24 * pixelRatio,
-          ),
-        ],
+            const SizedBox(width: 1),
+            SizedBox(
+              height: 16, // adjust this value to create the desired spacing
+              child: Transform.translate(
+                offset:
+                    Offset(0, 2), // adjust this value to shift the text down
+                child: Text(
+                  name,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 11,
+                    fontFamily: "Roboto",
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
