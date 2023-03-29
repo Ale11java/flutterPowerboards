@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 
 import 'package:http/http.dart' as http;
 import 'websocket.dart';
+import 'dart:typed_data';
 
 class RequiresAuthenticationError implements Exception {}
 
@@ -148,6 +149,44 @@ class TimuApi {
 
   Future<PreuploadedAttachmentReference> preupload(XFile file) async {
     return preuploadStream(name: file.name, stream: file.openRead());
+  }
+
+  Future<PreuploadedAttachmentReference> preuploadBytes(
+      {required String name, required Uint8List bytes}) async {
+    final response = await http.post(
+        Uri(
+            scheme: 'https',
+            host: host,
+            port: port,
+            path: '/api/graph/+preupload',
+            queryParameters: queryParameters),
+        headers: headers,
+        body: jsonEncode(<String, dynamic>{
+          'name': name,
+        }));
+
+    if (response.statusCode != 200) {
+      throw response.toError();
+    }
+
+    final requestData = jsonDecode(response.body);
+
+    final String id = requestData['id'];
+    final String url = requestData['url'];
+    final String contentType = requestData['contentType'];
+
+    final upload = http.Request('PUT', Uri.parse(url))
+      ..headers.addAll(<String, String>{'Content-Type': contentType});
+
+    upload.bodyBytes = bytes;
+
+    final uploadResponse = await upload.send();
+
+    if (uploadResponse.statusCode != 200) {
+      throw response.toError();
+    }
+
+    return PreuploadedAttachmentReference(id: id, name: name);
   }
 
   Future<PreuploadedAttachmentReference> preuploadStream(

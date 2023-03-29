@@ -14,7 +14,7 @@ class HeaderTabBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-        width: 400,
+        width: 250,
         child: TabBar(
           controller: controller,
           indicatorWeight: 3,

@@ -252,21 +252,24 @@ class _RequireAccessState extends State<RequireAccess> {
             ));
 
       case Progress.granted:
-        final token =
-            ObjectAccessTokenProviderState.of(context).getToken(widget.nounUrl);
         final Account activeAccount =
             AuthModel.of(super.context).activeAccount!;
-        final api = TimuApiProvider.of(context)
-            .api
-            .withToken(token ?? activeAccount.accessToken!);
+        final oat =
+            ObjectAccessTokenProviderState.of(context).getToken(widget.nounUrl);
+        final token = oat ?? activeAccount.accessToken!;
+
+        final api = TimuApiProvider.of(context).api.withToken(token);
+
+        print("Object access token: $oat");
+        print("Active account token: ${activeAccount?.accessToken}");
+        print("Proceeding to meeting with token $token");
 
         return TimuApiProvider(
             api: api,
             child: WebsocketProvider(
                 nounUrl: widget.nounUrl,
                 channel: 'lobby',
-                child:
-                    _NotificationPopup(child: wrap(widget.granted(context)))));
+                child: _NotificationPopup(child: widget.granted(context))));
     }
   }
 }
@@ -372,7 +375,5 @@ class _ClientWidget extends StatelessWidget {
 Widget wrap(Widget child) {
   return ColoredBox(
       color: const Color(0XFF2F2D57),
-      child: Center(
-          child: SingleChildScrollView(
-              child: SizedBox(width: 400, child: child))));
+      child: Center(child: SizedBox(width: 400, child: child)));
 }

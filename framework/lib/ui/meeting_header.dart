@@ -44,19 +44,17 @@ class MeetingHeader extends StatelessWidget {
     return Container(
         alignment: Alignment.center,
         height: 48,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
             color: Colors.white,
-            border: Border(
-                bottom: BorderSide(
-                    color: _meetingHeaderBorderColor,
-                    strokeAlign: BorderSide.strokeAlignInside))),
+            border:
+                Border(bottom: BorderSide(color: _meetingHeaderBorderColor))),
         child: Padding(
             padding: const EdgeInsets.fromLTRB(12, 0, 0, 0),
             child: Row(children: <Widget>[
               IntrinsicHeight(
                   child: MeetingHeaderTitle(start: start, text: title)),
               IntrinsicHeight(child: Row(children: buttons)),
-              Expanded(child: Spacer()),
+              const Spacer(),
               IntrinsicWidth(
                   child: HeaderTabBar(tabs: tabs, controller: tabController))
             ])));
@@ -71,11 +69,24 @@ class MeetingHeaderButton extends FilledButton {
       super.key,
       this.on = false})
       : super(
-            style: ButtonStyle(
-                overlayColor: MaterialStateProperty.all(Colors.transparent),
-                shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(5))),
-                backgroundColor: MaterialStateProperty.all(Colors.transparent)),
+            style: FilledButton.styleFrom(
+                    elevation: 0,
+                    enableFeedback: false,
+                    surfaceTintColor: Colors.transparent,
+                    splashFactory: NoSplash.splashFactory,
+                    padding: EdgeInsets.all(0),
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5)),
+                    foregroundColor: Colors.white,
+                    backgroundColor: Colors.white)
+                .copyWith(
+              overlayColor: MaterialStateProperty.resolveWith<Color>(
+                (Set<MaterialState> states) {
+                  return Colors.transparent;
+                },
+              ),
+            ),
             child: Tooltip(
                 message: text,
                 child: SizedBox(
@@ -90,7 +101,9 @@ class MeetingHeaderButton extends FilledButton {
                         child: Icon(
                           icon,
                           size: 32,
-                          color: on ? Colors.white : _meetingHeaderButtonColor,
+                          color: on
+                              ? Colors.transparent
+                              : _meetingHeaderButtonColor,
                         )))));
 
   final String text;

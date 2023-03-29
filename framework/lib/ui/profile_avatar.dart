@@ -12,7 +12,7 @@ class ProfileAvatar extends StatelessWidget {
   Widget build(BuildContext context) {
     ImageProvider? avatar;
     final String initials =
-        '${(profile.rawData['firstName'] ?? "").toString().characters.first}${(profile.rawData['lastName'] ?? "").toString().characters.first}';
+        '${(profile.rawData['firstName'] ?? " ").toString().characters.first}${(profile.rawData['lastName'] ?? " ").toString().characters.first}';
 
     final Widget avatarInitials = Text(initials,
         style: GoogleFonts.inter(textStyle: const TextStyle(fontSize: 14)));

@@ -110,7 +110,7 @@ class _ToolbarContents extends StatelessWidget {
 
     if (toolbar.direction == ToolbarDirection.horizontal) {
       return Container(
-        height: 56.0, // in logical pixels
+        height: 64.0, // in logical pixels
         padding: const EdgeInsets.all(8.0),
         decoration: BoxDecoration(
           border: Border.all(
@@ -129,7 +129,7 @@ class _ToolbarContents extends StatelessWidget {
       );
     } else {
       return Container(
-        width: 56.0, // in logical pixels
+        width: 64.0, // in logical pixels
         padding: const EdgeInsets.all(8.0),
         decoration: BoxDecoration(
           border: Border.all(
@@ -199,16 +199,19 @@ class ToolbarSeparator extends StatelessWidget {
 class ToolbarButton extends StatelessWidget {
   const ToolbarButton({
     this.onPressed,
+    this.onLongPress,
     this.child,
     super.key,
   });
 
+  final VoidCallback? onLongPress;
   final VoidCallback? onPressed;
   final Widget? child;
 
   @override
   Widget build(BuildContext context) {
     return FilledButton(
+      onLongPress: onLongPress,
       onPressed: onPressed,
       style: ButtonStyle(
         shape: MaterialStateProperty.all(
@@ -226,6 +229,7 @@ class ToggleToolbarButton extends ToolbarButton {
   const ToggleToolbarButton({
     this.on = false,
     super.onPressed,
+    super.onLongPress,
     super.child,
     super.key,
   });
@@ -237,31 +241,37 @@ class ToggleToolbarButton extends ToolbarButton {
     if (on) {
       return FilledButton(
         onPressed: onPressed,
-        style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.all(const Color(0xFF7752FF)),
-          textStyle: MaterialStateProperty.all(
-              const TextStyle(color: Color(0xffffffff))),
-          shape: MaterialStateProperty.all(
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0))),
-          padding: MaterialStateProperty.all(const EdgeInsets.all(5)),
-          minimumSize: MaterialStateProperty.all(const Size.square(32.0)),
-          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        ),
+        onLongPress: onLongPress,
+        style: FilledButton.styleFrom(
+            elevation: 0,
+            enableFeedback: false,
+            surfaceTintColor: Colors.transparent,
+            splashFactory: NoSplash.splashFactory,
+            padding: const EdgeInsets.all(5),
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(5.0)),
+            minimumSize: const Size.square(32.0),
+            textStyle: const TextStyle(color: Color(0xffffffff)),
+            backgroundColor: const Color(0x887752FF)),
         child: child,
       );
     } else {
       return FilledButton(
         onPressed: onPressed,
-        style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.all(const Color(0x002f2d57)),
-          textStyle: MaterialStateProperty.all(
-              const TextStyle(color: Color(0xffffffff))),
-          shape: MaterialStateProperty.all(
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0))),
-          padding: MaterialStateProperty.all(const EdgeInsets.all(5)),
-          minimumSize: MaterialStateProperty.all(const Size.square(32.0)),
-          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        ),
+        onLongPress: onLongPress,
+        style: FilledButton.styleFrom(
+            elevation: 0,
+            enableFeedback: false,
+            surfaceTintColor: Colors.transparent,
+            splashFactory: NoSplash.splashFactory,
+            padding: const EdgeInsets.all(5),
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(5.0)),
+            minimumSize: const Size.square(32.0),
+            textStyle: const TextStyle(color: Color(0xffffffff)),
+            backgroundColor: const Color(0x002f2d57)),
         child: child,
       );
     }
