@@ -12,7 +12,7 @@ class NotificationWidget extends StatelessWidget {
     this.secondaryAction,
   });
 
-  final ImageProvider? avatar;
+  final Widget? avatar;
   final String? initials;
   final String title;
   final String text;
@@ -49,7 +49,7 @@ class NotificationWidget extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               CircleAvatar(
-                backgroundImage: avatar,
+                //backgroundImage: avatar,
                 radius: 25.0,
                 child: avatar == null ? avatarInitials : null,
               ),

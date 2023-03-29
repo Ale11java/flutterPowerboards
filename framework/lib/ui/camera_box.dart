@@ -19,22 +19,24 @@ class CameraBox extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.white, width: 2.0),
-        borderRadius: BorderRadius.circular(8.0),
-      ),
+          border: Border.all(color: Colors.white, width: 2.0),
+          borderRadius: BorderRadius.circular(8.0),
+          boxShadow: [
+            BoxShadow(blurRadius: 5, color: Color.fromARGB(50, 0, 0, 0))
+          ]),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(8.0),
         child: Stack(
           children: [
             camera,
             Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: ParticipantOverlay(
+              bottom: 10,
+              left: 10,
+              child: IntrinsicWidth(
+                  child: ParticipantOverlay(
                 name: participantName,
                 muted: muted,
-              ),
+              )),
             ),
           ],
         ),

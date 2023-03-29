@@ -101,9 +101,7 @@ class MeetingHeaderButton extends FilledButton {
                         child: Icon(
                           icon,
                           size: 32,
-                          color: on
-                              ? Colors.transparent
-                              : _meetingHeaderButtonColor,
+                          color: on ? Colors.white : _meetingHeaderButtonColor,
                         )))));
 
   final String text;
