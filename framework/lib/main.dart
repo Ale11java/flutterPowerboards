@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:timu_dart/ui/camera_box.dart';
 
 import 'examples/floating_panel.dart';
 import 'examples/header_tab_bar.dart';
@@ -107,7 +108,7 @@ List<GoRoute> genRoutes() {
                 );
               },
               waiting: (BuildContext context) {
-                return const Column(
+                return Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     ScreenTitle(
@@ -118,7 +119,7 @@ List<GoRoute> genRoutes() {
                 );
               },
               granted: (BuildContext context) {
-                return const Column(
+                return Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     ScreenTitle(text: 'In App'),
@@ -279,29 +280,29 @@ List<GoRoute> genRoutes() {
         ),
       ),
     ),
-//    GoRoute(
-//      name: 'Notification',
-//      path: '/notification',
-//      builder: (BuildContext context, GoRouterState state) => Center(
-//        child: NotificationWidget(
-//
-//          title: 'Participant Name',
-//          text: 'is waiting in lobby...',
-//          primaryAction: NotificationAction(
-//            label: 'Admit',
-//            onPressed: () {
-//              // handle the action when the user taps the primary button
-//            },
-//          ),
-//          secondaryAction: NotificationAction(
-//            label: 'Remove',
-//            onPressed: () {
-//              // handle the action when the user taps the secondary button
-//            },
-//          ),
-//        ),
-//      ),
-//    ),
+    GoRoute(
+      name: 'Notification',
+      path: '/notification',
+      builder: (BuildContext context, GoRouterState state) => Center(
+        child: NotificationWidget(
+          initials: 'JK',
+          title: 'Participant Name',
+          text: 'is waiting in lobby...',
+          primaryAction: NotificationAction(
+            label: 'Admit',
+            onPressed: () {
+              // handle the action when the user taps the primary button
+            },
+          ),
+          secondaryAction: NotificationAction(
+            label: 'Remove',
+            onPressed: () {
+              // handle the action when the user taps the secondary button
+            },
+          ),
+        ),
+      ),
+    ),
 
     GoRoute(
       name: 'Dialog Buttons',
@@ -364,27 +365,49 @@ List<GoRoute> genRoutes() {
       path: '/sidebar-group',
       builder: (BuildContext context, GoRouterState state) => const Scaffold(
         body: Center(
-            child: SidebarGroup(
-          title: 'Create/View/Present/Share',
-          children: [
-            SidebarGroupButton(
-              icon: AssetImage('assets/app-timu.png'),
-              text: 'Create',
-            ),
-            SidebarGroupButton(
-              icon: AssetImage('assets/view.png'),
-              text: 'View',
-            ),
-            SidebarGroupButton(
-              icon: AssetImage('assets/present.png'),
-              text: 'Present',
-            ),
-            SidebarGroupButton(
-              icon: AssetImage('assets/share.png'),
-              text: 'Share',
-            ),
-          ],
-        )),
+            child: SidebarGroup(title: 'Daily Design Meeting', createChildren: [
+          SidebarGroupButton(
+            icon: TimuIcons.layer_layout_grid,
+            text: 'New layout',
+          ),
+        ], viewChildren: [
+          SidebarGroupButton(
+            icon: TimuIcons.browse,
+            text: 'Browse Contents',
+          ),
+          SidebarGroupButton(
+            icon: TimuIcons.hide,
+            text: 'Hide meeting controls',
+          ),
+          SidebarGroupButton(
+            icon: TimuIcons.people,
+            text: 'Show people here',
+          ),
+          SidebarGroupButton(
+            icon: TimuIcons.layers,
+            text: 'Show layers',
+          ),
+          SidebarGroupButton(
+            icon: TimuIcons.tools,
+            text: 'Show editing tools',
+          ),
+        ], presentChildren: [
+          SidebarGroupButton(
+            icon: TimuIcons.present_start,
+            text: 'Start presentation',
+          ),
+          SidebarGroupButton(
+            icon: TimuIcons.present_play,
+            text: 'Record presentation',
+          ),
+        ], shareChildren: [
+          SidebarGroupButton(
+            icon: TimuIcons.add_people,
+            text: 'Invite people',
+          ),
+        ], children: []
+                // ...
+                )),
       ),
     ),
     GoRoute(
@@ -396,6 +419,56 @@ List<GoRoute> genRoutes() {
             name: 'John Doe',
             muted: false,
           ),
+        ),
+      ),
+    ),
+    GoRoute(
+      name: 'Camera Box',
+      path: '/camera-box',
+      builder: (BuildContext context, GoRouterState state) => Scaffold(
+        body: Column(
+          children: [
+            Expanded(
+              child: Column(
+                children: [
+                  Expanded(
+                    child: CameraBox(
+                      camera: Image.asset('lib/assets/cam1.png'),
+                      participantName: 'Jane Doe',
+                      muted: false,
+                    ),
+                  ),
+                  Expanded(
+                    child: CameraBox(
+                      camera: Image.asset('lib//assets/cam2.png'),
+                      participantName: 'James Carter',
+                      muted: true,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: Column(
+                children: [
+                  Expanded(
+                    child: CameraBox(
+                      camera: Image.asset('lib//assets/cam3.png'),
+                      participantName: 'Jenny Taylor',
+                      muted: false,
+                    ),
+                  ),
+                  Expanded(
+                    child: CameraBox(
+                      camera: Image.asset('lib//assets/cam4.png'),
+                      participantName: 'Bob Denim',
+                      muted: true,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     ),

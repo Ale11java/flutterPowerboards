@@ -79,26 +79,6 @@ class CancelDialogButton extends DialogButton {
     Color? bgColor,
     required Color textColor,
   }) : super(key: key, onPressed: onPressed, child: child, bgColor: bgColor);
-
-  // @override
-  // Widget build(BuildContext context) {
-  //   return Padding(
-  //     padding: const EdgeInsets.symmetric(horizontal: 8.0),
-  //     child: Expanded(
-  //       child: TextButton(
-  //         onPressed: onPressed,
-  //         style: TextButton.styleFrom(
-  //           padding: const EdgeInsets.all(16.0),
-  //           alignment: Alignment.center,
-  //           backgroundColor: bgColor,
-  //           side: const BorderSide(width: 3, color: Color(0XFF7651fb)),
-  //           textStyle: const TextStyle(color: Colors.white),
-  //         ),
-  //         child: child,
-  //       ),
-  //     ),
-  //   );
-  // }
 }
 
 class OkDialogButton extends DialogButton {
@@ -130,7 +110,7 @@ class DialogButtonText extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text,
-      style: Theme.of(context).textTheme.button,
+      //style: Theme.of(context).textTheme.button,
     );
   }
 }
