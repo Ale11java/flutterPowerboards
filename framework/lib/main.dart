@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:timu_dart/ui/camera_box.dart';
+import 'package:timu_dart/ui/prompt_dialog.dart';
 
 import 'examples/floating_panel.dart';
 import 'examples/header_tab_bar.dart';
@@ -469,6 +470,20 @@ List<GoRoute> genRoutes() {
               ),
             ),
           ],
+        ),
+      ),
+    ),
+    GoRoute(
+      name: 'Prompt Dialog',
+      path: '/prompt-dialog',
+      builder: (context, state) => TimuDialogTheme(
+        child: PromptDialog(
+          input: 'Title',
+          placeholder: 'Input',
+          initialValue: '',
+          onOkPressed: (String value) {
+            print('User entered: $value');
+          },
         ),
       ),
     ),
