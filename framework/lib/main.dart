@@ -173,16 +173,7 @@ List<GoRoute> genRoutes() {
         childLoggedIn: MyHomePage(title: 'Before you go in, are you the host?'),
       ),
     ),
-    GoRoute(
-      name: 'Meeting Header',
-      path: '/meeting-header',
-      builder: (BuildContext context, GoRouterState state) => const Scaffold(
-        backgroundColor: Colors.blue,
-        body: Center(
-          child: MeetingHeaderExample(),
-        ),
-      ),
-    ),
+
     GoRoute(
       name: 'Floating Panel',
       path: '/floating-panel',

@@ -24,12 +24,10 @@ class _HeaderTabBarExampleState extends State<HeaderTabBarExample>
                 child: HeaderTabBar(
                   controller: TabController(length: 3, vsync: this),
                   tabs: [
-                    HeaderTab(semanticLabel: 'Tab 1', icon: TimuIcons.tools),
+                    HeaderTab(label: 'Tab 1', icon: TimuIcons.tools),
+                    HeaderTab(label: 'Tab 2', icon: TimuIcons.layer_text),
                     HeaderTab(
-                        semanticLabel: 'Tab 2', icon: TimuIcons.layer_text),
-                    HeaderTab(
-                        semanticLabel: 'Tab 3',
-                        icon: TimuIcons.layer_camera_grid),
+                        label: 'Tab 3', icon: TimuIcons.layer_camera_grid),
                   ],
                 ))));
   }
