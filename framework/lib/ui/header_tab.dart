@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 class HeaderTab {
-  const HeaderTab({required this.semanticLabel, required this.icon});
+  const HeaderTab({required this.label, required this.icon});
 
-  final String semanticLabel;
+  final String label;
   final IconData icon;
 }

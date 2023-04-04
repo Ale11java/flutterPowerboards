@@ -26,7 +26,7 @@ class HeaderTabBar extends StatelessWidget {
                   width: 28,
                   child: Tab(
                     icon: Tooltip(
-                      message: tab.semanticLabel,
+                      message: tab.label,
                       child: Icon(
                         tab.icon,
                         size: 16,

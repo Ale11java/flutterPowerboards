@@ -25,19 +25,18 @@ final _meetingHeaderClockFont = GoogleFonts.robotoFlex(
         color: _meetingHeaderAltColor));
 
 class MeetingHeader extends StatelessWidget {
-  const MeetingHeader(
-      {required this.title,
-      required this.start,
-      super.key,
-      required this.buttons,
-      required this.tabController,
-      required this.tabs});
+  const MeetingHeader({
+    required this.title,
+    required this.start,
+    super.key,
+    required this.leftButtons,
+    required this.rightButtons,
+  });
 
   final String title;
   final DateTime start;
-  final List<Widget> buttons;
-  final List<HeaderTab> tabs;
-  final TabController tabController;
+  final List<Widget> leftButtons;
+  final List<Widget> rightButtons;
 
   @override
   Widget build(BuildContext context) {
@@ -51,12 +50,19 @@ class MeetingHeader extends StatelessWidget {
         child: Padding(
             padding: const EdgeInsets.fromLTRB(12, 0, 0, 0),
             child: Row(children: <Widget>[
-              IntrinsicHeight(
-                  child: MeetingHeaderTitle(start: start, text: title)),
-              IntrinsicHeight(child: Row(children: buttons)),
-              const Spacer(),
-              IntrinsicWidth(
-                  child: HeaderTabBar(tabs: tabs, controller: tabController))
+              Expanded(
+                  child: IntrinsicHeight(child: Row(children: leftButtons))),
+              Expanded(
+                  child: Align(
+                      alignment: Alignment.center,
+                      child: IntrinsicWidth(
+                          child:
+                              MeetingHeaderTitle(start: start, text: title)))),
+              Expanded(
+                  child: IntrinsicHeight(
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: rightButtons))),
             ])));
   }
 }
