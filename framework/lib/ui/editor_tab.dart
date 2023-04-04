@@ -1,10 +1,10 @@
-import 'header_tab.dart';
 import 'package:flutter/material.dart';
 
 abstract class EditorTab {
-  const EditorTab({required this.tab});
+  const EditorTab({required this.label, required this.icon});
 
-  final HeaderTab tab;
+  final String label;
+  final IconData icon;
 
   Widget build(BuildContext context);
 }
