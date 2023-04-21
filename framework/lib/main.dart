@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:timu_dart/ui/camera_box.dart';
 
 import 'examples/floating_panel.dart';
+import 'examples/lobby.dart';
 import 'examples/login_prompt_page.dart';
 import 'model/auth_storage.dart';
 import 'timu_icons/timu_icons.dart';
@@ -41,9 +42,10 @@ List<GoRoute> genRoutes() {
           ListRoutesPage(routes: genRoutes()),
     ),
     GoRoute(
-      name: 'Lobby Page',
-      path: '/lobby-page',
-      builder: (BuildContext context, GoRouterState state) => const LobbyPage(),
+      name: 'Lobby Example',
+      path: '/lobby',
+      builder: (BuildContext context, GoRouterState state) =>
+          const LobbyExample(),
     ),
 
     GoRoute(

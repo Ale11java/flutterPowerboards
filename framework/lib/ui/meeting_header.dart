@@ -9,11 +9,11 @@ const _meetingHeaderAltColor = Color.fromARGB(0xff, 0x60, 0x73, 0x8B);
 const _meetingHeaderTitleColor = Color.fromARGB(0xff, 0x2F, 0x2D, 0x57);
 const _meetingHeaderBorderColor = const Color(0xffcccccc);
 
-final _meetingHeaderFont = GoogleFonts.robotoFlex(
+final meetingHeaderFont = GoogleFonts.robotoFlex(
     textStyle: const TextStyle(
-        height: 0,
+        height: 1,
         color: _meetingHeaderTitleColor,
-        fontSize: 21,
+        fontSize: 16,
         fontWeight: FontWeight.w800));
 final _meetingHeaderClockFont = GoogleFonts.robotoFlex(
     textStyle: const TextStyle(
@@ -31,7 +31,7 @@ class MeetingHeader extends StatelessWidget {
     required this.rightButtons,
   });
 
-  final String title;
+  final Widget title;
   final DateTime start;
   final List<Widget> leftButtons;
   final List<Widget> rightButtons;
@@ -40,57 +40,68 @@ class MeetingHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
         alignment: Alignment.center,
-        height: 48,
+        height: 40,
         decoration: const BoxDecoration(
             color: Colors.white,
             border:
                 Border(bottom: BorderSide(color: _meetingHeaderBorderColor))),
         child: Padding(
             padding: const EdgeInsets.fromLTRB(12, 0, 0, 0),
-            child: Row(children: <Widget>[
-              Expanded(
-                  child: IntrinsicHeight(child: Row(children: leftButtons))),
-              Expanded(
-                  child: Align(
-                      alignment: Alignment.center,
-                      child: IntrinsicWidth(
-                          child:
-                              MeetingHeaderTitle(start: start, text: title)))),
-              Expanded(
-                  child: IntrinsicHeight(
+            child: Stack(children: [
+              Row(
+                children: <Widget>[
+                  Expanded(
+                      child:
+                          IntrinsicHeight(child: Row(children: leftButtons))),
+                  IntrinsicHeight(
                       child: Row(
                           mainAxisAlignment: MainAxisAlignment.end,
-                          children: rightButtons))),
+                          children: [
+                        MeetingHeaderClock(start: start),
+                        ...rightButtons
+                      ])),
+                ],
+              ),
+              Align(
+                  child: IntrinsicWidth(child: title),
+                  alignment: Alignment.center),
             ])));
   }
 }
 
-class MeetingHeaderButton extends FilledButton {
+class ToolIcon extends StatelessWidget {
+  const ToolIcon(this.icon, {super.key});
+
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    return Icon(icon, color: _toolIconColor, size: 28);
+  }
+}
+
+const _toolIconColor = Color.fromARGB(0xff, 0x4A, 0x46, 0x98);
+
+class MeetingHeaderButton extends StatelessWidget {
   MeetingHeaderButton(
       {required this.text,
       required this.icon,
-      super.onPressed,
+      required this.onPressed,
       super.key,
-      this.on = false})
-      : super(
-            style: FilledButton.styleFrom(
-                    elevation: 0,
-                    enableFeedback: false,
-                    surfaceTintColor: Colors.transparent,
-                    splashFactory: NoSplash.splashFactory,
-                    padding: EdgeInsets.all(0),
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5)),
-                    foregroundColor: Colors.white,
-                    backgroundColor: Colors.white)
-                .copyWith(
-              overlayColor: MaterialStateProperty.resolveWith<Color>(
-                (Set<MaterialState> states) {
-                  return Colors.transparent;
-                },
-              ),
-            ),
+      this.on = false});
+
+  final void Function() onPressed;
+  final String text;
+  final IconData icon;
+
+  final bool on;
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+        cursor: SystemMouseCursors.click,
+        child: GestureDetector(
+            onTap: onPressed,
             child: Tooltip(
                 message: text,
                 child: SizedBox(
@@ -102,16 +113,8 @@ class MeetingHeaderButton extends FilledButton {
                                 ? _meetingHeaderButtonOnColor
                                 : Colors.transparent,
                             borderRadius: BorderRadius.circular(5)),
-                        child: Icon(
-                          icon,
-                          size: 32,
-                          color: on ? Colors.white : _meetingHeaderButtonColor,
-                        )))));
-
-  final String text;
-  final IconData icon;
-
-  final bool on;
+                        child: ToolIcon(icon))))));
+  }
 }
 
 class MeetingHeaderClock extends StatefulWidget {
@@ -152,7 +155,7 @@ class MeetingHeaderTitle extends StatelessWidget {
   const MeetingHeaderTitle(
       {required this.text, required this.start, super.key});
 
-  final String text;
+  final Widget text;
   final DateTime start;
 
   @override
@@ -160,7 +163,7 @@ class MeetingHeaderTitle extends StatelessWidget {
     return Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          Text(text, style: _meetingHeaderFont),
+          Expanded(child: text),
           SizedBox(width: 10),
           MeetingHeaderClock(start: start)
         ]);

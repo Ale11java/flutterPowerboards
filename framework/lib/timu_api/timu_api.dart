@@ -268,6 +268,32 @@ class TimuApi {
     return TimuObject(jsonDecode(response.body));
   }
 
+  Future<TimuObject> update(TimuObject object,
+      {List<PreuploadedAttachmentReference>? preuploads,
+      bool upsert = false,
+      required Map<String, dynamic> props}) async {
+    final req = <String, dynamic>{
+      ...props,
+      'preuploadedAttachments': preuploads
+    };
+
+    final response = await http.post(
+        Uri(
+            scheme: 'https',
+            host: host,
+            port: port,
+            path: object.url,
+            queryParameters: <String, dynamic>{...queryParameters}),
+        headers: headers,
+        body: jsonEncode(req));
+
+    if (response.statusCode != 201 && response.statusCode != 200) {
+      throw response.toError();
+    }
+
+    return TimuObject(jsonDecode(response.body));
+  }
+
   TimuWebsocket createWebsocket(String url, String channel,
       {Map<String, dynamic>? metadata}) {
     return TimuWebsocket(

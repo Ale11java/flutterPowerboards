@@ -10,7 +10,7 @@ import 'auth_model.dart';
 import 'text.dart';
 
 String formatNounUrl(String id) {
-  return '/api/graph/core:event/$id';
+  return '/api/graph/core:powerboard/$id';
 }
 
 String parseMeetingCode(String code) {
@@ -216,9 +216,11 @@ class _JoinPageState extends State<JoinPage> {
   }
 
   Future<void> createNew() async {
-    final noun =
-        await TimuApiProvider.of(context).api.create(type: 'core:event', data: {
+    final noun = await TimuApiProvider.of(context)
+        .api
+        .create(type: 'core:powerboard', data: {
       'name': 'Untitled',
+      'acl': 'private',
       'localAclAdditions': {
         'claims': [
           {
