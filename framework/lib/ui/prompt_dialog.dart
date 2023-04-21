@@ -191,7 +191,7 @@ class TimuDialogTheme extends StatelessWidget {
         textButtonTheme: TextButtonThemeData(
           style: ButtonStyle(
             foregroundColor: MaterialStateProperty.resolveWith<Color?>(
-              (states) => Theme.of(context).accentColor,
+              (states) => Theme.of(context).colorScheme.secondary,
             ),
           ),
         ),
