@@ -126,7 +126,7 @@ class TimuApi {
       : queryParameters = {
           "access_token": accessToken,
           ...(defaultNetwork != null
-              ? {"network": defaultNetwork.toString()}
+              ? {"\$network": defaultNetwork.toString()}
               : {})
         };
 
@@ -266,6 +266,47 @@ class TimuApi {
     }
 
     return TimuObject(jsonDecode(response.body));
+  }
+
+  Future<List<TimuObject>> list(List<String> types,
+      {String? filter,
+      List<String> sort = const [],
+      String? container,
+      int? size}) async {
+    if (types.length == 0) {
+      throw "Types are required";
+    }
+
+    final qp = <String, dynamic>{...queryParameters};
+    if (container != null) {
+      qp["\$container"] = container;
+    }
+    if (sort.length > 0) {
+      qp["sort"] = sort.join(",");
+    }
+    if (filter != null) {
+      qp["query"] = filter;
+    }
+    if (size != null) {
+      qp["size"] = size;
+    }
+
+    final response = await http.get(
+        Uri(
+            scheme: 'https',
+            host: host,
+            port: port,
+            path: "/api/graph/${types.join(',')}",
+            queryParameters: qp),
+        headers: headers);
+
+    if (response.statusCode != 200) {
+      throw response.toError();
+    }
+
+    return (jsonDecode(response.body)["data"] as List)
+        .map((d) => TimuObject(d))
+        .toList();
   }
 
   Future<TimuObject> update(TimuObject object,

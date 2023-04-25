@@ -239,6 +239,71 @@ class _JoinPageState extends State<JoinPage> {
     context.go(widget.redirectBuilder(eventID: fromUUID(noun.id)));
   }
 
+  List<Widget> recentBoards = [];
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final api = TimuApiProvider.of(context);
+    final profile = MyProfileProvider.of(context).profile;
+
+    api.api
+        .list(["core:activity"],
+            container: profile.url,
+            sort: ["updatedAt desc"],
+            filter: "target_type:'core:powerboard' AND kind:'core:view'")
+        .then((list) {
+      setState(() {
+        recentBoards = [];
+        if (list.length == 0) {
+          return;
+        }
+        recentBoards.add(SizedBox(height: 30));
+        recentBoards.add(Container(
+            width: 400,
+            alignment: Alignment.centerLeft,
+            padding: EdgeInsets.all(10),
+            child: Text("Recently Viewed",
+                style: TextStyle(
+                    color: Color.fromRGBO(171, 148, 255, 1),
+                    decoration: TextDecoration.none,
+                    fontSize: 15))));
+        for (var o in list) {
+          recentBoards.add(MouseRegion(
+            cursor: SystemMouseCursors.click,
+            child: GestureDetector(
+              onTap: () {
+                context.go("/editor?id=" +
+                    fromUUID(o.rawData["target"] != null
+                        ? o.rawData["target"].split("/")[4]
+                        : ""));
+              },
+              child: Container(
+                width: 400,
+                decoration: BoxDecoration(
+                    border: Border(
+                        top: BorderSide(
+                            color: Color.fromARGB(30, 230, 200, 255)))),
+                alignment: Alignment.centerLeft,
+                padding: EdgeInsets.all(10),
+                child: Text(o.rawData["target_name"],
+                    style: TextStyle(
+                        color: Colors.white,
+                        decoration: TextDecoration.none,
+                        fontSize: 15)),
+              ),
+            ),
+          ));
+        }
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final formKey = GlobalKey<FormState>();
@@ -285,13 +350,15 @@ class _JoinPageState extends State<JoinPage> {
       );
     }
 
+    var footer = (auth.activeAccount != null) ? [...recentBoards] : [];
+
     return ColoredBox(
-        color: const Color(0XFF2F2D57),
-        child: Center(
-            child: SingleChildScrollView(
-                child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
+      color: const Color(0XFF2F2D57),
+      child: Center(
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
               const ScreenTitle(text: 'Welcome to Powerboards'),
               const SizedBox(height: 16),
               const ScreenSubtitle(
@@ -299,45 +366,57 @@ class _JoinPageState extends State<JoinPage> {
               ),
               const SizedBox(height: 44),
               IntrinsicWidth(
-                  child: Row(children: [
-                SizedBox(
-                    width: 400,
-                    child: Form(
-                      key: formKey,
-                      child: InputTextField(
-                        autofocus: true,
-                        controller: controller,
-                        hintText: 'Enter URL or Code',
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter invite URL';
-                          }
-                          return null;
-                        },
-                        onFieldSubmitted: (value) {
-                          submitForm();
-                        },
-                        suffixIcon: Padding(
-                          padding: const EdgeInsets.all(8),
-                          child: FilledButton(
-                            onPressed: submitForm,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.white,
-                            ),
-                            child: Text('JOIN NOW',
+                child: Row(
+                  children: [
+                    SizedBox(
+                      width: 400,
+                      child: Form(
+                        key: formKey,
+                        child: InputTextField(
+                          autofocus: true,
+                          controller: controller,
+                          hintText: 'Enter URL or Code',
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter invite URL';
+                            }
+                            return null;
+                          },
+                          onFieldSubmitted: (value) {
+                            submitForm();
+                          },
+                          suffixIcon: Padding(
+                            padding: const EdgeInsets.all(8),
+                            child: FilledButton(
+                              onPressed: submitForm,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.white,
+                              ),
+                              child: Text(
+                                'JOIN NOW',
                                 style: GoogleFonts.inter(
-                                    textStyle: const TextStyle(
-                                  fontWeight: FontWeight.w900,
-                                  fontSize: 13,
-                                  color: Color(0XFF484575),
-                                ))),
+                                  textStyle: const TextStyle(
+                                    fontWeight: FontWeight.w900,
+                                    fontSize: 13,
+                                    color: Color(0XFF484575),
+                                  ),
+                                ),
+                              ),
+                            ),
                           ),
                         ),
                       ),
-                    )),
-              ])),
+                    ),
+                  ],
+                ),
+              ),
               const SizedBox(height: 30),
-              SizedBox(width: 400, child: bottomButton)
-            ]))));
+              SizedBox(width: 400, child: bottomButton),
+              ...footer
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
