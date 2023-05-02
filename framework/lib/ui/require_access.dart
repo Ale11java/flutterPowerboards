@@ -234,7 +234,19 @@ class _RequireAccessState extends State<RequireAccess> {
                 width: 50, height: 50, child: CircularProgressIndicator()));
 
       case Progress.joining:
-        return wrap(widget.joining(context, hasAccess, () {
+        return wrap(widget.joining(context, hasAccess, () async {
+          final api = TimuApiProvider.of(context).api;
+          if (!hasAccess) {
+            final maybeToken = await api.invoke(
+                nounPath: widget.nounUrl, name: "request-access", params: {});
+
+            if (maybeToken["token"] != null && maybeToken["token"] is String) {
+              ObjectAccessTokenProviderState.of(context)
+                  .setToken(widget.nounUrl, maybeToken["token"]);
+
+              hasAccess = true;
+            }
+          }
           setState(() {
             progress = hasAccess ? Progress.granted : Progress.waiting;
           });

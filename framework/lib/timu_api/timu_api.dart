@@ -381,15 +381,38 @@ class TimuApi {
     return TimuObject(jsonDecode(response.body));
   }
 
+  Future delete({required TimuObject object}) async {
+    final Map<String, dynamic> p = {...queryParameters};
+
+    final http.Response response = await http.delete(
+        Uri(
+            scheme: 'https',
+            host: host,
+            port: port,
+            path: object.url,
+            queryParameters: {...p}),
+        headers: headers);
+
+    if (response.statusCode >= 300) {
+      print(response.statusCode);
+      throw response.toError();
+    }
+  }
+
   Future<Map<String, dynamic>> invoke({
     required String name,
-    required String nounPath,
+    String? nounPath,
+    TimuObject? on,
     bool public = false,
     Map<String, dynamic> params = const <String, dynamic>{},
     Map<String, dynamic> body = const <String, dynamic>{},
   }) async {
     final String method = public ? '+public' : '+invoke';
     final Map<String, dynamic> p = {...queryParameters};
+
+    if (on != null) {
+      nounPath = on.url;
+    }
 
     print('host: $host; path: $nounPath/$method/$name');
 
@@ -461,7 +484,7 @@ class TimuObject {
     final attachments = <Attachment>[];
     final json = rawData["attachments"];
 
-    if (json is List<Map<String, dynamic>>) {
+    if (json is List) {
       for (var j in json) {
         attachments.add(Attachment.fromJSON(j));
       }
