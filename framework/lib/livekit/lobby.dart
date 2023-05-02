@@ -1,11 +1,13 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:livekit_client/livekit_client.dart';
 import 'package:webrtc_interface/webrtc_interface.dart';
 
 import './room.dart';
 import '../ui/primary_button.dart';
 import '../ui/text.dart';
+import 'package:collection/collection.dart';
 
 class Lobby extends StatefulWidget {
   const Lobby({required this.join, super.key});
@@ -17,6 +19,68 @@ class Lobby extends StatefulWidget {
 }
 
 class _LobbyState extends State<Lobby> {
+  List<Widget> buildAudioMenu(BuildContext context, Room room) {
+    final audioDevices = roomState.availableAudioDevices;
+    final videoDevices = roomState.availableVideoDevices;
+
+    final List<PopupMenuEntry<dynamic>> audioItems = [
+      PopupMenuItem(
+        child: Text("None"),
+        value: null,
+      )
+    ];
+    for (final device in audioDevices) {
+      audioItems.add(
+        CheckedPopupMenuItem(
+          checked: device == roomState.selectedAudioDevice,
+          child: Text(device.name),
+          value: device,
+        ),
+      );
+    }
+
+    final List<PopupMenuEntry<dynamic>> videoItems = [
+      PopupMenuItem(
+        child: Text("None"),
+        value: null,
+      )
+    ];
+    for (final device in videoDevices) {
+      videoItems.add(
+        CheckedPopupMenuItem(
+          checked: device == roomState.selectedVideoDevice,
+          child: Text(device.name),
+          value: device,
+        ),
+      );
+    }
+
+    return [
+      PopupMenuButton<MediaDeviceInfo>(
+        icon: Icon(Icons.mic),
+        itemBuilder: (context) => audioItems,
+        onSelected: (device) {
+          if (device != null) {
+            roomState.selectAudioDevice(device);
+          } else {
+            roomState.selectAudioDevice(roomState.defaultAudioDevice);
+          }
+        },
+      ),
+      PopupMenuButton<MediaDeviceInfo>(
+        icon: Icon(Icons.videocam),
+        itemBuilder: (context) => videoItems,
+        onSelected: (device) {
+          if (device != null) {
+            roomState.selectVideoDevice(device);
+          } else {
+            roomState.selectVideoDevice(roomState.defaultVideoDevice);
+          }
+        },
+      ),
+    ];
+  }
+
   late VideoRoomProviderState roomState;
   @override
   void didChangeDependencies() {
@@ -101,16 +165,124 @@ class _LobbyState extends State<Lobby> {
                   ? VideoTrackRenderer(video!,
                       fit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover)
                   : const ColoredBox(color: Colors.black))),
-      Row(children: [
-        PrimaryButton(
-            text: video == null ? "No Camera" : "Camera",
-            onPressed: toggleCamera),
-        const SizedBox(width: 10),
-        PrimaryButton(
-            text: audio == null ? "Muted" : "Audio", onPressed: toggleAudio),
-        const Spacer(),
-        PrimaryButton(text: "Join", onPressed: widget.join)
-      ]),
+      Row(
+        children: [
+          Flexible(
+            child: Row(
+              children: [
+                ElevatedButton(
+                  onPressed: toggleCamera,
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.white,
+                    onPrimary: Colors.black,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(56),
+                    ),
+                    padding: const EdgeInsets.fromLTRB(30, 15, 30, 15),
+                  ),
+                  child: Text(
+                    video == null ? "No Camera" : "Camera",
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w900,
+                      decoration: TextDecoration.none,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                ElevatedButton(
+                  onPressed: toggleAudio,
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.white,
+                    onPrimary: Colors.black,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(56),
+                    ),
+                    padding: const EdgeInsets.fromLTRB(30, 15, 30, 15),
+                  ),
+                  child: Text(
+                    audio == null ? "Muted" : "Audio",
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w900,
+                      decoration: TextDecoration.none,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                ElevatedButton(
+                  onPressed: widget.join,
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.white,
+                    onPrimary: Colors.black,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(56),
+                    ),
+                    padding: const EdgeInsets.fromLTRB(30, 15, 30, 15),
+                  ),
+                  child: const Text(
+                    "Join",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w900,
+                      decoration: TextDecoration.none,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(width: 10), // Add a SizedBox with width 10 here
+          ElevatedButton(
+            onPressed: () {
+              // Add your action here
+            },
+            style: ElevatedButton.styleFrom(
+              primary: Colors.white,
+              onPrimary: Colors.black,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(56),
+              ),
+              padding: const EdgeInsets.fromLTRB(30, 15, 30, 15),
+            ),
+            child: const Text(
+              "Default Device",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w900,
+                decoration: TextDecoration.none,
+              ),
+            ),
+          ),
+          SizedBox(width: 10), // Add a SizedBox with width 10 here
+          ElevatedButton(
+            onPressed: () {
+              // Add your action here
+            },
+            style: ElevatedButton.styleFrom(
+              primary: Colors.white,
+              onPrimary: Colors.black,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(56),
+              ),
+              padding: const EdgeInsets.fromLTRB(30, 15, 30, 15),
+            ),
+            child: const Text(
+              "External Device",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w900,
+                decoration: TextDecoration.none,
+              ),
+            ),
+          ),
+        ],
+      ),
     ]);
   }
 }
