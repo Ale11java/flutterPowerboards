@@ -12,7 +12,7 @@ class LobbyExample extends StatelessWidget {
       child: Center(
         child: SingleChildScrollView(
           child: SizedBox(
-            width: 400,
+            width: 640,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
