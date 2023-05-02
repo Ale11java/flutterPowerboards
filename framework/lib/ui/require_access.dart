@@ -1,12 +1,16 @@
 import 'dart:async';
 
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'notification.dart';
+import '../timu_api/websocket.dart';
+import 'websocket_clients.dart';
+import 'websocket_provider.dart';
 
 import '../model/account.dart';
 import '../model/auth_storage.dart';
 import '../timu_api/timu_api.dart';
 import '../timu_api/websocket.dart';
-
 import 'account_prompt_page.dart';
 import 'auth_model.dart';
 import 'auth_storage_cache.dart';
@@ -298,6 +302,19 @@ class _NotificationPopup extends StatefulWidget {
 class _NotificationPopupState extends State<_NotificationPopup> {
   Set<String> dismissed = {};
 
+  late AudioPlayer player;
+
+  @override
+  void initState() {
+    super.initState();
+    player = AudioPlayer();
+    _loadSound();
+  }
+
+  Future<void> _loadSound() async {
+    await player.load('lib/assets/ding-36029.mp3');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(children: [
@@ -317,6 +334,7 @@ class _NotificationPopupState extends State<_NotificationPopup> {
                                 setState(() {
                                   dismissed.add(client.id);
                                 });
+                                player.play();
                               }, key: ValueKey(client.id)))
                           .superJoin(const SizedBox(height: 10))
                           .toList(growable: false))));

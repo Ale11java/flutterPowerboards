@@ -20,6 +20,7 @@ dependencies:
   soundpool: ^2.3.0
   livekit_client: ^1.2.2
   webrtc_interface: ^1.0.12
+  audioplayers: ^0.20.1
 
 dev_dependencies:
   recase: ^4.0.0
@@ -36,6 +37,7 @@ flutter:
   assets:
     - lib/assets/
     - lib/assets/app-timu.png
+    - lib/assets/ding-36029.mp3
 
   fonts:
     - family: Timu

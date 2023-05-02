@@ -50,6 +50,13 @@ List<GoRoute> genRoutes() {
     ),
 
     GoRoute(
+      name: 'Lobby Example 2',
+      path: '/lobby2',
+      builder: (BuildContext context, GoRouterState state) =>
+          const LobbyExample(),
+    ),
+
+    GoRoute(
       name: 'Login Prompt Page',
       path: '/login-prompt-page',
       builder: (BuildContext context, GoRouterState state) =>
