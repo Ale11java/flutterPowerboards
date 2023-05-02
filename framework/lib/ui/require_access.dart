@@ -23,6 +23,7 @@ import 'profile_avatar.dart';
 import 'storage_login_page.dart';
 import 'websocket_clients.dart';
 import 'websocket_provider.dart';
+import 'dart:typed_data';
 
 enum Progress {
   processing,
@@ -311,8 +312,11 @@ class _NotificationPopupState extends State<_NotificationPopup> {
     _loadSound();
   }
 
+  Uint8List? _audioBytes;
+
   Future<void> _loadSound() async {
-    await player.load('lib/assets/ding-36029.mp3');
+    // TODO: load it into a byte array from asset bundle: https://www.fluttercampus.com/guide/222/read-files-from-assets-folder/ then use playBytes.
+    //_audioBytes =
   }
 
   @override
@@ -334,7 +338,9 @@ class _NotificationPopupState extends State<_NotificationPopup> {
                                 setState(() {
                                   dismissed.add(client.id);
                                 });
-                                player.play();
+                                if (_audioBytes != null) {
+                                  player.playBytes(_audioBytes!);
+                                }
                               }, key: ValueKey(client.id)))
                           .superJoin(const SizedBox(height: 10))
                           .toList(growable: false))));

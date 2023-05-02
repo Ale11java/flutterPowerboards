@@ -1,13 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:livekit_client/livekit_client.dart';
 import 'package:webrtc_interface/webrtc_interface.dart';
 
 import './room.dart';
-import '../ui/primary_button.dart';
 import '../ui/text.dart';
-import 'package:collection/collection.dart';
 
 class Lobby extends StatefulWidget {
   const Lobby({required this.join, super.key});
@@ -23,7 +20,7 @@ class _LobbyState extends State<Lobby> {
     final audioDevices = roomState.availableAudioDevices;
     final videoDevices = roomState.availableVideoDevices;
 
-    final List<PopupMenuEntry<dynamic>> audioItems = [
+    final List<PopupMenuEntry> audioItems = [
       PopupMenuItem(
         child: Text("None"),
         value: null,
@@ -39,7 +36,7 @@ class _LobbyState extends State<Lobby> {
       );
     }
 
-    final List<PopupMenuEntry<dynamic>> videoItems = [
+    final List<PopupMenuEntry> videoItems = [
       PopupMenuItem(
         child: Text("None"),
         value: null,
@@ -56,7 +53,7 @@ class _LobbyState extends State<Lobby> {
     }
 
     return [
-      PopupMenuButton<MediaDeviceInfo>(
+      PopupMenuButton(
         icon: Icon(Icons.mic),
         itemBuilder: (context) => audioItems,
         onSelected: (device) {
@@ -67,14 +64,16 @@ class _LobbyState extends State<Lobby> {
           }
         },
       ),
-      PopupMenuButton<MediaDeviceInfo>(
+      PopupMenuButton(
         icon: Icon(Icons.videocam),
         itemBuilder: (context) => videoItems,
         onSelected: (device) {
           if (device != null) {
             roomState.selectVideoDevice(device);
           } else {
-            roomState.selectVideoDevice(roomState.defaultVideoDevice);
+            if (roomState.defaultVideoDevice != null) {
+              roomState.selectVideoDevice(roomState.defaultVideoDevice!);
+            }
           }
         },
       ),
