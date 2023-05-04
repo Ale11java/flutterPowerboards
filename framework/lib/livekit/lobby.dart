@@ -237,17 +237,21 @@ class _LobbyState extends State<Lobby> {
           SizedBox(width: 10), // Add a SizedBox with width 10 here
           ElevatedButton(
             onPressed: () {
-              // Add your action here
+              roomState.selectAudioDevice(roomState.defaultAudioDevice);
+              setState(() {});
             },
             style: ElevatedButton.styleFrom(
-              primary: Colors.white,
+              primary:
+                  roomState.selectedAudioDevice == roomState.defaultAudioDevice
+                      ? Colors.white
+                      : Colors.green,
               onPrimary: Colors.black,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(56),
               ),
               padding: const EdgeInsets.fromLTRB(30, 15, 30, 15),
             ),
-            child: const Text(
+            child: Text(
               "Default Device",
               textAlign: TextAlign.center,
               style: TextStyle(
@@ -257,20 +261,23 @@ class _LobbyState extends State<Lobby> {
               ),
             ),
           ),
-          SizedBox(width: 10), // Add a SizedBox with width 10 here
           ElevatedButton(
             onPressed: () {
-              // Add your action here
+              roomState.selectAudioDevice(roomState.externalAudioDevice);
+              setState(() {});
             },
             style: ElevatedButton.styleFrom(
-              primary: Colors.white,
+              primary:
+                  roomState.selectedAudioDevice == roomState.externalAudioDevice
+                      ? Colors.white
+                      : Colors.green,
               onPrimary: Colors.black,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(56),
               ),
               padding: const EdgeInsets.fromLTRB(30, 15, 30, 15),
             ),
-            child: const Text(
+            child: Text(
               "External Device",
               textAlign: TextAlign.center,
               style: TextStyle(
