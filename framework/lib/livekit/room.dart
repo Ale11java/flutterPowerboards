@@ -121,6 +121,8 @@ class VideoRoomProviderState extends State<VideoRoomProvider> {
 
   get externalAudioDevice => null;
 
+  get externalVideoDevice => null;
+
   @override
   void initState() {
     super.initState();
