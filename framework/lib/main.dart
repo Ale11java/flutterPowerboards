@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:timu_dart/ui/camera_box.dart';
-import 'package:timu_dart/ui/prompt_dialog.dart';
 
 import 'examples/floating_panel.dart';
 import 'examples/lobby.dart';
@@ -10,16 +8,21 @@ import 'examples/login_prompt_page.dart';
 import 'model/auth_storage.dart';
 import 'timu_icons/timu_icons.dart';
 import 'ui/auth_storage_cache.dart';
+import 'ui/camera_box.dart';
 import 'ui/dialog_buttons.dart';
 import 'ui/home_page.dart';
 import 'ui/in_app_page.dart';
 import 'ui/join_page.dart';
 import 'ui/list_route_page.dart';
-import 'ui/lobby_page.dart';
 import 'ui/lobby_wait_page.dart';
+import 'ui/login_email.dart';
+import 'ui/login_start_email.dart';
+import 'ui/login_start_jwt.dart';
+import 'ui/login_theme.dart';
 import 'ui/notification.dart';
 import 'ui/participant_overlay.dart';
 import 'ui/primary_button.dart';
+import 'ui/prompt_dialog.dart';
 import 'ui/require_access.dart';
 import 'ui/sidebar_group.dart';
 import 'ui/storage_login.dart';
@@ -42,6 +45,27 @@ List<GoRoute> genRoutes() {
       builder: (BuildContext context, GoRouterState state) =>
           ListRoutesPage(routes: genRoutes()),
     ),
+    GoRoute(
+        name: 'Login Email',
+        path: '/login-email',
+        builder: (BuildContext context, GoRouterState state) =>
+            const LoginThemeWidget(child: LoginEmailPage())),
+    GoRoute(
+        name: 'Start email',
+        path: '/login-start-email/:email',
+        builder: (BuildContext context, GoRouterState state) {
+          final email = state.params['email'];
+          return LoginThemeWidget(child: LoginStartEmailPage(email: email!));
+        }),
+    GoRoute(
+        name: 'Start jwt',
+        path: '/login-start-jwt/:jwt/:email',
+        builder: (BuildContext context, GoRouterState state) {
+          final jwt = state.params['jwt'];
+          final email = state.params['email'];
+          return LoginThemeWidget(
+              child: LoginStartJwtPage(jwt: jwt!, email: email!));
+        }),
     GoRoute(
       name: 'Lobby Example',
       path: '/lobby',
@@ -109,7 +133,7 @@ List<GoRoute> genRoutes() {
                 );
               },
               waiting: (BuildContext context) {
-                return Column(
+                return const Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     ScreenTitle(
@@ -120,7 +144,7 @@ List<GoRoute> genRoutes() {
                 );
               },
               granted: (BuildContext context) {
-                return Column(
+                return const Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     ScreenTitle(text: 'In App'),
@@ -148,7 +172,7 @@ List<GoRoute> genRoutes() {
     GoRoute(
       name: 'Join Text Field',
       path: '/join-text-field',
-      builder: (BuildContext context, GoRouterState state) => JoinPage(),
+      builder: (BuildContext context, GoRouterState state) => const JoinPage(),
     ),
 //    GoRoute(
 //      name: 'Test',

@@ -1,35 +1,89 @@
 PODS:
+  - appcheck (1.0.3):
+    - Flutter
+  - audioplayers (0.0.1):
+    - Flutter
+  - connectivity_plus (0.0.1):
+    - Flutter
+    - ReachabilitySwift
+  - device_info_plus (0.0.1):
+    - Flutter
   - Flutter (1.0.0)
   - flutter_secure_storage (6.0.0):
     - Flutter
+  - flutter_webrtc (0.9.20):
+    - Flutter
+    - WebRTC-SDK (= 104.5112.09)
+  - livekit_client (1.1.13):
+    - Flutter
+    - WebRTC-SDK (= 104.5112.09)
   - path_provider_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
+  - ReachabilitySwift (5.0.0)
+  - soundpool (0.0.1):
+    - Flutter
   - url_launcher_ios (0.0.1):
     - Flutter
+  - WebRTC-SDK (104.5112.09)
 
 DEPENDENCIES:
+  - appcheck (from `.symlinks/plugins/appcheck/ios`)
+  - audioplayers (from `.symlinks/plugins/audioplayers/ios`)
+  - connectivity_plus (from `.symlinks/plugins/connectivity_plus/ios`)
+  - device_info_plus (from `.symlinks/plugins/device_info_plus/ios`)
   - Flutter (from `Flutter`)
   - flutter_secure_storage (from `.symlinks/plugins/flutter_secure_storage/ios`)
+  - flutter_webrtc (from `.symlinks/plugins/flutter_webrtc/ios`)
+  - livekit_client (from `.symlinks/plugins/livekit_client/ios`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
+  - soundpool (from `.symlinks/plugins/soundpool/ios`)
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
 
+SPEC REPOS:
+  trunk:
+    - ReachabilitySwift
+    - WebRTC-SDK
+
 EXTERNAL SOURCES:
+  appcheck:
+    :path: ".symlinks/plugins/appcheck/ios"
+  audioplayers:
+    :path: ".symlinks/plugins/audioplayers/ios"
+  connectivity_plus:
+    :path: ".symlinks/plugins/connectivity_plus/ios"
+  device_info_plus:
+    :path: ".symlinks/plugins/device_info_plus/ios"
   Flutter:
     :path: Flutter
   flutter_secure_storage:
     :path: ".symlinks/plugins/flutter_secure_storage/ios"
+  flutter_webrtc:
+    :path: ".symlinks/plugins/flutter_webrtc/ios"
+  livekit_client:
+    :path: ".symlinks/plugins/livekit_client/ios"
   path_provider_foundation:
     :path: ".symlinks/plugins/path_provider_foundation/darwin"
+  soundpool:
+    :path: ".symlinks/plugins/soundpool/ios"
   url_launcher_ios:
     :path: ".symlinks/plugins/url_launcher_ios/ios"
 
 SPEC CHECKSUMS:
+  appcheck: e1ab9d4e03736f03e0401554a134d1ed502d7629
+  audioplayers: 455322b54050b30ea4b1af7cd9e9d105f74efa8c
+  connectivity_plus: 413a8857dd5d9f1c399a39130850d02fe0feaf7e
+  device_info_plus: e5c5da33f982a436e103237c0c85f9031142abed
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
   flutter_secure_storage: 23fc622d89d073675f2eaa109381aefbcf5a49be
+  flutter_webrtc: 15c5fb4ea324f3178ff97c0f02b9467b85977e42
+  livekit_client: 9d7f40b2ece3c5dc1e305d5d7e4edaf40724963d
   path_provider_foundation: c68054786f1b4f3343858c1e1d0caaded73f0be9
+  ReachabilitySwift: 985039c6f7b23a1da463388634119492ff86c825
+  soundpool: c7f4422ca206e77f8900ed3c4ee6a6ff5a0e38a9
   url_launcher_ios: 08a3dfac5fb39e8759aeb0abbd5d9480f30fc8b4
+  WebRTC-SDK: 3fa5c6fa717314fade68bffed85737484a28ad0b
 
-PODFILE CHECKSUM: aa3b1d9cb94e8055dc6468141196cf9e4c8e33df
+PODFILE CHECKSUM: 46cce8b2f44f5fb04c6b3865475978899dffeb00
 
-COCOAPODS: 1.12.0
+COCOAPODS: 1.12.1

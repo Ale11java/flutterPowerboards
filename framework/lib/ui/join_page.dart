@@ -239,9 +239,69 @@ class _JoinPageState extends State<JoinPage> {
     context.go(widget.redirectBuilder(eventID: fromUUID(noun.id)));
   }
 
+  List<Widget> recentBoards = [];
+
   @override
   void initState() {
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final api = TimuApiProvider.of(context);
+    final profile = MyProfileProvider.of(context).profile;
+
+    api.api
+        .list(["core:activity"],
+            container: profile.url,
+            sort: ["updatedAt desc"],
+            filter: "target_type:'core:powerboard' AND kind:'core:view'")
+        .then((list) {
+      setState(() {
+        recentBoards = [];
+        if (list.length == 0) {
+          return;
+        }
+        recentBoards.add(SizedBox(height: 30));
+        recentBoards.add(Container(
+            width: 400,
+            alignment: Alignment.centerLeft,
+            padding: EdgeInsets.all(10),
+            child: Text("Recently Viewed",
+                style: TextStyle(
+                    color: Color.fromRGBO(171, 148, 255, 1),
+                    decoration: TextDecoration.none,
+                    fontSize: 15))));
+        for (var o in list) {
+          recentBoards.add(MouseRegion(
+            cursor: SystemMouseCursors.click,
+            child: GestureDetector(
+              onTap: () {
+                context.go("/editor?id=" +
+                    fromUUID(o.rawData["target"] != null
+                        ? o.rawData["target"].split("/")[4]
+                        : ""));
+              },
+              child: Container(
+                width: 400,
+                decoration: BoxDecoration(
+                    border: Border(
+                        top: BorderSide(
+                            color: Color.fromARGB(30, 230, 200, 255)))),
+                alignment: Alignment.centerLeft,
+                padding: EdgeInsets.all(10),
+                child: Text(o.rawData["target_name"],
+                    style: TextStyle(
+                        color: Colors.white,
+                        decoration: TextDecoration.none,
+                        fontSize: 15)),
+              ),
+            ),
+          ));
+        }
+      });
+    });
   }
 
   @override
@@ -290,7 +350,7 @@ class _JoinPageState extends State<JoinPage> {
       );
     }
 
-    var footer = (auth.activeAccount != null) ? [const RecentBoardList()] : [];
+    var footer = (auth.activeAccount != null) ? [...recentBoards] : [];
 
     return ColoredBox(
       color: const Color(0XFF2F2D57),
@@ -358,112 +418,5 @@ class _JoinPageState extends State<JoinPage> {
         ),
       ),
     );
-  }
-}
-
-class RecentBoardList extends StatefulWidget {
-  const RecentBoardList({super.key});
-
-  @override
-  State createState() => _RecentBoardListState();
-}
-
-class _RecentBoardListState extends State<RecentBoardList> {
-  List<Widget> recentBoards = [];
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    final api = TimuApiProvider.of(context);
-    final profile = MyProfileProvider.of(context).profile;
-
-    api.api
-        .list(['core:activity'],
-            container: profile.url,
-            sort: ['updatedAt desc'],
-            filter: "target_type:'core:powerboard' AND kind:'core:view'")
-        .then((list) {
-      setState(() {
-        recentBoards = [];
-        if (list.isEmpty) {
-          return;
-        }
-        for (final o in list) {
-          final item = MouseRegion(
-            cursor: SystemMouseCursors.click,
-            child: GestureDetector(
-              onSecondaryTapDown: (details) {
-                final offset = details.globalPosition;
-
-                showMenu(
-                    context: context,
-                    position: RelativeRect.fromLTRB(
-                      offset.dx,
-                      offset.dy,
-                      MediaQuery.of(context).size.width - offset.dx,
-                      MediaQuery.of(context).size.height - offset.dy,
-                    ),
-                    items: [
-                      PopupMenuItem(
-                        onTap: () async {
-                          await api.api.delete(object: o);
-                          setState(() {
-                            final index = list.indexOf(o);
-                            list.removeAt(index);
-                            recentBoards.removeAt(index);
-                          });
-                        },
-                        child: const Text('Remove from history'),
-                      )
-                    ]);
-              },
-              onTap: () {
-                context.go("/editor?id=" +
-                    fromUUID(o.rawData["target"] != null
-                        ? o.rawData["target"].split("/")[4]
-                        : ""));
-              },
-              child: Container(
-                width: 400,
-                decoration: const BoxDecoration(
-                    border: Border(
-                        top: BorderSide(
-                            color: Color.fromARGB(30, 230, 200, 255)))),
-                alignment: Alignment.centerLeft,
-                padding: const EdgeInsets.all(10),
-                child: Text(o.rawData["target_name"],
-                    style: const TextStyle(
-                        color: Colors.white,
-                        decoration: TextDecoration.none,
-                        fontSize: 15)),
-              ),
-            ),
-          );
-
-          recentBoards.add(item);
-        }
-      });
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return IntrinsicHeight(
-        child: Column(children: [
-      const SizedBox(height: 30),
-      Container(
-        width: 400,
-        alignment: Alignment.centerLeft,
-        padding: const EdgeInsets.all(10),
-        child: const Text(
-          'Recently Viewed',
-          style: TextStyle(
-              color: Color.fromRGBO(171, 148, 255, 1),
-              decoration: TextDecoration.none,
-              fontSize: 15),
-        ),
-      ),
-      ...recentBoards
-    ]));
   }
 }

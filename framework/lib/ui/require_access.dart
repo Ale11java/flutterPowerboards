@@ -172,7 +172,8 @@ class _RequireAccessState extends State<RequireAccess> {
 
     if (storage.hasAccounts) {
       setState(() {
-        progress = Progress.accountPrompt;
+        // progress = Progress.accountPrompt;
+        progress = Progress.selectAccount;
       });
     } else {
       redirectToLogin(super.context);
