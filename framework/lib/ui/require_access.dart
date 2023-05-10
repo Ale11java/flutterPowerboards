@@ -24,6 +24,7 @@ import 'storage_login_page.dart';
 import 'websocket_clients.dart';
 import 'websocket_provider.dart';
 import 'dart:typed_data';
+import 'package:flutter/services.dart';
 
 enum Progress {
   processing,
@@ -316,6 +317,10 @@ class _NotificationPopupState extends State<_NotificationPopup> {
   Uint8List? _audioBytes;
 
   Future<void> _loadSound() async {
+    String audioasset = "lib/assets/ding-36029.mp3"; //path to asset
+    ByteData bytes = await rootBundle.load(audioasset); //load sound from assets
+    Uint8List soundbytes =
+        bytes.buffer.asUint8List(bytes.offsetInBytes, bytes.lengthInBytes);
     // TODO: load it into a byte array from asset bundle: https://www.fluttercampus.com/guide/222/read-files-from-assets-folder/ then use playBytes.
     //_audioBytes =
   }

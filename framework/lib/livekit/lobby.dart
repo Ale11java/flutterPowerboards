@@ -16,77 +16,20 @@ class Lobby extends StatefulWidget {
 }
 
 class _LobbyState extends State<Lobby> {
-  List<Widget> buildAudioMenu(BuildContext context, Room room) {
-    final audioDevices = roomState.availableAudioDevices;
-    final videoDevices = roomState.availableVideoDevices;
-
-    final List<PopupMenuEntry> audioItems = [
-      PopupMenuItem(
-        child: Text("None"),
-        value: null,
-      )
-    ];
-    for (final device in audioDevices) {
-      audioItems.add(
-        CheckedPopupMenuItem(
-          checked: device == roomState.selectedAudioDevice,
-          child: Text(device.name),
-          value: device,
-        ),
-      );
-    }
-
-    final List<PopupMenuEntry> videoItems = [
-      PopupMenuItem(
-        child: Text("None"),
-        value: null,
-      )
-    ];
-    for (final device in videoDevices) {
-      videoItems.add(
-        CheckedPopupMenuItem(
-          checked: device == roomState.selectedVideoDevice,
-          child: Text(device.name),
-          value: device,
-        ),
-      );
-    }
-
-    return [
-      PopupMenuButton(
-        icon: Icon(Icons.mic),
-        itemBuilder: (context) => audioItems,
-        onSelected: (device) {
-          if (device != null) {
-            roomState.selectAudioDevice(device);
-          } else {
-            roomState.selectAudioDevice(roomState.defaultAudioDevice);
-          }
-        },
-      ),
-      PopupMenuButton(
-        icon: Icon(Icons.videocam),
-        itemBuilder: (context) => videoItems,
-        onSelected: (device) {
-          if (device != null) {
-            roomState.selectVideoDevice(device);
-          } else {
-            if (roomState.defaultVideoDevice != null) {
-              roomState.selectVideoDevice(roomState.defaultVideoDevice!);
-            }
-          }
-        },
-      ),
-    ];
-  }
-
   late VideoRoomProviderState roomState;
+  late Device? selectedVideoDevice;
+  late Device? selectedAudioDevice;
+  LocalVideoTrack? video;
+  LocalAudioTrack? audio;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
 
     roomState = context.findAncestorStateOfType<VideoRoomProviderState>()!;
     roomState.fastConnectOptions = FastConnectOptions();
+    selectedVideoDevice = roomState.selectedVideoDevice as Device?;
+    selectedAudioDevice = roomState.selectedAudioDevice as Device?;
 
     if (!kDebugMode) {
       LocalVideoTrack.createCameraTrack(const CameraCaptureOptions())
@@ -136,8 +79,73 @@ class _LobbyState extends State<Lobby> {
     }
   }
 
-  LocalVideoTrack? video;
-  LocalAudioTrack? audio;
+  List<Widget> buildAudioMenu(BuildContext context, Room room) {
+    final audioDevices = roomState.availableAudioDevices;
+    final videoDevices = roomState.availableVideoDevices;
+
+    final List<PopupMenuEntry> audioItems = [
+      PopupMenuItem(
+        child: Text("None"),
+        value: null,
+      )
+    ];
+    for (final device in audioDevices) {
+      audioItems.add(
+        CheckedPopupMenuItem(
+          checked: device == selectedAudioDevice,
+          child: Text(device.name),
+          value: device,
+        ),
+      );
+    }
+
+    final List<PopupMenuEntry> videoItems = [
+      PopupMenuItem(
+        child: Text("None"),
+        value: null,
+      )
+    ];
+    for (final device in videoDevices) {
+      videoItems.add(
+        CheckedPopupMenuItem(
+          checked: device == selectedVideoDevice,
+          child: Text(device.name),
+          value: device,
+        ),
+      );
+    }
+
+    return [
+      PopupMenuButton(
+        icon: Icon(Icons.mic),
+        itemBuilder: (context) => audioItems,
+        onSelected: (device) {
+          if (device != null) {
+            roomState.selectAudioDevice(device);
+            selectedAudioDevice = device;
+          } else {
+            roomState.selectAudioDevice(roomState.defaultAudioDevice);
+            selectedAudioDevice = roomState.defaultAudioDevice;
+          }
+        },
+      ),
+      PopupMenuButton(
+        icon: Icon(Icons.videocam),
+        itemBuilder: (context) => videoItems,
+        onSelected: (device) {
+          if (device != null) {
+            roomState.selectVideoDevice(device);
+            selectedVideoDevice = device;
+          } else {
+            if (roomState.defaultVideoDevice != null) {
+              roomState.selectVideoDevice(roomState.defaultVideoDevice!);
+              selectedVideoDevice = roomState.defaultVideoDevice as Device?;
+            }
+          }
+        },
+      ),
+    ];
+  }
 
   VideoRoom? room;
 
@@ -151,7 +159,6 @@ class _LobbyState extends State<Lobby> {
     roomState.fastConnectOptions = FastConnectOptions(
         microphone: TrackOption(track: audio, enabled: audio != null),
         camera: TrackOption(track: video, enabled: video != null));
-
     return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
       const ScreenTitle(text: "Adjust your Mic and Camera"),
       const SizedBox(height: 15),
@@ -234,20 +241,29 @@ class _LobbyState extends State<Lobby> {
               ],
             ),
           ),
-          SizedBox(width: 10), // Add a SizedBox with width 10 here
+          const SizedBox(width: 10),
           ElevatedButton(
             onPressed: () {
-              // Add your action here
+              roomState.selectAudioDevice(roomState.defaultAudioDevice);
+              if (roomState.defaultVideoDevice != null) {
+                roomState.selectVideoDevice(roomState.defaultVideoDevice!);
+                selectedVideoDevice = roomState.defaultVideoDevice as Device?;
+              }
+              selectedAudioDevice = roomState.defaultAudioDevice;
+              setState(() {});
             },
             style: ElevatedButton.styleFrom(
-              primary: Colors.white,
+              primary: selectedAudioDevice == roomState.defaultAudioDevice &&
+                      selectedVideoDevice == roomState.defaultVideoDevice
+                  ? Colors.white
+                  : Colors.green,
               onPrimary: Colors.black,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(56),
               ),
               padding: const EdgeInsets.fromLTRB(30, 15, 30, 15),
             ),
-            child: const Text(
+            child: Text(
               "Default Device",
               textAlign: TextAlign.center,
               style: TextStyle(
@@ -257,20 +273,29 @@ class _LobbyState extends State<Lobby> {
               ),
             ),
           ),
-          SizedBox(width: 10), // Add a SizedBox with width 10 here
+          const SizedBox(width: 10),
           ElevatedButton(
             onPressed: () {
-              // Add your action here
+              roomState.selectAudioDevice(roomState.externalAudioDevice);
+              if (roomState.externalVideoDevice != null) {
+                roomState.selectVideoDevice(roomState.externalVideoDevice!);
+                selectedVideoDevice = roomState.externalVideoDevice;
+              }
+              selectedAudioDevice = roomState.externalAudioDevice;
+              setState(() {});
             },
             style: ElevatedButton.styleFrom(
-              primary: Colors.white,
+              primary: selectedAudioDevice == roomState.externalAudioDevice &&
+                      selectedVideoDevice == roomState.externalVideoDevice
+                  ? Colors.white
+                  : Colors.green,
               onPrimary: Colors.black,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(56),
               ),
               padding: const EdgeInsets.fromLTRB(30, 15, 30, 15),
             ),
-            child: const Text(
+            child: Text(
               "External Device",
               textAlign: TextAlign.center,
               style: TextStyle(
@@ -285,3 +310,5 @@ class _LobbyState extends State<Lobby> {
     ]);
   }
 }
+
+class Device {}
