@@ -189,6 +189,41 @@ String defaultJoinRedirectBuilder({required String eventID}) {
       queryParameters: {'nounUrl': formatNounUrl(eventID)}).toString();
 }
 
+Future<void> openNewPowerboard(
+    BuildContext context, JoinRedirectBuilder redirectBuilder) async {
+  final api = TimuApiProvider.of(context).api;
+  final me = MyProfileProvider.of(context).profile;
+
+  final noun = await api.create(type: 'core:powerboard', data: {
+    'name': 'Untitled',
+    'acl': {
+      'claims': [
+        {'name': 'url', 'value': me.url, 'role': 'core:owner'},
+        {
+          'name': 'temporaryAccessTo',
+          'value': 'self',
+          'role': 'core:contributor'
+        },
+      ]
+    },
+    'localAclAdditions': {
+      'claims': [
+        {
+          'name': 'type',
+          'role': 'core:reader',
+          'value': 'core:guest',
+        },
+        {
+          'name': 'type',
+          'role': 'core:reader',
+          'value': 'core:user',
+        }
+      ]
+    }
+  });
+  context.go(redirectBuilder(eventID: fromUUID(noun.id)));
+}
+
 class JoinPage extends StatefulWidget {
   const JoinPage(
       {super.key, this.redirectBuilder = defaultJoinRedirectBuilder});
@@ -215,30 +250,6 @@ class _JoinPageState extends State<JoinPage> {
     super.dispose();
   }
 
-  Future<void> createNew() async {
-    final noun = await TimuApiProvider.of(context)
-        .api
-        .create(type: 'core:powerboard', data: {
-      'name': 'Untitled',
-      'acl': 'private',
-      'localAclAdditions': {
-        'claims': [
-          {
-            'name': 'type',
-            'role': 'core:reader',
-            'value': 'core:guest',
-          },
-          {
-            'name': 'type',
-            'role': 'core:reader',
-            'value': 'core:user',
-          }
-        ]
-      }
-    });
-    context.go(widget.redirectBuilder(eventID: fromUUID(noun.id)));
-  }
-
   @override
   void initState() {
     super.initState();
@@ -260,7 +271,7 @@ class _JoinPageState extends State<JoinPage> {
 
     if (auth.activeAccount != null) {
       bottomButton = FilledButton(
-        onPressed: createNew,
+        onPressed: () => openNewPowerboard(context, widget.redirectBuilder),
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.white,
           minimumSize: const Size.fromHeight(42),
