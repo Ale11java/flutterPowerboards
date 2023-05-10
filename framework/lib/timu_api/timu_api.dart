@@ -288,7 +288,7 @@ class TimuApi {
       qp["query"] = filter;
     }
     if (size != null) {
-      qp["size"] = size;
+      qp["size"] = size.toString();
     }
 
     final response = await http.get(
