@@ -21,6 +21,8 @@ dependencies:
   livekit_client: ^1.2.2
   webrtc_interface: ^1.0.12
   audioplayers: ^0.20.1
+  appcheck: ^1.0.6
+  flutter_webrtc: ^0.9.27
 
 dev_dependencies:
   recase: ^4.0.0

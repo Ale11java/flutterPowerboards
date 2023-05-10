@@ -107,18 +107,6 @@ class VideoRoomProviderState extends State<VideoRoomProvider> {
   lk.FastConnectOptions? fastConnectOptions;
   late lk.Room room;
 
-  get availableAudioDevices => null;
-
-  get availableVideoDevices => null;
-
-  Object? get selectedAudioDevice => null;
-
-  Object? get selectedVideoDevice => null;
-
-  get defaultAudioDevice => null;
-
-  MediaDeviceInfo? get defaultVideoDevice => null;
-
   @override
   void initState() {
     super.initState();
@@ -162,10 +150,6 @@ class VideoRoomProviderState extends State<VideoRoomProvider> {
   Widget build(BuildContext context) {
     return VideoRoom(room: room, child: widget.child);
   }
-
-  void selectAudioDevice(defaultAudioDevice) {}
-
-  void selectVideoDevice(MediaDeviceInfo device) {}
 }
 
 class VideoChatConnectionWidget extends StatefulWidget {

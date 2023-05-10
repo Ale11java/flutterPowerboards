@@ -45,15 +45,6 @@ class _LobbyState extends State<Lobby2> {
         video?.dispose();
         video = null;
       });
-    } else {
-      // TODO: this is bad
-      video?.dispose();
-      LocalVideoTrack.createCameraTrack(const CameraCaptureOptions())
-          .then((track) {
-        setState(() {
-          video = track;
-        });
-      });
     }
   }
 

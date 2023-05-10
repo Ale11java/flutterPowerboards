@@ -40,6 +40,7 @@ class AuthStorageImpl extends AuthStorage {
     }
 
     if (accountsJson != null) {
+      print(accountsJson);
       final Map<String, dynamic> data =
           jsonDecode(accountsJson) as Map<String, dynamic>;
       final List<Account> accounts = data.entries
@@ -81,14 +82,32 @@ class AuthStorageImpl extends AuthStorage {
     );
   }
 
+  // @override
+  // Future<void> addAccount(Account account) async {
+  //   await _storage.write(key: activeAccountStorageKey, value: account.key);
+
+  //   final accounts = await getAccounts();
+  //   await _storage.write(
+  //     key: accountsStorageKey,
+  //     value: jsonEncode([...accounts, account]),
+  //   );
+  // }
+
   @override
   Future<void> addAccount(Account account) async {
     await _storage.write(key: activeAccountStorageKey, value: account.key);
 
     final accounts = await getAccounts();
+    final Map<String, Account> accountsMap = {
+      for (var acc in accounts) acc.key: acc
+    };
+
+    // Add the new account to the accountsMap
+    accountsMap[account.key] = account;
+
     await _storage.write(
       key: accountsStorageKey,
-      value: jsonEncode([...accounts, account]),
+      value: jsonEncode(accountsMap),
     );
   }
 }

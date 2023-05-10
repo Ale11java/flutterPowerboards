@@ -33,6 +33,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.1"
+  appcheck:
+    dependency: "direct main"
+    description:
+      name: appcheck
+      sha256: a9e5852e8c9d14342cfa3569fc464a1d49a49eac41e3d006f5825ce54663678f
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.6"
   args:
     dependency: "direct dev"
     description:
@@ -49,6 +57,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.11.0"
+  audioplayers:
+    dependency: "direct main"
+    description:
+      name: audioplayers
+      sha256: a565e7e3e8a21a823b8cd7fed0bde1eb3796a96b373374be557adecfb511fa6b
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.20.1"
   boolean_selector:
     dependency: transitive
     description:
@@ -129,6 +145,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.2"
+  cryptography:
+    dependency: transitive
+    description:
+      name: cryptography
+      sha256: df156c5109286340817d21fa7b62f9140f17915077127dd70f8bd7a2a0997a35
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.5.0"
   dart_webrtc:
     dependency: transitive
     description:
@@ -265,13 +289,13 @@ packages:
     source: sdk
     version: "0.0.0"
   flutter_webrtc:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: flutter_webrtc
-      sha256: f8904369f3ad57945a797481bf079c281f4944ad4635e9d412529141d81c9c76
+      sha256: a6dcf0e092228a801d2a2e922a227d651795963f8ad1b5e3cf9023d085bf071a
       url: "https://pub.dev"
     source: hosted
-    version: "0.9.25"
+    version: "0.9.27"
   flutter_window_close:
     dependency: transitive
     description:
@@ -364,10 +388,10 @@ packages:
     dependency: "direct main"
     description:
       name: livekit_client
-      sha256: "7f0ebc499bbf01589cc016090c33f5cabe807e3a8fcdea5984f44d1b2b4e0e2e"
+      sha256: e5a44c0fae7ffd9758f415f249e3fdd4a54148c6efbe091d758b9cb436728022
       url: "https://pub.dev"
     source: hosted
-    version: "1.2.2"
+    version: "1.3.0"
   logging:
     dependency: transitive
     description:
@@ -857,10 +881,10 @@ packages:
     dependency: "direct main"
     description:
       name: webrtc_interface
-      sha256: "5fdd616bc2937194402298f3024e81c74f68f44f6d73de31aaea69ee7d156b12"
+      sha256: "0ac4693f921c81005edefd2f43b9fe84b0ed54481474fe1ee16b789b0c84a77c"
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.12"
+    version: "1.0.13"
   win32:
     dependency: transitive
     description:

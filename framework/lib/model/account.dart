@@ -29,6 +29,18 @@ class Account {
       provider: value['provider'] as String?,
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'key': key,
+      'email': email,
+      'firstName': firstName,
+      'lastName': lastName,
+      'access': accessToken,
+      'method': method,
+      'provider': provider,
+    };
+  }
 }
 
 const ProviderGoogle = 'google';
